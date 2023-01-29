@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Mesa
+    uniqueID: 121487299
+    locked: 0
+  - name: Tablero
+    uniqueID: 2874609849
+    locked: 0
+  - name: Instancias
+    uniqueID: 655590843
+    locked: 0
+  - name: Logica
+    uniqueID: 3149830385
+    locked: 0

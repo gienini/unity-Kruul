@@ -65,7 +65,27 @@ public class GridCursor : MonoBehaviour
 
     private void SetCursorValidity(Vector3Int cursorGridPosition)
     {
-        SetCursorToValid();
+        List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
+        bool esValida = true;
+        if (valoresCuadrante != null)
+        {
+            foreach (ValorCasilla valorCasilla in valoresCuadrante)
+            {
+                if (valorCasilla.esOcupado || !valorCasilla.esTablero)
+                {
+                    esValida = false;
+                }
+            }
+            if (esValida)
+            {
+                SetCursorToValid();
+            }
+            else
+            {
+                SetCursorToInvalid();
+            }
+        }
+
     }
 
     private void SetCursorToValid()
@@ -90,5 +110,10 @@ public class GridCursor : MonoBehaviour
         //Camara esta a z = -10, de manera que los items estan enfrente (+10)
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -mainCamera.transform.position.z));
         return grid.WorldToCell(worldPosition);
+    }
+
+    public Vector3 GetWorldPositionForCursor()
+    {
+        return new Vector3(grid.CellToWorld(GetGridPositionForCursor()).x + 0.5f, grid.CellToWorld(GetGridPositionForCursor()).y + 0.5f, 0f);
     }
 }
