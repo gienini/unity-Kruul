@@ -4,26 +4,33 @@ using UnityEngine;
 
 public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasillasManager>
 {
-    private Dictionary<string, ValorCasilla> dictValoresCasilla;
+    private Dictionary<string, ValorCasilla> _dictValoresCasilla;
+    private bool _esDictCargado = false;
     [SerializeField] private SO_PropiedadesCasilla[] propiedadesCasillaArray = null;
+
+    public bool EsDictCargado { get => _esDictCargado; set => _esDictCargado = value; }
+    public Dictionary<string, ValorCasilla> DictValoresCasilla { get => _dictValoresCasilla; set => _dictValoresCasilla = value; }
 
     private void OnEnable()
     {
         EventHandler.PopCartaEnPosicionEvent += RegistraCartaEnPosicion;
     }
+
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= RegistraCartaEnPosicion;
     }
     private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta)
     {
+        //Representa el espacio que ocupa la carta
         List<ValorCasilla> cuadrantes = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);
+        //SEPUEDE carta.coordenadasCasilla = (int)posicion.x, (int)posicion.y
         //Setea valores de casillas
-        for(int i = 0; i < cuadrantes.Count; i++)
+        for (int i = 0; i < cuadrantes.Count; i++)
         {
             ValorCasilla casilla = cuadrantes[i];
-            casilla.esColor1 = carta.GetComponentsInChildren<CartaCuartaParte>()[i].esColor1;
-            casilla.esColor2 = !carta.GetComponentsInChildren<CartaCuartaParte>()[i].esColor1;
+            casilla.esColor1 = carta.ValorCuartosCarta[i] == '1';
+            casilla.esColor2 = carta.ValorCuartosCarta[i] == '2';
             PropiedadCasilla nuevoValorColor1 = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esColor1, casilla.esColor1);
             PropiedadCasilla nuevoValorColor2 = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esColor2, casilla.esColor2);
             PropiedadCasilla nuevoValorCasillaOcupada = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esOcupada, true);
@@ -54,7 +61,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     esPuntoColor1 = false;
                 }
                 
-                Debug.Log("escanea x:" + casillaCuadrante.x + " y:" + casillaCuadrante.y + "escolor1: " + casillaCuadrante.esColor1 + " escolor2" + casillaCuadrante.esColor2);
+                Debug.Log("escanea#X:" + casillaCuadrante.x + "#Y:" + casillaCuadrante.y + "#COLOR1: " + casillaCuadrante.esColor1 + " #COLOR2:" + casillaCuadrante.esColor2 + "#OCUPADO:" + casillaCuadrante.esOcupado);
             }
 
             if (esPuntoColor1 || esPuntoColor2)
@@ -67,14 +74,13 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
 
     private void Start()
     {
-        InicializaDictValoresCasilla();
     }
 
-    private void InicializaDictValoresCasilla()
+    public void InicializaDictValoresCasilla()
     {
         if (propiedadesCasillaArray != null && propiedadesCasillaArray.Length > 0)
         {
-            dictValoresCasilla = new Dictionary<string, ValorCasilla>();
+            DictValoresCasilla = new Dictionary<string, ValorCasilla>();
             for (int i = 0; i < propiedadesCasillaArray.Length; i++)
             {
                 //Elemento SO de una capa de propiedades
@@ -83,6 +89,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     PutValorEnDict(casilla);
                 }
             }
+            EsDictCargado = true;
         }
     }
 
@@ -96,10 +103,10 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         ValorCasilla nuevoValor;
         string key = GeneraKey(casilla.coordenada.x, casilla.coordenada.y);
-        if (dictValoresCasilla.TryGetValue(key, out ValorCasilla value))
+        if (DictValoresCasilla.TryGetValue(key, out ValorCasilla value))
         {
             nuevoValor = value;
-            dictValoresCasilla.Remove(key);
+            DictValoresCasilla.Remove(key);
         }
         else
         {
@@ -124,8 +131,29 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             default:
                 break;
         }
-        dictValoresCasilla.Add(key, nuevoValor);
+        DictValoresCasilla.Add(key, nuevoValor);
 
+    }
+
+    public bool EsAlgunOcupadoEnCuadrantesOrtoAdyacente(int x, int y)
+    {
+        bool retorno = false;
+        List<List<ValorCasilla>> cuadrantes = GetCuadrantesAdyacentes(x, y);
+        for (int i = 0; i < cuadrantes.Count; i++)
+        {
+            if (i != 0 && i != 2 && i != 6 && i != 8)
+            {
+                List<ValorCasilla> cuadrante = cuadrantes[i];
+                foreach (ValorCasilla casilla in cuadrante)
+                {
+                    if (casilla.esOcupado)
+                    {
+                        retorno = true;
+                    }
+                }
+            }
+        }
+        return retorno;
     }
 
     public List<List<ValorCasilla>> GetCuadrantesAdyacentes(List<ValorCasilla> cuadrante)
@@ -166,7 +194,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         {
             for (int offsetX = 0; offsetX < 2; offsetX++)
             {
-                dictValoresCasilla.TryGetValue(GeneraKey(x+ offsetX, y+ offsetY), out ValorCasilla v);
+                DictValoresCasilla.TryGetValue(GeneraKey(x+ offsetX, y+ offsetY), out ValorCasilla v);
                 if (v == null)
                 {
                     v = new ValorCasilla();
@@ -180,7 +208,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     }
     public ValorCasilla GetValorEnCoordenada(int x, int y)
     {
-        if (dictValoresCasilla.TryGetValue(GeneraKey(x, y), out ValorCasilla v))
+        if (DictValoresCasilla.TryGetValue(GeneraKey(x, y), out ValorCasilla v))
         {
             return v;
         }

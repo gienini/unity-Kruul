@@ -5,36 +5,32 @@ using UnityEngine;
 public class Carta : MonoBehaviour
 {
     private CartaCuartaParte[] _cuartasPartes = null;
-    private CoordenadaCasilla _coordenadaCasilla;
-    [SerializeField] private Sprite spriteCartaCuartaParteColor1 = null;
-    [SerializeField] private Sprite spriteCartaCuartaParteColor2 = null;
+    private bool _esRefresh = true;
+    [SerializeField] private string _valorCuartosCarta = null;
 
-
-    // Start is called before the first frame update
-    void Start()
+    public string ValorCuartosCarta { get => _valorCuartosCarta; set => setValorCuartosCarta(value); }
+    private void setValorCuartosCarta(string valor)
     {
-        
+        _valorCuartosCarta = valor;
+        _esRefresh = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    //private CoordenadaCasilla _coordenadaCasilla;
+    //public CoordenadaCasilla CoordenadaCasilla { get => _coordenadaCasilla; set => _coordenadaCasilla = value; }
+    void Start()
+    {   
+        
+    }
+    private void Update()
     {
-        if (_cuartasPartes == null)
+        if (_esRefresh)
         {
             _cuartasPartes = GetComponentsInChildren<CartaCuartaParte>();
             for (int i = 0; i < _cuartasPartes.Length; i++)
             {
-                CartaCuartaParte cartaCuartaParte = _cuartasPartes[i];
-                if (cartaCuartaParte.esColor1)
-                {
-                    cartaCuartaParte.GetComponent<SpriteRenderer>().sprite = spriteCartaCuartaParteColor1;
-                }
-                else
-                {
-                    cartaCuartaParte.GetComponent<SpriteRenderer>().sprite = spriteCartaCuartaParteColor2;
-                }
-
+                _cuartasPartes[i].InicializaCuarto(ValorCuartosCarta);
             }
+            _esRefresh = false;
         }
     }
 }

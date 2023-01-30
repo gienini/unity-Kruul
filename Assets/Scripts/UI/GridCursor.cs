@@ -14,7 +14,7 @@ public class GridCursor : MonoBehaviour
     [SerializeField] private Sprite redCursorSprite = null;
 
     private bool _cursorPositionIsValid = false;
-    private bool _cursorIsEnabled = true;
+    private bool _cursorIsEnabled = false;
     public bool CursorPositionIsValid { get => _cursorPositionIsValid; set => _cursorPositionIsValid = value; }
     public bool CursorIsEnabled { get => _cursorIsEnabled; set => _cursorIsEnabled = value; }
 
@@ -27,7 +27,7 @@ public class GridCursor : MonoBehaviour
 
     private void Update()
     {
-        if (CursorIsEnabled)
+        if (PropiedadesCasillasManager.Instance.EsDictCargado)
         {
             DisplayCursor();
         }
@@ -66,16 +66,25 @@ public class GridCursor : MonoBehaviour
     private void SetCursorValidity(Vector3Int cursorGridPosition)
     {
         List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
+        bool esNoOcupada = true;
+        bool esDentroTablero = true;
+        bool esAdyacenteAotra = PropiedadesCasillasManager.Instance.EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
+        
         bool esValida = true;
         if (valoresCuadrante != null)
         {
             foreach (ValorCasilla valorCasilla in valoresCuadrante)
             {
-                if (valorCasilla.esOcupado || !valorCasilla.esTablero)
+                if (valorCasilla.esOcupado)
                 {
-                    esValida = false;
+                    esNoOcupada = false;
+                }
+                if (!valorCasilla.esTablero)
+                {
+                    esDentroTablero = false;
                 }
             }
+            esValida = esNoOcupada && esDentroTablero && esAdyacenteAotra;
             if (esValida)
             {
                 SetCursorToValid();

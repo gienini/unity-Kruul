@@ -69,13 +69,16 @@
     <Compile Include="Assets\Scripts\Debug\TestCoordenadasCursor.cs" />
     <Compile Include="Assets\Scripts\Eventos\EventHandler.cs" />
     <Compile Include="Assets\Scripts\Misc\Enums.cs" />
+    <Compile Include="Assets\Scripts\Misc\Metodos.cs" />
     <Compile Include="Assets\Scripts\Partida\Carta.cs" />
     <Compile Include="Assets\Scripts\Partida\CartaCuartaParte.cs" />
     <Compile Include="Assets\Scripts\Partida\PartidaManager.cs" />
     <Compile Include="Assets\Scripts\Partida\Pieza.cs" />
+    <Compile Include="Assets\Scripts\SO_Scripts\Baraja.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\CoordenadaCasilla.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\EditorTilesPropiedadesManager.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\PropiedadCasilla.cs" />
+    <Compile Include="Assets\Scripts\SO_Scripts\SO_Baraja.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\SO_PropiedadesCasilla.cs" />
     <Compile Include="Assets\Scripts\Tablero\PropiedadesCasillasManager.cs" />
     <Compile Include="Assets\Scripts\Tablero\ValorCasilla.cs" />

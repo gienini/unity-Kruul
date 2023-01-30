@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 34048832}
   - component: {fileID: 34048835}
   m_Layer: 0
-  m_Name: PanelJuego
+  m_Name: Cursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

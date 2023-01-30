@@ -103,10 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09ddb97d6d011e42ae51929f03c0690, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteCartaCuartaParteColor1: {fileID: 21300000, guid: df654a481c2d69c4a844b6cbe0ceb22f,
-    type: 3}
-  spriteCartaCuartaParteColor2: {fileID: 21300000, guid: 47c5e8ef256ed6146bedad25091884f6,
-    type: 3}
+  valorCuartosCarta: 1010
 --- !u!1001 &1101539411977716548
 PrefabInstance:
   m_ObjectHideFlags: 0

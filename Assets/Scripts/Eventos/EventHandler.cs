@@ -34,4 +34,40 @@ public class EventHandler
             PuntoEnCuadranteEvent(cuadrante, esColor1);
         }
     }
+
+    public static event Action EmpiezaFase1Event;
+    public static void CallEmpiezaFase1Event()
+    {
+        if (EmpiezaFase1Event != null)
+        {
+            EmpiezaFase1Event();
+        }
+    }
+
+    public static event Action EmpiezaFase2Event;
+    public static void CallEmpiezaFase2Event()
+    {
+        if (EmpiezaFase2Event != null)
+        {
+            EmpiezaFase2Event();
+        }
+    }
+
+    public static event Action AcabaFase1Event;
+    public static void CallAcabaFase1Event()
+    {
+        if (AcabaFase1Event != null)
+        {
+            AcabaFase1Event();
+        }
+    }
+
+    public static event Action AcabaFase2Event;
+    public static void CallAcabaFase2Event()
+    {
+        if (AcabaFase2Event != null)
+        {
+            AcabaFase2Event();
+        }
+    }
 }
