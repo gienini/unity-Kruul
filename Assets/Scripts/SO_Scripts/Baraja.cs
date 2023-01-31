@@ -26,6 +26,16 @@ public class Baraja
         return retorno;
     }
 
+    public string GetSiguiente()
+    {
+        string retorno = null;
+        if (_pilaCartas != null && _pilaCartas.Count > 0)
+        {
+            retorno = _pilaCartas[0];
+        }
+        return retorno;
+    }
+
     public int Count()
     {
         int retorno = 0;

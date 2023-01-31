@@ -32,6 +32,10 @@ public class JugadorActivoImagen : MonoBehaviour
 
     private void RefrescaTextos()
     {
+        if (_imageComponent == null)
+        {
+            _imageComponent = GetComponent<Image>();
+        }
         if (_esTurnoJugador1)
         {
             _imageComponent.sprite = imagenJugador1;

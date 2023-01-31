@@ -56,7 +56,7 @@ public class CanvasPartida : MonoBehaviour
         _fichasJugadasJ2Texto.text = "Fichas jugador2: #".Replace("#", _fichasJugadasJugador2.ToString());
     }
 
-    private void PopCartaEnPosicionEvent(Vector3 arg1, Carta arg2, int cartasRestantesBaraja)
+    private void PopCartaEnPosicionEvent(Vector3 arg1, Carta arg2, int cartasRestantesBaraja, string cuartosProximaCarta)
     {
         _cartasRestantesBaraja = cartasRestantesBaraja;
     }

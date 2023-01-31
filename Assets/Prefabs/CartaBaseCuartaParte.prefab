@@ -47,6 +47,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5626971694241356241}
   - component: {fileID: 1806941416802241988}
+  - component: {fileID: 2063159492467182594}
   m_Layer: 0
   m_Name: Marco
   m_TagString: Untagged
@@ -123,6 +124,14 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!222 &2063159492467182594
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7783937459699152074}
+  m_CullTransparentMesh: 0
 --- !u!1 &8797371652013116085
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,6 +143,7 @@ GameObject:
   - component: {fileID: 4200128581786979213}
   - component: {fileID: 7311597529526875894}
   - component: {fileID: 8851043617966092109}
+  - component: {fileID: 1644258209602506726}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -225,3 +235,11 @@ MonoBehaviour:
   posicion: 0
   spriteColor1: {fileID: 21300000, guid: df654a481c2d69c4a844b6cbe0ceb22f, type: 3}
   spriteColor2: {fileID: 21300000, guid: 47c5e8ef256ed6146bedad25091884f6, type: 3}
+--- !u!222 &1644258209602506726
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8797371652013116085}
+  m_CullTransparentMesh: 0

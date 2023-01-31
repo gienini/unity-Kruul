@@ -20,7 +20,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         EventHandler.PopCartaEnPosicionEvent -= RegistraCartaEnPosicion;
     }
-    private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes)
+    private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes, string cuartosProximaCarta)
     {
         //Representa el espacio que ocupa la carta
         List<ValorCasilla> cuadrante = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);

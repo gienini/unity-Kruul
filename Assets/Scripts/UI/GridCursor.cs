@@ -5,24 +5,37 @@ using UnityEngine.UI;
 
 public class GridCursor : MonoBehaviour
 {
-    private Canvas canvas;
-    private Grid grid;
-    private Camera mainCamera;
     [SerializeField] private Image cursorImage = null;
     [SerializeField] private RectTransform cursorRectTransform = null;
     [SerializeField] private Sprite greenCursorSprite = null;
     [SerializeField] private Sprite redCursorSprite = null;
+    [SerializeField] private GameObject cartaBasePrefab = null;
 
+    private GameObject _cartaGO;
+    private Canvas _canvas;
+    private Grid _grid;
+    private Camera _mainCamera;
+    //private Carta _cartaBaseCursor;
     private bool _cursorPositionIsValid = false;
     private bool _cursorIsEnabled = false;
     public bool CursorPositionIsValid { get => _cursorPositionIsValid; set => _cursorPositionIsValid = value; }
     public bool CursorIsEnabled { get => _cursorIsEnabled; set => _cursorIsEnabled = value; }
 
+    private void OnEnable()
+    {
+        EventHandler.PopCartaEnPosicionEvent += PopCartaEnPosicionEvent;
+    }
+    private void OnDisable()
+    {
+        EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
+    }
+
     private void Start()
     {
-        grid = GameObject.FindObjectOfType<Grid>();
-        mainCamera = Camera.main;
-        canvas = GetComponentInParent<Canvas>();
+        _grid = GameObject.FindObjectOfType<Grid>();
+        _mainCamera = Camera.main;
+        _canvas = GetComponentInParent<Canvas>();
+        //_cartaBaseCursor = GetComponentInChildren<Carta>();
     }
 
     private void Update()
@@ -35,15 +48,14 @@ public class GridCursor : MonoBehaviour
 
     private Vector3Int DisplayCursor()
     {
-        if (grid != null)
+        if (_grid != null)
         {
             Vector3Int cursorGridPosition = GetGridPositionForCursor();
 
             SetCursorValidity(cursorGridPosition);
 
-            //Seteamos el valor pero no lo usamos aun
-
             cursorRectTransform.position = GetRectTransformPositionForCursor(cursorGridPosition);
+            _cartaGO.gameObject.GetComponent<RectTransform>().position = GetRectTransformPositionForCursor(cursorGridPosition);
 
             return cursorGridPosition;
         }
@@ -56,11 +68,11 @@ public class GridCursor : MonoBehaviour
     public Vector2 GetRectTransformPositionForCursor(Vector3Int gridPosition)
     {
         //Representa un punto en la escena completa
-        Vector3 gridWorldPosition = grid.CellToWorld(gridPosition);
+        Vector3 gridWorldPosition = _grid.CellToWorld(gridPosition);
         //Representa un punto dentro de la pantalla del jugador
-        Vector2 gridScreenPosition = mainCamera.WorldToScreenPoint(gridWorldPosition);
+        Vector2 gridScreenPosition = _mainCamera.WorldToScreenPoint(gridWorldPosition);
 
-        return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, canvas);
+        return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, _canvas);
     }
 
     private void SetCursorValidity(Vector3Int cursorGridPosition)
@@ -117,12 +129,25 @@ public class GridCursor : MonoBehaviour
     {
         //La Z la calculamos asi:
         //Camara esta a z = -10, de manera que los items estan enfrente (+10)
-        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -mainCamera.transform.position.z));
-        return grid.WorldToCell(worldPosition);
+        Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -_mainCamera.transform.position.z));
+        return _grid.WorldToCell(worldPosition);
     }
 
     public Vector3 GetWorldPositionForCursor()
     {
-        return new Vector3(grid.CellToWorld(GetGridPositionForCursor()).x + 0.5f, grid.CellToWorld(GetGridPositionForCursor()).y + 0.5f, 0f);
+        return new Vector3(_grid.CellToWorld(GetGridPositionForCursor()).x + 0.5f, _grid.CellToWorld(GetGridPositionForCursor()).y + 0.5f, 0f);
+    }
+
+    private void PopCartaEnPosicionEvent(Vector3 posicion, Carta carta, int cartasRestantesBaraja, string cuartosProximaCarta)
+    {
+        if (_cartaGO != null)
+        {
+            Destroy(_cartaGO);
+        }
+        //GameObject carta
+        _cartaGO = Instantiate(cartaBasePrefab, _canvas.transform);
+        _cartaGO.GetComponent<Carta>().ValorCuartosCarta = cuartosProximaCarta;
+        _cartaGO.transform.SetParent(gameObject.transform);
+        _cartaGO.transform.SetAsFirstSibling();
     }
 }

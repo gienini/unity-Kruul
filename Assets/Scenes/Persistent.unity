@@ -180,7 +180,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 34048830}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -225,6 +225,8 @@ MonoBehaviour:
   cursorRectTransform: {fileID: 282307072}
   greenCursorSprite: {fileID: 21300000, guid: 6eb4238b7d3f1f6429255a3371aa1db4, type: 3}
   redCursorSprite: {fileID: 21300000, guid: b7da371603beeef4dbc6638e0433ae58, type: 3}
+  cartaBasePrefab: {fileID: 4667310535363786593, guid: b4048fd60b141dd4eb27329b441c7af9,
+    type: 3}
 --- !u!1 &189027692
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,7 +724,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3.100006, y: 153.3}
+  m_AnchoredPosition: {x: 3.0999756, y: 153.29999}
   m_SizeDelta: {x: -86.5, y: -324.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &534711751
@@ -1831,7 +1833,7 @@ PrefabInstance:
     - target: {fileID: 1539389362790117520, guid: 2cbcd4afd1e9e43419f55e7fd46437d5,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1539389362790117520, guid: 2cbcd4afd1e9e43419f55e7fd46437d5,
         type: 3}
@@ -1897,6 +1899,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1539389362790117521, guid: 2cbcd4afd1e9e43419f55e7fd46437d5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1539389362790118255, guid: 2cbcd4afd1e9e43419f55e7fd46437d5,
         type: 3}

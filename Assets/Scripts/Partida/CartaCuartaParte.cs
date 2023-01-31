@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CartaCuartaParte : MonoBehaviour
 {
@@ -8,25 +9,52 @@ public class CartaCuartaParte : MonoBehaviour
     [SerializeField] public CartaCuartaPartePosicion posicion = 0;
     [SerializeField] private Sprite spriteColor1 = null;
     [SerializeField] private Sprite spriteColor2 = null;
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private bool esCursor = false;
+    private SpriteRenderer _spriteRenderer;
+    private Image _image;
+    private bool _esRefresh = false;
 
     public bool esColor1 { get => _esColor1; set => _esColor1 = value; }
 
     private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (esCursor)
+        {
+            _image = GetComponent<Image>();
+        } else
+        {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+        
+        
     }
     private void Update()
     {
-        if (spriteRenderer != null)
+        if (esCursor && _esRefresh)
         {
-            if (_esColor1 && spriteRenderer.sprite == null)
+            if (_image != null)
             {
-                spriteRenderer.sprite = spriteColor1;
+                if (_esColor1 && _image.sprite == null)
+                {
+                    _image.sprite = spriteColor1;
+                }
+                else if (!_esColor1 && _image.sprite == null)
+                {
+                    _image.sprite = spriteColor2;
+                }
             }
-            else if (!_esColor1 && spriteRenderer.sprite == null)
+        } else
+        {
+            if (_spriteRenderer != null)
             {
-                spriteRenderer.sprite = spriteColor2;
+                if (_esColor1 && _spriteRenderer.sprite == null)
+                {
+                    _spriteRenderer.sprite = spriteColor1;
+                }
+                else if (!_esColor1 && _spriteRenderer.sprite == null)
+                {
+                    _spriteRenderer.sprite = spriteColor2;
+                }
             }
         }
     }
@@ -57,6 +85,7 @@ public class CartaCuartaParte : MonoBehaviour
         {
             esColor1 = false;
         }
+        _esRefresh = true;
         Debug.Log(" new CUARTO-POSICION:"+ (int)posicion);
         Debug.Log(" new CUARTO-VALOR:" + valor);
     }

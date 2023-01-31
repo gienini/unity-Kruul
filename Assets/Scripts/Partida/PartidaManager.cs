@@ -52,7 +52,7 @@ public class PartidaManager : MonoBehaviour
             //Inicializar diccionario casillas
             PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
             //LLamamos evento con el componente carta seteado por la baraja
-            EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>(), _baraja.Count());
+            EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
             esFase1Cargada = false;
         }
     }
@@ -61,14 +61,14 @@ public class PartidaManager : MonoBehaviour
         ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
         if (valorCasilla != null && valorCasilla.esTablero)
         {
-            //Posicion
+            //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
             Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, posicion.z);
             //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
             //GameObject carta
             GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
             cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
-            //LLamamos evento con el componente carta seteado por la baraja
-            EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), _baraja.Count());
+            //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
+            EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
             Debug.Log("Crea Carta en posicion x=" + posicionFinal.x + " y=" + posicionFinal.y);
             EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
             _esTurnoJugador1 = !_esTurnoJugador1;

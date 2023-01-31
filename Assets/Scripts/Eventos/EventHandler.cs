@@ -15,13 +15,13 @@ public class EventHandler
         }
     }
 
-    public static event Action<Vector3, Carta, int> PopCartaEnPosicionEvent;
+    public static event Action<Vector3, Carta, int, string> PopCartaEnPosicionEvent;
 
-    public static void CallPopCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantesBaraja)
+    public static void CallPopCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantesBaraja, string cuartosProximaCarta)
     {
         if (PopCartaEnPosicionEvent != null)
         {
-            PopCartaEnPosicionEvent(posicion, carta, cartasRestantesBaraja);
+            PopCartaEnPosicionEvent(posicion, carta, cartasRestantesBaraja, cuartosProximaCarta);
         }
     }
 
