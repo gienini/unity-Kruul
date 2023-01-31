@@ -20,15 +20,15 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         EventHandler.PopCartaEnPosicionEvent -= RegistraCartaEnPosicion;
     }
-    private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta)
+    private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes)
     {
         //Representa el espacio que ocupa la carta
-        List<ValorCasilla> cuadrantes = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);
+        List<ValorCasilla> cuadrante = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);
         //SEPUEDE carta.coordenadasCasilla = (int)posicion.x, (int)posicion.y
         //Setea valores de casillas
-        for (int i = 0; i < cuadrantes.Count; i++)
+        for (int i = 0; i < cuadrante.Count; i++)
         {
-            ValorCasilla casilla = cuadrantes[i];
+            ValorCasilla casilla = cuadrante[i];
             casilla.esColor1 = carta.ValorCuartosCarta[i] == '1';
             casilla.esColor2 = carta.ValorCuartosCarta[i] == '2';
             PropiedadCasilla nuevoValorColor1 = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esColor1, casilla.esColor1);
@@ -40,12 +40,12 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         }
         //Check for puntos
         List<List<ValorCasilla>> cuadrantesAdyacentes = GetCuadrantesAdyacentes((int)posicion.x, (int)posicion.y);
-        foreach (List<ValorCasilla> cuadrante in cuadrantesAdyacentes)
+        foreach (List<ValorCasilla> cuadranteAdyacente in cuadrantesAdyacentes)
         {
             bool esPuntoColor1 = true;
             bool esPuntoColor2 = true;
             Debug.Log("----------------Cuadrante");
-            foreach (ValorCasilla casillaCuadrante in cuadrante)
+            foreach (ValorCasilla casillaCuadrante in cuadranteAdyacente)
             {
                 if (!casillaCuadrante.esOcupado)
                 {
@@ -67,7 +67,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             if (esPuntoColor1 || esPuntoColor2)
             {
                 Debug.Log("PUNTO");
-                EventHandler.CallPuntoEnCuadranteEvent(cuadrante, esPuntoColor1);
+                EventHandler.CallPuntoEnCuadranteEvent(cuadranteAdyacente, esPuntoColor1);
             }
         }
     }

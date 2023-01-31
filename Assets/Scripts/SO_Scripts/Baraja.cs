@@ -18,10 +18,20 @@ public class Baraja
     public string Pop()
     {
         string retorno = null;
-        if (_pilaCartas.Count > 0)
+        if (_pilaCartas != null &&_pilaCartas.Count > 0)
         {
             retorno = _pilaCartas[0];
             _pilaCartas.RemoveAt(0);
+        }
+        return retorno;
+    }
+
+    public int Count()
+    {
+        int retorno = 0;
+        if (_pilaCartas != null && _pilaCartas.Count > 0)
+        {
+            retorno = _pilaCartas.Count;
         }
         return retorno;
     }

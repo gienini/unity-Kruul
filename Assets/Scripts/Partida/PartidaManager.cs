@@ -9,10 +9,16 @@ public class PartidaManager : MonoBehaviour
     [SerializeField] private SO_Baraja so_baraja = null;
     private Camera mainCamera;
     private Baraja _baraja;
+    //CuentasJugadores
+    private int _puntosJugador1 = 0;
+    private int _puntosJugador2 = 0;
+    private int _fichasPuestasJugador1 = 0;
+    private int _fichasPuestasJugador2 = 0;
+    //CuentasBarajas
 
     //test
     [SerializeField] private GameObject cartaBasePrefab2 = null;
-    private bool esTurno = true;
+    private bool _esTurnoJugador1 = true;
     private bool esFase1Cargada = false;
     private void OnEnable()
     {
@@ -46,7 +52,7 @@ public class PartidaManager : MonoBehaviour
             //Inicializar diccionario casillas
             PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
             //LLamamos evento con el componente carta seteado por la baraja
-            EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>());
+            EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>(), _baraja.Count());
             esFase1Cargada = false;
         }
     }
@@ -57,13 +63,15 @@ public class PartidaManager : MonoBehaviour
         {
             //Posicion
             Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, posicion.z);
+            //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
             //GameObject carta
             GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
             cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
             //LLamamos evento con el componente carta seteado por la baraja
-            EventHandler.CallPopCartaEnPosicion(posicion, cartaGO.GetComponent<Carta>());
+            EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), _baraja.Count());
             Debug.Log("Crea Carta en posicion x=" + posicionFinal.x + " y=" + posicionFinal.y);
-            esTurno = !esTurno;
+            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+            _esTurnoJugador1 = !_esTurnoJugador1;
         }        
     }
     private void PuntoEnCuadranteEvent(List<ValorCasilla> cuadrante, bool esPuntoColor1)

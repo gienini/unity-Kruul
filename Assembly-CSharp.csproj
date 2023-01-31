@@ -82,7 +82,9 @@
     <Compile Include="Assets\Scripts\SO_Scripts\SO_PropiedadesCasilla.cs" />
     <Compile Include="Assets\Scripts\Tablero\PropiedadesCasillasManager.cs" />
     <Compile Include="Assets\Scripts\Tablero\ValorCasilla.cs" />
+    <Compile Include="Assets\Scripts\UI\CanvasPartida.cs" />
     <Compile Include="Assets\Scripts\UI\GridCursor.cs" />
+    <Compile Include="Assets\Scripts\UI\JugadorActivoImagen.cs" />
     <Compile Include="Assets\Tiles\CoordinateBrush\CoordinateBrush.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />

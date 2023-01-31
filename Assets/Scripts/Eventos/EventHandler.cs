@@ -15,13 +15,13 @@ public class EventHandler
         }
     }
 
-    public static event Action<Vector3, Carta> PopCartaEnPosicionEvent;
+    public static event Action<Vector3, Carta, int> PopCartaEnPosicionEvent;
 
-    public static void CallPopCartaEnPosicion(Vector3 posicion, Carta carta)
+    public static void CallPopCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantesBaraja)
     {
         if (PopCartaEnPosicionEvent != null)
         {
-            PopCartaEnPosicionEvent(posicion, carta);
+            PopCartaEnPosicionEvent(posicion, carta, cartasRestantesBaraja);
         }
     }
 
@@ -68,6 +68,16 @@ public class EventHandler
         if (AcabaFase2Event != null)
         {
             AcabaFase2Event();
+        }
+    }
+
+    public static event Action<bool> JugadaHechaEvent;
+
+    public static void CallJugadaHechaEvent(bool esJugador1)
+    {
+        if (JugadaHechaEvent != null)
+        {
+            JugadaHechaEvent(esJugador1);
         }
     }
 }
