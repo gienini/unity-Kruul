@@ -10,14 +10,12 @@ public class PartidaManager : MonoBehaviour
     private Camera mainCamera;
     private Baraja _baraja;
     //CuentasJugadores
-    private int _puntosJugador1 = 0;
-    private int _puntosJugador2 = 0;
     private int _fichasPuestasJugador1 = 0;
     private int _fichasPuestasJugador2 = 0;
     //CuentasBarajas
 
     //test
-    [SerializeField] private GameObject cartaBasePrefab2 = null;
+    //[SerializeField] private GameObject cartaBasePrefab2 = null;
     private bool _esTurnoJugador1 = true;
     private bool esFase1Cargada = false;
     private void OnEnable()
@@ -76,12 +74,24 @@ public class PartidaManager : MonoBehaviour
     }
     private void PuntoEnCuadranteEvent(List<ValorCasilla> cuadrante, bool esPuntoColor1)
     {
-        Debug.Log("PUNTO cuadrante[2].x=" + cuadrante[2].x + " cuadrante[2].y="+ cuadrante[2].y);
-        Vector3 posicionFinal = new Vector3((cuadrante[2].x )/2, cuadrante[2].y , -mainCamera.transform.position.z);
-        //Vector3 posicionFinal = new Vector3((cuadrante[2].x / 2) - 0.5f, cuadrante[2].y - 0.5f, -mainCamera.transform.position.z);
+        Debug.Log("PUNTO cuadrante[1].x=" + cuadrante[1].x + " cuadrante[1].y="+ cuadrante[1].y);
+        //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
+        Vector3 posicionFinal = new Vector3((cuadrante[2].x )/2f, cuadrante[2].y, -mainCamera.transform.position.z);
 
         Debug.Log("POSFINAL X=" + posicionFinal.x + " Y="+posicionFinal.y);
-        Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
+        if (esPuntoColor1)
+        {
+            GameObject pieza = Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
+            pieza.GetComponent<Pieza>().EsColor1 = true;
+            _fichasPuestasJugador1++;
+        }
+        else
+        {
+            GameObject pieza = Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
+            pieza.GetComponent<Pieza>().EsColor1 = false;
+            _fichasPuestasJugador2++;
+        }
+        
     }
 
 

@@ -303,8 +303,6 @@ MonoBehaviour:
   piezaPrefab: {fileID: 2942802447260452051, guid: 8626fdd5711fdf747af9f9a05d48f9ed,
     type: 3}
   so_baraja: {fileID: 11400000, guid: 435cf48368354924eb807e0677812e20, type: 2}
-  cartaBasePrefab2: {fileID: 4667310535363786593, guid: cfc23114eff8f964bab43f0f82a8a8ba,
-    type: 3}
 --- !u!4 &1046170640
 Transform:
   m_ObjectHideFlags: 0
