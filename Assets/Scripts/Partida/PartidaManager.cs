@@ -39,17 +39,7 @@ public class PartidaManager : MonoBehaviour
     {
         if (esFase1Cargada)
         {
-            _baraja = new Baraja(so_baraja.cartas);
-
-            //Posicion
-            Vector3 posicionFinal = new Vector3(0, 0, -mainCamera.transform.position.z);
-            //GameObject carta
-            GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
-            cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
-            //Inicializar diccionario casillas
-            PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
-            //LLamamos evento con el componente carta seteado por la baraja
-            EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
+            PrimeraCartaFase1();
             esFase1Cargada = false;
         }
     }
@@ -58,18 +48,27 @@ public class PartidaManager : MonoBehaviour
         ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
         if (valorCasilla != null && valorCasilla.esTablero)
         {
-            //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
-            Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, posicion.z);
-            //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
-            //GameObject carta
-            GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
-            cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
-            //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
-            EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
-            Debug.Log("Crea Carta en posicion x=" + posicionFinal.x + " y=" + posicionFinal.y);
-            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
-            _esTurnoJugador1 = !_esTurnoJugador1;
+            PonCartaEnTablero(posicion);
+            if (_baraja.Count() == 0)
+            {
+                EventHandler.CallAcabaFase1Event();
+                SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
+            }
         }        
+    }
+    private void PonCartaEnTablero(Vector3 posicion)
+    {
+        //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
+        Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, posicion.z);
+        //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
+        //GameObject carta
+        GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
+        cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
+        //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
+        EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
+        Debug.Log("Crea Carta en posicion x=" + posicionFinal.x + " y=" + posicionFinal.y);
+        EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+        _esTurnoJugador1 = !_esTurnoJugador1;
     }
     private void PuntoEnCuadranteEvent(List<ValorCasilla> cuadrante, bool esPuntoColor1)
     {
@@ -97,16 +96,29 @@ public class PartidaManager : MonoBehaviour
 
     private void EmpiezaFase1Event()
     {
-
         PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
         esFase1Cargada = true;
-
     }
 
 
     public void EmpiezaPartida()
     {
         EventHandler.CallEmpiezaFase1Event();
+    }
+
+    private void PrimeraCartaFase1()
+    {
+        _baraja = new Baraja(so_baraja.cartas);
+
+        //Posicion
+        Vector3 posicionFinal = new Vector3(0, 0, -mainCamera.transform.position.z);
+        //GameObject carta
+        GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
+        cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
+        //Inicializar diccionario casillas
+        PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
+        //LLamamos evento con el componente carta seteado por la baraja
+        EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
     }
 
 }

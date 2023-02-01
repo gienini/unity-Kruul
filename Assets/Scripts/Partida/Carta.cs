@@ -23,7 +23,7 @@ public class Carta : MonoBehaviour
     }
     private void Update()
     {
-        if (_esRefresh && ValorCuartosCarta != "")
+        if (_esRefresh && _valorCuartosCarta != null && _valorCuartosCarta != "")
         {
             _cuartasPartes = GetComponentsInChildren<CartaCuartaParte>();
             for (int i = 0; i < _cuartasPartes.Length; i++)

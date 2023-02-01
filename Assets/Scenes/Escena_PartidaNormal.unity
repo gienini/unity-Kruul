@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e48935b456efdc2498a3151db6862a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cartaBasePrefab: {fileID: 4667310535363786593, guid: 42bc53162a9ad0445bde4b06ea9e159b,
+  cartaBasePrefab: {fileID: 4667310535363786593, guid: cefce32211c19374ea5b777e0cbcefad,
     type: 3}
   piezaPrefab: {fileID: 2942802447260452051, guid: 8626fdd5711fdf747af9f9a05d48f9ed,
     type: 3}

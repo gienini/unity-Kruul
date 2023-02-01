@@ -6,22 +6,54 @@ public class InputManager : MonoBehaviour
 {
     [SerializeField] private GridCursor gridCursor = null;
     private bool _esMenuPausa = false;
+    private bool _esFase1 = false;
+    private bool _esFase2 = false;
     private void Update()
     {
         if (SceneControllerManager.Instance.EscenaActual == NombresEscena.Escena_PartidaNormal.ToString())
         {
-            ControlesPartida();
+            if (_esFase1)
+            {
+                ControlesFase1();
+            }else if (_esFase2)
+            {
+                ControlesFase2();
+            }
+            
         }
     }
     private void OnEnable()
     {
-        EventHandler.EmpiezaFase1Event += EmpiezaFaseNuevaEvent;
-        EventHandler.EmpiezaFase2Event += EmpiezaFaseNuevaEvent;
+        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
+        EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
+        EventHandler.AcabaFase1Event += AcabaFase1Event;
+        EventHandler.AcabaFase2Event += AcabaFase2Event;
     }
     private void OnDisable()
     {
-        EventHandler.EmpiezaFase1Event -= EmpiezaFaseNuevaEvent;
-        EventHandler.EmpiezaFase2Event -= EmpiezaFaseNuevaEvent;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
+        EventHandler.AcabaFase1Event -= AcabaFase1Event;
+        EventHandler.AcabaFase2Event -= AcabaFase2Event;
+    }
+    private void AcabaFase1Event()
+    {
+        _esFase1 = false;
+    }
+    private void AcabaFase2Event()
+    {
+        _esFase2 = false;
+    }
+    private void EmpiezaFase1Event()
+    {
+        EmpiezaFaseNuevaEvent();
+        _esFase1 = true;
+    }
+
+    private void EmpiezaFase2Event()
+    {
+        EmpiezaFaseNuevaEvent();
+        _esFase2 = true;
     }
 
     private void EmpiezaFaseNuevaEvent()
@@ -29,7 +61,7 @@ public class InputManager : MonoBehaviour
         _esMenuPausa = false;
     }
 
-    private void ControlesPartida()
+    private void ControlesFase1()
     {
         if (!_esMenuPausa)
         {
@@ -39,6 +71,14 @@ public class InputManager : MonoBehaviour
                 EventHandler.CallClickEnTableroEvent(cursorGridPosition);
             }
         }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            AccionEscape();
+        }
+    }
+
+    private void ControlesFase2()
+    {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AccionEscape();

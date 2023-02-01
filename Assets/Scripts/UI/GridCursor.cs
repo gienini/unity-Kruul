@@ -18,20 +18,41 @@ public class GridCursor : MonoBehaviour
     //private Carta _cartaBaseCursor;
     private bool _cursorPositionIsValid = false;
     private bool _cursorIsEnabled = false;
+    private bool _esFase1 = false;
+    private bool _esFase2 = false;
     public bool CursorPositionIsValid { get => _cursorPositionIsValid; set => _cursorPositionIsValid = value; }
     public bool CursorIsEnabled { get => _cursorIsEnabled; set => _cursorIsEnabled = value; }
 
     private void OnEnable()
     {
         EventHandler.PopCartaEnPosicionEvent += PopCartaEnPosicionEvent;
-        EventHandler.EmpiezaFase1Event += EmpiezaFaseNuevaEvent;
-        EventHandler.EmpiezaFase2Event += EmpiezaFaseNuevaEvent;
+        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
+        EventHandler.AcabaFase1Event += AcabaFase1Event;
+        EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
+        EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
     }
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
-        EventHandler.EmpiezaFase1Event -= EmpiezaFaseNuevaEvent;
-        EventHandler.EmpiezaFase2Event -= EmpiezaFaseNuevaEvent;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
+        EventHandler.AcabaFase1Event -= AcabaFase1Event;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
+        EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
+    }
+
+    private void DespuesFadeOutEvent()
+    {
+        if (_esFase1)
+        {
+            _cursorIsEnabled = true;
+        }
+    }
+
+    private void AcabaFase1Event()
+    {
+        _cursorIsEnabled = false;
+        _esFase1 = false;
+        gameObject.SetActive(false);
     }
 
     private void Start()
@@ -44,12 +65,23 @@ public class GridCursor : MonoBehaviour
 
     private void Update()
     {
-        if (PropiedadesCasillasManager.Instance.EsDictCargado)
+        if (_cursorIsEnabled && PropiedadesCasillasManager.Instance.EsDictCargado)
         {
             DisplayCursor();
         }
     }
 
+    private void EmpiezaFase1Event()
+    {
+        EmpiezaFaseNuevaEvent();
+        _esFase1 = true;
+    }
+
+    private void EmpiezaFase2Event()
+    {
+        EmpiezaFaseNuevaEvent();
+        _esFase1 = true;
+    }
 
     private void EmpiezaFaseNuevaEvent()
     {
