@@ -24,15 +24,19 @@ public class GridCursor : MonoBehaviour
     private void OnEnable()
     {
         EventHandler.PopCartaEnPosicionEvent += PopCartaEnPosicionEvent;
+        EventHandler.EmpiezaFase1Event += EmpiezaFaseNuevaEvent;
+        EventHandler.EmpiezaFase2Event += EmpiezaFaseNuevaEvent;
     }
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFaseNuevaEvent;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFaseNuevaEvent;
     }
 
     private void Start()
     {
-        _grid = GameObject.FindObjectOfType<Grid>();
+        
         _mainCamera = Camera.main;
         _canvas = GetComponentInParent<Canvas>();
         //_cartaBaseCursor = GetComponentInChildren<Carta>();
@@ -44,6 +48,12 @@ public class GridCursor : MonoBehaviour
         {
             DisplayCursor();
         }
+    }
+
+
+    private void EmpiezaFaseNuevaEvent()
+    {
+        _grid = GameObject.FindObjectOfType<Grid>();
     }
 
     private Vector3Int DisplayCursor()

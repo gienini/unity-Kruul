@@ -12,9 +12,12 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
     [SerializeField] private CanvasGroup faderCanvasGroup = null;
     [SerializeField] private Image faderImage = null;
     [SerializeField] private GameObject MenuPrincipalCanvas = null;
+    [SerializeField] private GameObject MenuPausaCanvas = null;
     [SerializeField] private List<GameObject> PartidaCanvas = null;
     public NombresEscena startingSceneName;
     private string _escenaActual;
+
+    public string EscenaActual { get => _escenaActual; set => _escenaActual = value; }
 
     private IEnumerator Start()
     {
@@ -30,22 +33,33 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
     {
         if (!isFading)
         {
+            MenuPausaCanvas.SetActive(false);
             StartCoroutine(FadeAndSwitchScene(sceneName));
+        }
+    }
+
+    public void ToggleMenuPausa()
+    {
+        MenuPausaCanvas.SetActive(!MenuPausaCanvas.activeSelf);
+        foreach (GameObject go in PartidaCanvas)
+        {
+            go.SetActive(!go.activeSelf);
         }
     }
 
     private IEnumerator FadeAndSwitchScene(string sceneName)
     {
+        
         EventHandler.CallAntesFadeOutEvent();
         EventHandler.CallFadeOutEvent();
         //yield return de corutina, se pasa la ejecucion al metodo Fade y se para aqui
         yield return StartCoroutine(Fade(1f));
-        if (_escenaActual != NombresEscena.none.ToString())
+        if (EscenaActual != NombresEscena.none.ToString())
         {
             //Operacion builtin para desmontar una escena
             yield return SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().buildIndex);
         }
-
+        EscenaActual = sceneName;
         yield return StartCoroutine(LoadSceneAndSetActive(sceneName));
         yield return StartCoroutine(Fade(0f));
 
@@ -56,7 +70,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
 
     private IEnumerator LoadSceneAndSetActive(string sceneName)
     {
-        _escenaActual = sceneName;
+        
         //Caso de menu principal
         if (sceneName != NombresEscena.none.ToString())
         {
@@ -115,5 +129,10 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         isFading = false;
 
         faderCanvasGroup.blocksRaycasts = false;
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
