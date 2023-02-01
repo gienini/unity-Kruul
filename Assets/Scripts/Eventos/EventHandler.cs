@@ -80,4 +80,38 @@ public class EventHandler
             JugadaHechaEvent(esJugador1);
         }
     }
+
+    public static event Action AntesFadeOutEvent;
+    public static void CallAntesFadeOutEvent()
+    {
+        if (AntesFadeOutEvent != null)
+        {
+            AntesFadeOutEvent();
+        }
+    }
+    public static event Action FadeOutEvent;
+    public static void CallFadeOutEvent()
+    {
+        if (FadeOutEvent != null)
+        {
+            FadeOutEvent();
+        }
+    }
+    public static event Action DespuesFadeOutEvent;
+    public static void CallDespuesFadeOutEvent()
+    {
+        if (DespuesFadeOutEvent != null)
+        {
+            DespuesFadeOutEvent();
+        }
+    }
+
+    public static event Action MenuPrincipalEvent;
+    public static void CallMenuPrincipalEvent()
+    {
+        if (MenuPrincipalEvent != null)
+        {
+            MenuPrincipalEvent();
+        }
+    }
 }

@@ -1,0 +1,59 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class MenuPrincipalManager : MonoBehaviour
+{
+    private CanvasGroup _canvasGroupComponent;
+    private bool _esMenuPrincipalCargado = false;
+    private void Start()
+    {
+        _canvasGroupComponent = GetComponent<CanvasGroup>();
+    }
+    private void OnEnable()
+    {
+        EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
+        EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
+        EventHandler.MenuPrincipalEvent += MenuPrincipalEvent;
+        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
+    }
+    private void OnDisable()
+    {
+        EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
+        EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
+        EventHandler.MenuPrincipalEvent -= MenuPrincipalEvent;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
+    }
+
+    public void BotonEmpezarJuego()
+    {
+        SceneControllerManager.Instance.FadeAndLoadScene(NombresEscena.Escena_PartidaNormal.ToString());
+    }
+
+    private void EmpiezaFase1Event()
+    {
+        _esMenuPrincipalCargado = false;
+    }
+
+    private void MenuPrincipalEvent()
+    {
+        _esMenuPrincipalCargado = true;
+    }
+    private void AntesFadeOutEvent()
+    {
+        //gameObject.SetActive(false);
+    }
+
+    private void DespuesFadeOutEvent()
+    {
+        //if (_esMenuPrincipalCargado)
+        //{
+        //    gameObject.SetActive(true);
+        //}else
+        //{
+        //    gameObject.SetActive(false);
+        //}
+        
+    }
+}

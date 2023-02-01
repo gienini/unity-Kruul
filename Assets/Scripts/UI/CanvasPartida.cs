@@ -76,5 +76,5 @@ public class CanvasPartida : MonoBehaviour
         _cartasRestantesBaraja = 0;
         _fichasJugadasJugador1 = 0;
         _fichasJugadasJugador2 = 0;
-}
+    }
 }

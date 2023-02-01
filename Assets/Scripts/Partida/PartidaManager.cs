@@ -33,7 +33,6 @@ public class PartidaManager : MonoBehaviour
     private void Start()
     {
         mainCamera = Camera.main;
-        EventHandler.CallEmpiezaFase1Event();
     }
 
     private void Update()
@@ -104,5 +103,10 @@ public class PartidaManager : MonoBehaviour
 
     }
 
+
+    public void EmpiezaPartida()
+    {
+        EventHandler.CallEmpiezaFase1Event();
+    }
 
 }

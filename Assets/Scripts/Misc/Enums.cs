@@ -13,3 +13,10 @@ public enum CartaCuartaPartePosicion
     AbajoIzquierda = 2,
     AbajoDerecha = 3
 }
+
+public enum NombresEscena
+{
+    Escena_PartidaNormal,
+    Escena_PartidaTutorial,
+    none
+}

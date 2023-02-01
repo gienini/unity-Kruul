@@ -72,8 +72,10 @@
     <Compile Include="Assets\Scripts\Misc\Metodos.cs" />
     <Compile Include="Assets\Scripts\Partida\Carta.cs" />
     <Compile Include="Assets\Scripts\Partida\CartaCuartaParte.cs" />
+    <Compile Include="Assets\Scripts\Partida\MenuPrincipalManager.cs" />
     <Compile Include="Assets\Scripts\Partida\PartidaManager.cs" />
     <Compile Include="Assets\Scripts\Partida\Pieza.cs" />
+    <Compile Include="Assets\Scripts\Partida\SceneControllerManager.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\Baraja.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\CoordenadaCasilla.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\EditorTilesPropiedadesManager.cs" />
