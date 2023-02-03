@@ -5,18 +5,18 @@ using UnityEngine;
 
 public class TestCoordenadasCursor : MonoBehaviour
 {
-    [SerializeField] private GridCursor gridCursor = null;
+    [SerializeField] private GridCursorFase1 gridCursor = null;
     private TextMeshProUGUI textoCoordenadas;
     private TextMeshProUGUI textoCoordenadasUltimoClick;
 
     private void OnEnable()
     {
-        EventHandler.ClickEnTableroEvent += UpdateTextoCoordenadasUltimoClick;
+        EventHandler.ClickEnTableroFase1Event += UpdateTextoCoordenadasUltimoClick;
     }
 
     private void OnDisable()
     {
-        EventHandler.ClickEnTableroEvent -= UpdateTextoCoordenadasUltimoClick;
+        EventHandler.ClickEnTableroFase1Event -= UpdateTextoCoordenadasUltimoClick;
     }
 
     private void UpdateTextoCoordenadasUltimoClick(Vector3 posicion)

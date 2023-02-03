@@ -10,6 +10,7 @@ public class CanvasPartida : MonoBehaviour
     private TextMeshProUGUI _fichasJugadasJ1Texto;
     private TextMeshProUGUI _fichasJugadasJ2Texto;
     private TextMeshProUGUI _barajaCartasTexto;
+    private TextMeshProUGUI _faseTexto;
 
     private int _cartasRestantesBaraja = 0;
     private int _fichasJugadasJugador1 = 0;
@@ -19,12 +20,14 @@ public class CanvasPartida : MonoBehaviour
         EventHandler.PopCartaEnPosicionEvent += PopCartaEnPosicionEvent;
         EventHandler.PuntoEnCuadranteEvent += PuntoEvent;
         EventHandler.EmpiezaFase1Event += EmpiezaFase1;
+        EventHandler.EmpiezaFase2Event += EmpiezaFase2;
     }
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
         EventHandler.PuntoEnCuadranteEvent -= PuntoEvent;
         EventHandler.EmpiezaFase1Event -= EmpiezaFase1;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFase2;
     }
     void Start()
     {
@@ -46,6 +49,10 @@ public class CanvasPartida : MonoBehaviour
             else if (reg.gameObject.name == "BarajaCartasTexto")
             {
                 _barajaCartasTexto = reg;
+            }
+            else if (reg.gameObject.name == "FaseTexto")
+            {
+                _faseTexto = reg;
             }
         }
     }
@@ -71,10 +78,16 @@ public class CanvasPartida : MonoBehaviour
         }
     }
 
+    private void EmpiezaFase2()
+    {
+        _faseTexto.text = "FASE 2";
+    }
+
     private void EmpiezaFase1()
     {
         _cartasRestantesBaraja = 0;
         _fichasJugadasJugador1 = 0;
         _fichasJugadasJugador2 = 0;
+        _faseTexto.text = "FASE 1";
     }
 }

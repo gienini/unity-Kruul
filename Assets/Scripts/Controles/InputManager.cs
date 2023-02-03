@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [SerializeField] private GridCursor gridCursor = null;
+    [SerializeField] private GridCursorFase1 gridCursorFase1 = null;
+    [SerializeField] private GridCursorFase2 gridCursorFase2 = null;
     private bool _esMenuPausa = false;
     private bool _esFase1 = false;
     private bool _esFase2 = false;
@@ -65,10 +66,10 @@ public class InputManager : MonoBehaviour
     {
         if (!_esMenuPausa)
         {
-            if (Input.GetMouseButton(0) && gridCursor.CursorPositionIsValid)
+            if (Input.GetMouseButton(0) && gridCursorFase1.CursorPositionIsValid)
             {
-                Vector3Int cursorGridPosition = gridCursor.GetGridPositionForCursor();
-                EventHandler.CallClickEnTableroEvent(cursorGridPosition);
+                Vector3Int cursorGridPosition = gridCursorFase1.GetGridPositionForCursor();
+                EventHandler.CallClickEnTableroFase1Event(cursorGridPosition);
             }
         }
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -79,6 +80,13 @@ public class InputManager : MonoBehaviour
 
     private void ControlesFase2()
     {
+        if (!_esMenuPausa)
+        {
+            if (Input.GetMouseButton(0) && gridCursorFase2.CursorPositionIsValid)
+            {
+                EventHandler.CallClickEnTableroFase2Event(gridCursorFase2, gridCursorFase2.CursorPositionIsPieza);
+            }
+        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AccionEscape();

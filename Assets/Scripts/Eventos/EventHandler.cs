@@ -5,13 +5,23 @@ using UnityEngine;
 
 public class EventHandler
 {
-    public static event Action<Vector3> ClickEnTableroEvent;
+    public static event Action<Vector3> ClickEnTableroFase1Event;
 
-    public static void CallClickEnTableroEvent(Vector3 posicion)
+    public static void CallClickEnTableroFase1Event(Vector3 posicion)
     {
-        if (ClickEnTableroEvent != null)
+        if (ClickEnTableroFase1Event != null)
         {
-            ClickEnTableroEvent(posicion);
+            ClickEnTableroFase1Event(posicion);
+        }
+    }
+
+    public static event Action<GridCursorFase2, bool> ClickEnTableroFase2Event;
+
+    public static void CallClickEnTableroFase2Event(GridCursorFase2 cursor, bool esClickEnPieza)
+    {
+        if (ClickEnTableroFase2Event != null)
+        {
+            ClickEnTableroFase2Event(cursor, esClickEnPieza);
         }
     }
 

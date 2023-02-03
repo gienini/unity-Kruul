@@ -11,7 +11,9 @@ public class MenuPausa : MonoBehaviour
     }
     public void BotonReiniciarPartida()
     {
+        PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
         SceneControllerManager.Instance.FadeAndLoadScene(NombresEscena.Escena_PartidaNormal.ToString());
+        
     }
 
     public void BotonSalir()

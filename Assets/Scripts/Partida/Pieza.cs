@@ -8,8 +8,10 @@ public class Pieza : MonoBehaviour
     [SerializeField] private Sprite spriteColor2 = null;
     [SerializeField] private bool _esColor1;
     private bool _esRefresh = false;
+    private List<ValorCasilla> _cuadrante;
 
     public bool EsColor1 { get => _esColor1; set => setColor(value); }
+    public List<ValorCasilla> Cuadrante { get => _cuadrante; set => _cuadrante = value; }
 
     private void setColor(bool esColor1)
     {

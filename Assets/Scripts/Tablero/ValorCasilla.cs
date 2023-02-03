@@ -12,4 +12,9 @@ public class ValorCasilla
     public ValorCasilla()
     {
     }
+
+    public bool esVacia()
+    {
+        return esTablero && !esOcupado && !esColor1 && !esColor2;
+    }
 }

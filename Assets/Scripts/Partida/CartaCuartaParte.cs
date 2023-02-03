@@ -86,8 +86,6 @@ public class CartaCuartaParte : MonoBehaviour
             esColor1 = false;
         }
         _esRefresh = true;
-        Debug.Log(" new CUARTO-POSICION:"+ (int)posicion);
-        Debug.Log(" new CUARTO-VALOR:" + valor);
     }
 
 }

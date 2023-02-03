@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +7,15 @@ public class Carta : MonoBehaviour
 {
     private CartaCuartaParte[] _cuartasPartes = null;
     private bool _esRefresh = true;
+    [SerializeField] private int _numCuartosConFicha = 0;
     [SerializeField] private string _valorCuartosCarta = null;
+    public Vector3 PosicionInicial;
+    public int OrdenCarta;
+    public HashSet<int> CartasVecinas;
 
     public string ValorCuartosCarta { get => _valorCuartosCarta; set => setValorCuartosCarta(value); }
+    public int NumCuartosConFicha { get => _numCuartosConFicha; set => _numCuartosConFicha = value; }
+
     private void setValorCuartosCarta(string valor)
     {
         _valorCuartosCarta = valor;

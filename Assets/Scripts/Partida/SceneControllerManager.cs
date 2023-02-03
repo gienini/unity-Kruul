@@ -14,18 +14,54 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
     [SerializeField] private Image faderImage = null;
     [SerializeField] private GameObject MenuPrincipalCanvas = null;
     [SerializeField] private GameObject MenuPausaCanvas = null;
+    [SerializeField] private GameObject AccionesCanvas = null;
     [SerializeField] private List<GameObject> PartidaCanvas = null;
+    [SerializeField] private GridCursorFase1 gridCursorFase1 = null;
+    [SerializeField] private GridCursorFase2 gridCursorFase2 = null;
     public NombresEscena startingSceneName;
     private string _escenaActual;
     private TextMeshProUGUI _textoFader;
     public string EscenaActual { get => _escenaActual; set => _escenaActual = value; }
+
+    private void OnEnable()
+    {
+        EventHandler.AcabaFase1Event += AcabaFaseEvent;
+        EventHandler.AcabaFase2Event += AcabaFaseEvent;
+        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
+        EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
+        EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
+    }
+
+    private void DespuesFadeOutEvent()
+    {
+    }
+
+    private void EmpiezaFase2Event()
+    {
+        gridCursorFase2.gameObject.SetActive(true);
+        gridCursorFase1.gameObject.SetActive(false);
+    }
+
+    private void EmpiezaFase1Event()
+    {
+        gridCursorFase1.gameObject.SetActive(true);
+        gridCursorFase2.gameObject.SetActive(false);
+        AccionesCanvas.gameObject.SetActive(false);
+    }
+
+    private void AcabaFaseEvent()
+    {
+        gridCursorFase1.gameObject.SetActive(false);
+        gridCursorFase2.gameObject.SetActive(false);
+    }
 
     private IEnumerator Start()
     {
         faderImage.color = new Color(0f, 0f, 0f, 1f);
         faderCanvasGroup.alpha = 1f;
         yield return StartCoroutine(LoadSceneAndSetActive(startingSceneName.ToString()));
-
+        gridCursorFase1.gameObject.SetActive(false);
+        gridCursorFase2.gameObject.SetActive(false);
         StartCoroutine(Fade(0f));
         EventHandler.CallMenuPrincipalEvent();
     }
@@ -150,5 +186,10 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public void ToggleAcciones()
+    {
+        AccionesCanvas.gameObject.SetActive(!AccionesCanvas.activeSelf);
     }
 }
