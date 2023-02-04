@@ -10,6 +10,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     private bool _esDictCargado = false;
     private Carta _cartaFlotante;
     private List<ValorCasilla> _cuadranteFlotante;
+    private List<Carta> _cartasEscondidas;
+    private List<List<ValorCasilla>> _cuadrantesEscondidos;
     [SerializeField] private SO_PropiedadesCasilla[] propiedadesCasillaArray = null;
 
     public bool EsDictCargado { get => _esDictCargado; set => _esDictCargado = value; }
@@ -32,26 +34,116 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         {
             if (carta.CartasVecinas.Count > 1)
             {
+                _cartasEscondidas = new List<Carta>();
+                _cuadrantesEscondidos = new List<List<ValorCasilla>>();
+
                 Dictionary<int, Carta> dictCartasPorOrden = new Dictionary<int, Carta>();
                 foreach (Carta cartaDict in DictCoordenadasCarta.Values)
                 {
                     dictCartasPorOrden.Add(cartaDict.OrdenCarta, cartaDict);
                 }
-                Dictionary<int, HashSet<int>> nodosVecinos = new Dictionary<int, HashSet<int>>();
+                Dictionary<int, HashSet<int>> treeNodoVecinos = new Dictionary<int, HashSet<int>>();
                 HashSet<int> resultadoFetch;
+                int maxSize = 0;
                 foreach (int indiceVecina in carta.CartasVecinas)
                 {
                     resultadoFetch = new HashSet<int>();
                     resultadoFetch.Add(carta.OrdenCarta);
-                    nodosVecinos.Add(indiceVecina, fetchNodos(indiceVecina, resultadoFetch, dictCartasPorOrden));
+                    HashSet<int> set = fetchNodos(indiceVecina, resultadoFetch, dictCartasPorOrden);
+                    if (set.Count > maxSize)
+                    {
+                        maxSize = set.Count;
+                    }
+                    treeNodoVecinos.Add(indiceVecina, set);
                 }
-                Debug.Log("TEST");
+                Dictionary<int, SortedSet<int>> nodosMantener = new Dictionary<int, SortedSet<int>>();
+                foreach (int ordenNodo in treeNodoVecinos.Keys)
+                {
+                    if (treeNodoVecinos.TryGetValue(ordenNodo, out HashSet<int> set))
+                    {
+                        if (set.Count < maxSize)
+                        {
+                            //Se esconde el arbol de nodos
+                            foreach (int ordenCarta in set)
+                            {
+                                if (dictCartasPorOrden.TryGetValue(ordenCarta, out Carta cartaEsconder))
+                                {
+                                    escondeCarta(cartaEsconder, false);
+                                }
+                            }
+                        }else
+                        {
+                            //Se mantiene el arbol de nodos
+                            nodosMantener.Add(ordenNodo, new SortedSet<int>(set));
+                        }
+                    }
+                }
+                //Hay mas de un arbol de nodos para mantener
+                if (nodosMantener.Keys.Count > 1)
+                {
+                    HashSet<SortedSet<int>> setArboles = new HashSet<SortedSet<int>>();
+                    foreach (SortedSet<int> arbolNodos in nodosMantener.Values)
+                    {
+                        setArboles.Add(arbolNodos);
 
+                    }
+                    //no son todos iguales
+                    if (setArboles.Count > 1)
+                    {
+                        //jugador seleccione nodo
+                        Debug.Log("JUGADOR SELECCIONA NODO");
+                    }
+                }
+                else
+                {
+                    //Solo un arbol de nodos para mantener OR Todos los arboles son iguales THEN nada
+                }
+
+                //Mas de un nodo para mantener
+                //Set de sets, se compara size nodosMantener[1 con size resultado
+                //Son iguales
+                //NADA
+                //Son diferentes = 
+                //Se unifican los que sean iguales
+                //Jugador selecciona uno para mantener, los otros se descartan
             }
-            _cartaFlotante = carta;
-            _cartaFlotante.gameObject.SetActive(false);
-            _cuadranteFlotante = RemoveCuadranteEnDict(posicion);
+            //Seteamos carta flotante
+            escondeCarta(carta, true);
         }
+    }
+    private void escondeCarta(Carta carta, bool esCartaFlotante)
+    {
+        if (esCartaFlotante)
+        {
+            _cartaFlotante = carta;
+            _cuadranteFlotante = RemoveCuadranteEnDict(carta.PosicionInicial);
+        }else
+        {
+            _cartasEscondidas.Add(carta);
+            _cuadrantesEscondidos.Add(RemoveCuadranteEnDict(carta.PosicionInicial));
+        }
+        carta.gameObject.SetActive(false);
+    }
+
+    public void DeshacerJugada()
+    {
+        _cartaFlotante.gameObject.SetActive(true);
+        PutCuadranteEnDict(_cuadranteFlotante);
+        if (_cartasEscondidas != null && _cuadrantesEscondidos != null)
+        {
+            for (int i = 0; i < _cartasEscondidas.Count && i < _cuadrantesEscondidos.Count; i++)
+            {
+                _cartasEscondidas[i].gameObject.SetActive(true);
+                PutCuadranteEnDict(_cuadrantesEscondidos[i]);
+            }
+        }
+    }
+
+    public void EliminarCartaFlotante()
+    {
+        //Multiplicamos por 2 a X porque partimos de las coordenadas de la representacion visual
+        DictCoordenadasCarta.Remove(GeneraKey(_cartaFlotante.gameObject.transform.position.x * 2 , _cartaFlotante.gameObject.transform.position.y));
+        Destroy(_cartaFlotante);
     }
 
     private HashSet<int> fetchNodos(int nodoActual, HashSet<int> retorno, Dictionary<int, Carta> dictCartasPorOrden)
@@ -71,19 +163,6 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             }
         }
         return retorno;
-    }
-
-    public void EliminarCartaFlotante()
-    {
-        //Multiplicamos por 2 a X porque partimos de las coordenadas de la representacion visual
-        DictCoordenadasCarta.Remove(GeneraKey(_cartaFlotante.gameObject.transform.position.x * 2 , _cartaFlotante.gameObject.transform.position.y));
-        Destroy(_cartaFlotante);
-    }
-
-    public void DeshacerJugada()
-    {
-        _cartaFlotante.gameObject.SetActive(true);
-        PutCuadranteEnDict(_cuadranteFlotante);
     }
     private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes, string cuartosProximaCarta)
     {
