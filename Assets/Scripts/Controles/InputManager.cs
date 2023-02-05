@@ -66,7 +66,7 @@ public class InputManager : MonoBehaviour
     {
         if (!_esMenuPausa)
         {
-            if (Input.GetMouseButton(0) && gridCursorFase1.CursorPositionIsValid)
+            if (Input.GetMouseButtonDown(0) && gridCursorFase1.CursorPositionIsValid)
             {
                 Vector3Int cursorGridPosition = gridCursorFase1.GetGridPositionForCursor();
                 EventHandler.CallClickEnTableroFase1Event(cursorGridPosition);

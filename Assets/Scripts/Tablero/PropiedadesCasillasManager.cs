@@ -8,8 +8,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     private Dictionary<string, Carta> _dictCoordenadasCarta;
     private Dictionary<string, Pieza> _dictCoordenadasPieza;
     private bool _esDictCargado = false;
-    private Carta _cartaFlotante;
-    private List<ValorCasilla> _cuadranteFlotante;
+    private Carta _cartaEscondidaCursor;
+    private List<ValorCasilla> _cuadranteEscondidoCursor;
     private List<Carta> _cartasEscondidas;
     private List<List<ValorCasilla>> _cuadrantesEscondidos;
     [SerializeField] private SO_PropiedadesCasilla[] propiedadesCasillaArray = null;
@@ -32,6 +32,9 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         if (DictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x, posicion.y), out Carta carta))
         {
+
+            //Seteamos carta flotante
+            escondeCarta(carta, true);
             if (carta.CartasVecinas.Count > 1)
             {
                 _cartasEscondidas = new List<Carta>();
@@ -94,41 +97,27 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                         Debug.Log("JUGADOR SELECCIONA NODO");
                     }
                 }
-                else
-                {
-                    //Solo un arbol de nodos para mantener OR Todos los arboles son iguales THEN nada
-                }
-
-                //Mas de un nodo para mantener
-                //Set de sets, se compara size nodosMantener[1 con size resultado
-                //Son iguales
-                //NADA
-                //Son diferentes = 
-                //Se unifican los que sean iguales
-                //Jugador selecciona uno para mantener, los otros se descartan
             }
-            //Seteamos carta flotante
-            escondeCarta(carta, true);
         }
     }
     private void escondeCarta(Carta carta, bool esCartaFlotante)
     {
         if (esCartaFlotante)
         {
-            _cartaFlotante = carta;
-            _cuadranteFlotante = RemoveCuadranteEnDict(carta.PosicionInicial);
+            _cartaEscondidaCursor = carta;
+            _cuadranteEscondidoCursor = RemoveCuadranteEnDict(carta.PosicionTablero);
         }else
         {
             _cartasEscondidas.Add(carta);
-            _cuadrantesEscondidos.Add(RemoveCuadranteEnDict(carta.PosicionInicial));
+            _cuadrantesEscondidos.Add(RemoveCuadranteEnDict(carta.PosicionTablero));
         }
         carta.gameObject.SetActive(false);
     }
 
     public void DeshacerJugada()
     {
-        _cartaFlotante.gameObject.SetActive(true);
-        PutCuadranteEnDict(_cuadranteFlotante);
+        _cartaEscondidaCursor.gameObject.SetActive(true);
+        PutCuadranteEnDict(_cuadranteEscondidoCursor);
         if (_cartasEscondidas != null && _cuadrantesEscondidos != null)
         {
             for (int i = 0; i < _cartasEscondidas.Count && i < _cuadrantesEscondidos.Count; i++)
@@ -137,15 +126,28 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 PutCuadranteEnDict(_cuadrantesEscondidos[i]);
             }
         }
+        _cartaEscondidaCursor = null;
+        _cuadranteEscondidoCursor = null;
     }
-
-    public void EliminarCartaFlotante()
+    public void JugadaEliminar()
     {
-        //Multiplicamos por 2 a X porque partimos de las coordenadas de la representacion visual
-        DictCoordenadasCarta.Remove(GeneraKey(_cartaFlotante.gameObject.transform.position.x * 2 , _cartaFlotante.gameObject.transform.position.y));
-        Destroy(_cartaFlotante);
+        if (_cartaEscondidaCursor != null)
+        {
+            DictCoordenadasCarta.Remove(GeneraKey(_cartaEscondidaCursor.PosicionTablero.x, _cartaEscondidaCursor.PosicionTablero.y));
+            Destroy(_cartaEscondidaCursor.gameObject);
+            if (_cartasEscondidas != null)
+            {
+                for (int i = 0; i < _cartasEscondidas.Count ; i++)
+                {
+                    RemoveCuadranteEnDict(_cartasEscondidas[i].PosicionTablero);
+                    DictCoordenadasCarta.Remove(GeneraKey(_cartasEscondidas[i].PosicionTablero.x, _cartasEscondidas[i].PosicionTablero.y));
+                    Destroy(_cartasEscondidas[i].gameObject);
+                }
+            }
+        }
+        _cartaEscondidaCursor = null;
+        _cuadranteEscondidoCursor = null;
     }
-
     private HashSet<int> fetchNodos(int nodoActual, HashSet<int> retorno, Dictionary<int, Carta> dictCartasPorOrden)
     {
         if (!retorno.Contains(nodoActual) && dictCartasPorOrden.TryGetValue(nodoActual, out Carta cartaActual))
@@ -164,10 +166,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         }
         return retorno;
     }
-    private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes, string cuartosProximaCarta)
-    {
-        RegistraCartaEnPosicion(posicion, carta);
-    }
+    
     private List<ValorCasilla> GeneraCartaVirtual(Vector3 posicion, Carta carta)
     {
         //Representa el espacio que ocupa la carta
@@ -199,15 +198,18 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         
         return retornoCartaVirtual;
     }
-    
+    private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes, string cuartosProximaCarta)
+    {
+        RegistraCartaEnPosicion(posicion, carta);
+    }
+
     private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta)
     {
         //Representa el espacio que ocupa la carta
         List<ValorCasilla> cuadrante = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);
-        carta.PosicionInicial = posicion;
+        carta.PosicionTablero = posicion;
         //Setea dict de Cartas
         DictCoordenadasCarta.Add(GeneraKey(posicion.x, posicion.y), carta);
-        //SEPUEDE carta.coordenadasCasilla = (int)posicion.x, (int)posicion.y
         //Setea valores de casillas
         for (int i = 0; i < cuadrante.Count; i++)
         {
@@ -242,7 +244,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         List<ValorCasilla> cartaVirtual = null;
         if (!esRegistraPunto)
         {
-            if (cartaToCheck.PosicionInicial.x == posicion.x && cartaToCheck.PosicionInicial.y == posicion.y)
+            if (cartaToCheck.PosicionTablero.x == posicion.x && cartaToCheck.PosicionTablero.y == posicion.y)
             {
                 //Caso de que carta flotante pase por coordenada inicial
                 return false;
@@ -346,7 +348,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         List<ValorCasilla> retorno = new List<ValorCasilla>();
         for (int i = 0; i < cuadrante.Count; i++)
         {
-            retorno.Add(cuadrante[i]);
+            retorno.Add(new ValorCasilla(cuadrante[i]));
             RemoveValorEnDict(cuadrante[i].x, cuadrante[i].y);
         }
         return retorno;

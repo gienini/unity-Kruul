@@ -9,7 +9,7 @@ public class Carta : MonoBehaviour
     private bool _esRefresh = true;
     [SerializeField] private int _numCuartosConFicha = 0;
     [SerializeField] private string _valorCuartosCarta = null;
-    public Vector3 PosicionInicial;
+    public Vector3 PosicionTablero;
     public int OrdenCarta;
     public HashSet<int> CartasVecinas;
 

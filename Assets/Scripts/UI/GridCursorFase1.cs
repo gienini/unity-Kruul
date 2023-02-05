@@ -134,14 +134,14 @@ public class GridCursorFase1 : MonoBehaviour
 
         return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, _canvas);
     }
-
-    private void SetCursorValidity(Vector3Int cursorGridPosition)
+    public bool CheckPositionValidity(Vector3Int cursorGridPosition)
     {
+        bool retorno = false;
         List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
         bool esNoOcupada = true;
         bool esDentroTablero = true;
         bool esAdyacenteAotra = PropiedadesCasillasManager.Instance.EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
-        
+
         bool esValida = true;
         if (valoresCuadrante != null)
         {
@@ -159,14 +159,21 @@ public class GridCursorFase1 : MonoBehaviour
             esValida = esNoOcupada && esDentroTablero && esAdyacenteAotra;
             if (esValida)
             {
-                SetCursorToValid();
-            }
-            else
-            {
-                SetCursorToInvalid();
+                retorno = true;
             }
         }
+        return retorno;
+    }
 
+    private void SetCursorValidity(Vector3Int cursorGridPosition)
+    {
+        if (CheckPositionValidity(cursorGridPosition))
+        {
+            SetCursorToValid();
+        }else
+        {
+            SetCursorToInvalid();
+        }
     }
 
     private void SetCursorToValid()

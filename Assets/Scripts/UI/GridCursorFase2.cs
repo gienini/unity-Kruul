@@ -149,6 +149,36 @@ public class GridCursorFase2 : MonoBehaviour
         return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, _canvas);
     }
 
+    public bool CheckPositionValidity(Vector3Int cursorGridPosition)
+    {
+        bool retorno = false;
+        Pieza pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
+        //Tiene carta flotante
+        if (CartaGO != null)
+        {
+            //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
+            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>()))
+            {
+                retorno = true;
+            }
+        }
+        //Posicion pieza para retirar
+        else if (pieza != null && ((_esTurnoColor1 && pieza.EsColor1) || (!_esTurnoColor1 && !pieza.EsColor1)))
+        {
+            retorno = true;
+        }
+        else
+        {
+            //Posicion carta para retirar
+            Carta cartaEnPosicion = PropiedadesCasillasManager.Instance.getCartaEnPosicion(GetGridPositionForCursor());
+            if (cartaEnPosicion != null && cartaEnPosicion.NumCuartosConFicha == 0)
+            {
+                retorno = true;
+            }
+        }
+        return retorno;
+    }
+
     private void SetCursorValidity(Vector3Int cursorGridPosition)
     {
         Pieza pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
@@ -230,7 +260,7 @@ public class GridCursorFase2 : MonoBehaviour
         //GameObject carta
         CartaGO = Instantiate(cartaBasePrefab, _canvas.transform);
         CartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
-        CartaGO.GetComponent<Carta>().PosicionInicial = carta.PosicionInicial;
+        CartaGO.GetComponent<Carta>().PosicionTablero = carta.PosicionTablero;
         CartaGO.transform.SetParent(gameObject.transform);
         CartaGO.transform.SetAsFirstSibling();
         SceneControllerManager.Instance.ToggleAcciones();
@@ -238,7 +268,7 @@ public class GridCursorFase2 : MonoBehaviour
 
     public void BotonEliminar()
     {
-        PropiedadesCasillasManager.Instance.EliminarCartaFlotante();
+        PropiedadesCasillasManager.Instance.JugadaEliminar();
         Destroy(CartaGO);
         EventHandler.CallJugadaHechaEvent(_esTurnoColor1);
         SceneControllerManager.Instance.ToggleAcciones();

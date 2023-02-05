@@ -118,19 +118,19 @@ public class PartidaManager : MonoBehaviour
         //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
         //GameObject carta
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
+        cartaGO.GetComponent<Carta>().OrdenCarta = carta.OrdenCarta;
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
-        cartaGO.GetComponent<Carta>().PosicionInicial = carta.PosicionInicial;
         SetVecinosNuevaCarta(cartaGO.GetComponent<Carta>(), posicion);
         Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
         Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), 0, null);
-
-        EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
-
-        Destroy(carta.gameObject);
-        PropiedadesCasillasManager.Instance.EliminarCartaFlotante();
+        PropiedadesCasillasManager.Instance.JugadaEliminar();
         SceneControllerManager.Instance.ToggleAcciones();
+        EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+        //Representacion visual de la carta flotante
+        Destroy(carta.gameObject);
+        
     }
     private void PuntoEnCuadranteEvent(List<ValorCasilla> cuadrante, bool esPuntoColor1)
     {
@@ -175,12 +175,19 @@ public class PartidaManager : MonoBehaviour
     }
     private void SetVecinosNuevaCarta(Carta cartaNueva, Vector3 posicion)
     {
-        HashSet<int> idsVecinos = new HashSet<int>();
-        foreach (Carta cartaVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)posicion.x, (int)posicion.y))
+        //Quitamos referencia de antiguos vecinos
+        foreach (Carta oldVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)cartaNueva.PosicionTablero.x, (int)cartaNueva.PosicionTablero.y))
         {
-            cartaVecina.CartasVecinas.Add(cartaNueva.OrdenCarta);
-            idsVecinos.Add(cartaVecina.OrdenCarta);
+            oldVecina.CartasVecinas.Remove(cartaNueva.OrdenCarta);
         }
+        //Seteamos nuevos vecinos
+        HashSet<int> idsVecinos = new HashSet<int>();
+        foreach (Carta newVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)posicion.x, (int)posicion.y))
+        {
+            newVecina.CartasVecinas.Add(cartaNueva.OrdenCarta);
+            idsVecinos.Add(newVecina.OrdenCarta);
+        }
+        cartaNueva.PosicionTablero = posicion;
         cartaNueva.CartasVecinas = idsVecinos;
     }
     public void EmpiezaPartida()
