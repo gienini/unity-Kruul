@@ -6,6 +6,7 @@ public class PartidaManager : MonoBehaviour
 {
     [SerializeField] private GameObject cartaBasePrefab = null;
     [SerializeField] private GameObject piezaPrefab = null;
+    [SerializeField] private GameObject dorsoPrefab = null;
     [SerializeField] private SO_Baraja so_baraja = null;
     private Camera mainCamera;
     private Baraja _baraja;
@@ -20,7 +21,6 @@ public class PartidaManager : MonoBehaviour
     //test
     //[SerializeField] private GameObject cartaBasePrefab2 = null;
     private bool _esTurnoJugador1 = true;
-    private bool _esFase1PrimeraCarta = true;
     private void OnEnable()
     {
         EventHandler.ClickEnTableroFase1Event += ClickEnTableroFase1Event;
@@ -30,6 +30,8 @@ public class PartidaManager : MonoBehaviour
         EventHandler.AcabaFase1Event += AcabaFase1Event;
         EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
         EventHandler.AcabaFase2Event += AcabaFase2Event;
+        EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
+        EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
     }
     private void OnDisable()
     {
@@ -40,7 +42,11 @@ public class PartidaManager : MonoBehaviour
         EventHandler.AcabaFase1Event -= AcabaFase1Event;
         EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
         EventHandler.AcabaFase2Event -= AcabaFase2Event;
+        EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
+        EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
     }
+
+    
 
     private void Start()
     {
@@ -49,10 +55,18 @@ public class PartidaManager : MonoBehaviour
 
     private void Update()
     {
-        if (_esFase1PrimeraCarta)
+    }
+    private void DespuesIntroFase1Event()
+    {
+        PrimeraCartaFase1();
+    }
+
+    private void DespuesFadeOutEvent()
+    {
+        if (_esFase1)
         {
-            _esFase1PrimeraCarta = false;
-            PrimeraCartaFase1();
+            inicializaBaraja();
+
         }
     }
     private void ClickEnTableroFase2Event(GridCursorFase2 cursor, bool esClickEnPieza)
@@ -96,33 +110,34 @@ public class PartidaManager : MonoBehaviour
     private void PonCartaEnTableroFase1(Vector3 posicion)
     {
         //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
-        Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, posicion.z);
+        Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, -mainCamera.transform.position.z);
         //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
         //GameObject carta
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
         cartaGO.GetComponent<Carta>().OrdenCarta = _baraja.Count();
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
         SetVecinosNuevaCarta(cartaGO.GetComponent<Carta>(), posicion);
-        Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
-        Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
+        //Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
+        //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
-        EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
+        EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, -mainCamera.transform.position.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
         
         EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+        StartCoroutine(volteaCartaSiguiente());
     }
 
     private void PonCartaEnTableroFase2(Vector3 posicion, Carta carta)
     {
         //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
-        Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, posicion.z);
+        Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, -mainCamera.transform.position.z);
         //Vector3 posicionFinal = new Vector3(posicion.x, posicion.y, posicion.z);
         //GameObject carta
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
         cartaGO.GetComponent<Carta>().OrdenCarta = carta.OrdenCarta;
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
         SetVecinosNuevaCarta(cartaGO.GetComponent<Carta>(), posicion);
-        Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
-        Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
+        //Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
+        //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), 0, null);
         PropiedadesCasillasManager.Instance.JugadaEliminar();
@@ -137,8 +152,8 @@ public class PartidaManager : MonoBehaviour
         //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
         Vector3 posicionFinal = new Vector3((cuadrante[2].x )/2f, cuadrante[2].y, -mainCamera.transform.position.z);
 
-        Debug.Log("Crea Punto en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
-        Debug.Log("Crea Punto en posicion x=" + cuadrante[2].x + " y=" + cuadrante[2].y);
+        //Debug.Log("Crea Punto en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
+        //Debug.Log("Crea Punto en posicion x=" + cuadrante[2].x + " y=" + cuadrante[2].y);
 
         GameObject pieza;
         if (esPuntoColor1)
@@ -159,14 +174,13 @@ public class PartidaManager : MonoBehaviour
 
     private void PrimeraCartaFase1()
     {
-        _baraja = new Baraja(so_baraja.cartas);
-
+        string valoresPrimeraCarta = _baraja.Pop();
         //Posicion
         Vector3 posicionFinal = new Vector3(0, 0, -mainCamera.transform.position.z);
         //GameObject carta
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
         cartaGO.GetComponent<Carta>().OrdenCarta = _baraja.Count();
-        cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
+        cartaGO.GetComponent<Carta>().ValorCuartosCarta = valoresPrimeraCarta;
         cartaGO.GetComponent<Carta>().CartasVecinas = new HashSet<int>();
         //Inicializar diccionario casillas
         PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
@@ -194,6 +208,97 @@ public class PartidaManager : MonoBehaviour
     {
         EventHandler.CallEmpiezaFase1Event();
     }
+    List<GameObject> listDorsos;
+    private void inicializaBaraja()
+    {
+        _baraja = new Baraja(so_baraja.cartas);
+
+        listDorsos = new List<GameObject>();
+        StartCoroutine(instanciaDorsos(Settings.PosicionFinalSpawnCartas));
+
+    }
+
+    private IEnumerator instanciaDorsos(Vector3 posicion)
+    {
+        for (int i = 0; i < _baraja.Count(); i++)
+        {
+            yield return new WaitForSeconds(0.15f);
+            if (i == _baraja.Count() - 1)
+            {
+                //Ultima vuelta, la carta va al medio
+                yield return new WaitForSeconds(0.30f);
+                StartCoroutine(instanciaDorso(new Vector3(0, 0, -mainCamera.transform.position.z), true));
+            }
+            else
+            {
+                StartCoroutine(instanciaDorso(new Vector3(posicion.x + Random.Range(-0.01f, 0.01f), posicion.y + Random.Range(-0.1f, 0.1f), -mainCamera.transform.position.z)));
+                posicion = new Vector3(posicion.x + 0.5f, posicion.y, 0);
+            }
+            
+        }
+        yield return null;
+    }
+    private IEnumerator instanciaDorso(Vector3 posicionFinal)
+    {
+        return instanciaDorso(posicionFinal, false);
+    }
+    private IEnumerator instanciaDorso(Vector3 posicionFinal, bool esUltima)
+    {
+        Vector3 posicionInicial = new Vector3(Random.Range(-12, 21), 10, -mainCamera.transform.position.z);
+        Vector3 porcionViaje = (posicionFinal - posicionInicial) / 100;
+        GameObject dorso = Instantiate(dorsoPrefab, posicionInicial, Quaternion.AngleAxis(90, Vector3.left));
+        float escalaRND = Random.Range(5 , 7.5f);
+        dorso.transform.localScale = new Vector3(escalaRND, escalaRND);
+        escalaRND = escalaRND - 1;
+        listDorsos.Add(dorso);
+        for (int i = 0; i < 100; i++)//(dorso.transform.position != posicionFinal)
+        {
+            dorso.transform.rotation = Quaternion.AngleAxis(10, Vector3.right) * dorso.transform.rotation;
+            dorso.transform.position = dorso.transform.position + porcionViaje;
+            dorso.transform.localScale = new Vector3((dorso.transform.localScale.x - (escalaRND/100)), (dorso.transform.localScale.y - (escalaRND / 100)));
+            yield return new WaitForSeconds(0.01f);
+
+        }
+        dorso.transform.rotation = Quaternion.identity;
+        if (esUltima)
+        {
+            EventHandler.CallDespuesIntroFase1Event();
+            StartCoroutine(volteaCartaSiguiente());
+        }
+        
+        yield return null;
+    }
+    private GameObject GetDorsoSiguiente()
+    {
+        GameObject dorsoSiguiente = listDorsos[listDorsos.Count - 1];
+        listDorsos.RemoveAt(listDorsos.Count - 1);
+        return dorsoSiguiente;
+    }
+
+    private IEnumerator volteaCartaSiguiente()
+    {
+        GameObject dorsoSiguiente = GetDorsoSiguiente();
+        dorsoSiguiente.GetComponent<Dorso>().ToggleParticulasEsperar();
+        Vector3 posicionFinal = _esTurnoJugador1 ? Settings.PosicionRobaCartaColor1 : Settings.PosicionRobaCartaColor2;
+        Vector3 porcionViaje = (posicionFinal - dorsoSiguiente.transform.position) / 100;
+        for (int i = 0; i < 100; i++)
+        {
+            dorsoSiguiente.transform.position = dorsoSiguiente.transform.position + porcionViaje;
+            dorsoSiguiente.transform.localScale += new Vector3(0.03f, 0.03f, 0);
+            dorsoSiguiente.GetComponent<Dorso>().ParticulasVoltear.gameObject.transform.localScale += new Vector3(0.03f, 0.03f, 0);
+            yield return new WaitForSeconds(0.01f);
+        }
+        dorsoSiguiente.transform.rotation = Quaternion.identity;
+        yield return new WaitForSeconds(2f);
+
+        //Mostramos la carta
+        dorsoSiguiente.GetComponent<Dorso>().ToggleDorsoCarta();
+        dorsoSiguiente.GetComponentInChildren<Carta>().ValorCuartosCarta = _baraja.GetSiguiente();
+        EventHandler.CallDespuesVoltearCartaEvent();
+        Destroy(dorsoSiguiente);
+        yield return null;
+    }
+
     #region eventosFASE
     private void EmpiezaFase1Event()
     {

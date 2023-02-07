@@ -6,7 +6,6 @@ using UnityEngine;
 public class Carta : MonoBehaviour
 {
     private CartaCuartaParte[] _cuartasPartes = null;
-    private bool _esRefresh = true;
     [SerializeField] private int _numCuartosConFicha = 0;
     [SerializeField] private string _valorCuartosCarta = null;
     public Vector3 PosicionTablero;
@@ -19,7 +18,6 @@ public class Carta : MonoBehaviour
     private void setValorCuartosCarta(string valor)
     {
         _valorCuartosCarta = valor;
-        _esRefresh = true;
     }
 
     //private CoordenadaCasilla _coordenadaCasilla;
@@ -30,14 +28,16 @@ public class Carta : MonoBehaviour
     }
     private void Update()
     {
-        if (_esRefresh && _valorCuartosCarta != null && _valorCuartosCarta != "")
+        if (_valorCuartosCarta != null && _valorCuartosCarta != "")
         {
             _cuartasPartes = GetComponentsInChildren<CartaCuartaParte>();
             for (int i = 0; i < _cuartasPartes.Length; i++)
             {
                 _cuartasPartes[i].InicializaCuarto(ValorCuartosCarta);
             }
-            _esRefresh = false;
         }
+    }
+    private void OnEnable()
+    {
     }
 }

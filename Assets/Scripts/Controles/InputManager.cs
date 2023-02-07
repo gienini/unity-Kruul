@@ -68,7 +68,9 @@ public class InputManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0) && gridCursorFase1.CursorPositionIsValid)
             {
+                
                 Vector3Int cursorGridPosition = gridCursorFase1.GetGridPositionForCursor();
+                gridCursorFase1.CongelaYEsperaCarta();
                 EventHandler.CallClickEnTableroFase1Event(cursorGridPosition);
             }
         }

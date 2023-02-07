@@ -124,4 +124,22 @@ public class EventHandler
             MenuPrincipalEvent();
         }
     }
+
+    public static event Action DespuesIntroFase1Event;
+    public static void CallDespuesIntroFase1Event()
+    {
+        if (DespuesIntroFase1Event != null)
+        {
+            DespuesIntroFase1Event();
+        }
+    }
+
+    public static event Action DespuesVoltearCartaEvent;
+    public static void CallDespuesVoltearCartaEvent()
+    {
+        if (DespuesVoltearCartaEvent != null)
+        {
+            DespuesVoltearCartaEvent();
+        }
+    }
 }

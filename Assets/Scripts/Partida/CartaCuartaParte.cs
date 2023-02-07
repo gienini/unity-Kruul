@@ -5,58 +5,87 @@ using UnityEngine.UI;
 
 public class CartaCuartaParte : MonoBehaviour
 {
-    private bool _esColor1 = true;
+
+    [SerializeField] private GameObject MiniColor1Child = null;
+    [SerializeField] private GameObject MiniColor2Child = null;
+
+    [SerializeField] private bool _esColor1 = true;
     [SerializeField] public CartaCuartaPartePosicion posicion = 0;
-    [SerializeField] private Sprite spriteColor1 = null;
-    [SerializeField] private Sprite spriteColor2 = null;
+    
     [SerializeField] private bool esCursor = false;
-    private SpriteRenderer _spriteRenderer;
-    private Image _image;
-    private bool _esRefresh = false;
 
     public bool esColor1 { get => _esColor1; set => _esColor1 = value; }
 
     private void Start()
     {
-        if (esCursor)
-        {
-            _image = GetComponent<Image>();
-        } else
-        {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-        }
+        //if (esCursor)
+        //{
+        //    _image = GetComponent<Image>();
+        //} else
+        //{
+        //    _spriteRenderer = GetComponent<SpriteRenderer>();
+        //}
         
         
     }
+    private void setComponentsImage(GameObject miniColorChild)
+    {
+        foreach(Image image in miniColorChild.GetComponentsInChildren<Image>())
+        {
+            image.enabled = true;
+            SpriteRenderer spriteRenderer = image.gameObject.GetComponent<SpriteRenderer>();
+            image.sprite = spriteRenderer.sprite;
+            image.color = spriteRenderer.color;
+            spriteRenderer.enabled = false;
+        }
+    }
     private void Update()
     {
-        if (esCursor && _esRefresh)
+        if (_esColor1)
         {
-            if (_image != null)
+            MiniColor1Child.SetActive(true);
+            MiniColor2Child.SetActive(false);
+            if (esCursor)
             {
-                if (_esColor1 && _image.sprite == null)
-                {
-                    _image.sprite = spriteColor1;
-                }
-                else if (!_esColor1 && _image.sprite == null)
-                {
-                    _image.sprite = spriteColor2;
-                }
-            }
-        } else
+                setComponentsImage(MiniColor1Child);
+            }            
+        }
+        else
         {
-            if (_spriteRenderer != null)
+            MiniColor2Child.SetActive(true);
+            MiniColor1Child.SetActive(false);
+            if (esCursor)
             {
-                if (_esColor1 && _spriteRenderer.sprite == null)
-                {
-                    _spriteRenderer.sprite = spriteColor1;
-                }
-                else if (!_esColor1 && _spriteRenderer.sprite == null)
-                {
-                    _spriteRenderer.sprite = spriteColor2;
-                }
+                setComponentsImage(MiniColor2Child);
             }
         }
+        //if (esCursor && _esRefresh)
+        //{
+        //    if (_image != null)
+        //    {
+        //        if (_esColor1 && _image.sprite == null)
+        //        {
+        //            _image.sprite = spriteColor1;
+        //        }
+        //        else if (!_esColor1 && _image.sprite == null)
+        //        {
+        //            _image.sprite = spriteColor2;
+        //        }
+        //    }
+        //} else
+        //{
+        //    if (_spriteRenderer != null)
+        //    {
+        //        if (_esColor1 && (_spriteRenderer.sprite == null || _spriteRenderer.sprite == spriteColor2))
+        //        {
+        //            _spriteRenderer.sprite = spriteColor1;
+        //        }
+        //        else if (!_esColor1 && (_spriteRenderer.sprite == null || _spriteRenderer.sprite == spriteColor1))
+        //        {
+        //            _spriteRenderer.sprite = spriteColor2;
+        //        }
+        //    }
+        //}
     }
 
     public void InicializaCuarto(string valorCuartosCarta)
@@ -80,12 +109,11 @@ public class CartaCuartaParte : MonoBehaviour
         }
         if (valor == '1')
         {
-            esColor1 = true;
+            _esColor1 = true;
         }else if (valor == '2')
         {
-            esColor1 = false;
+            _esColor1 = false;
         }
-        _esRefresh = true;
     }
 
 }

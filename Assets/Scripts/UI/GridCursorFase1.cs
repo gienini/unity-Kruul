@@ -11,6 +11,8 @@ public class GridCursorFase1 : MonoBehaviour
     [SerializeField] private Sprite redCursorSprite = null;
     [SerializeField] private GameObject cartaBasePrefab = null;
 
+    private Vector2 _rectTransformPosFinalVolteaCartaColor1;
+    private Vector2 _rectTransformPosFinalVolteaCartaColor2;
     private GameObject _cartaGO;
     private Canvas _canvas;
     private Grid _grid;
@@ -18,26 +20,57 @@ public class GridCursorFase1 : MonoBehaviour
     //private Carta _cartaBaseCursor;
     private bool _cursorPositionIsValid = false;
     private bool _cursorIsEnabled = false;
-    public bool CursorPositionIsValid { get => _cursorPositionIsValid; set => _cursorPositionIsValid = value; }
-    public bool CursorIsEnabled { get => _cursorIsEnabled; set => _cursorIsEnabled = value; }
+    private bool _esTurnoColor1 = true;
+    public bool CursorPositionIsValid { get => _cursorPositionIsValid && _cursorIsEnabled; set => _cursorPositionIsValid = value; }
+    public GameObject CartaGO { get => _cartaGO; set => _cartaGO = value; }
 
     private void OnEnable()
     {
         EventHandler.PopCartaEnPosicionEvent += PopCartaEnPosicionEvent;
-        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
         EventHandler.AcabaFase1Event += AcabaFase1Event;
+        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
         EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
-        EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
+        EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
+        EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
+        EventHandler.DespuesVoltearCartaEvent += DespuesVoltearCartaEvent;
+        EventHandler.JugadaHechaEvent += JugadaHechaEvent;
     }
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
-        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
         EventHandler.AcabaFase1Event -= AcabaFase1Event;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
         EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
+        EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
+        EventHandler.DespuesVoltearCartaEvent -= DespuesVoltearCartaEvent;
+        EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
+    }
+
+    private void EmpiezaFase1Event()
+    {
+        
+        CongelaYEsperaCarta();
+        _grid = null;
+    }
+
+    private void JugadaHechaEvent(bool obj)
+    {
+        _esTurnoColor1 = !_esTurnoColor1;
+    }
+
+    private void DespuesVoltearCartaEvent()
+    {
+        _cursorIsEnabled = true;
+        
+    }
+
+    public void CongelaYEsperaCarta()
+    {
+        _cursorIsEnabled = false;
+        HideCursor();
     }
 
     private void AntesFadeOutEvent()
@@ -46,7 +79,6 @@ public class GridCursorFase1 : MonoBehaviour
         {
             _cartaGO.SetActive(false);
         }
-        cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 0f);
         _cursorIsEnabled = false;
     }
 
@@ -56,8 +88,6 @@ public class GridCursorFase1 : MonoBehaviour
         {
             _cartaGO.SetActive(true);
         }
-        _cursorIsEnabled = true;
-        cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 1f);
     }
 
     private void AcabaFase1Event()
@@ -84,12 +114,21 @@ public class GridCursorFase1 : MonoBehaviour
         {
             DisplayCursor();
         }else {
+            HideCursor();
         }
     }
 
-    private void EmpiezaFase1Event()
+    private void DespuesIntroFase1Event()
     {
-        EmpiezaFaseNuevaEvent();
+        _grid = GameObject.FindObjectOfType<Grid>();
+        if (_rectTransformPosFinalVolteaCartaColor1 == null)
+        {
+            _rectTransformPosFinalVolteaCartaColor1 = GetRectTransformPositionForCursor(Settings.PosicionRobaCartaColor1Int);
+        }
+        if (_rectTransformPosFinalVolteaCartaColor2 == null)
+        {
+            _rectTransformPosFinalVolteaCartaColor2 = GetRectTransformPositionForCursor(Settings.PosicionRobaCartaColor2Int);
+        }
     }
 
     private void EmpiezaFase2Event()
@@ -99,17 +138,23 @@ public class GridCursorFase1 : MonoBehaviour
 
     private void EmpiezaFaseNuevaEvent()
     {
-        _grid = GameObject.FindObjectOfType<Grid>();
+        
     }
-
+    private void HideCursor()
+    {
+        cursorRectTransform.gameObject.SetActive(false);
+        if (_cartaGO != null)
+        {
+            _cartaGO.gameObject.SetActive(false);
+        }
+    }
     private Vector3Int DisplayCursor()
     {
-        if (_grid == null)
+        if (_grid != null && _cursorIsEnabled)
         {
-            _grid = GameObject.FindObjectOfType<Grid>();
-        }
-        if (_grid != null)
-        {
+            cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 1f);
+            cursorRectTransform.gameObject.SetActive(true);
+            _cartaGO.gameObject.SetActive(true);
             Vector3Int cursorGridPosition = GetGridPositionForCursor();
 
             SetCursorValidity(cursorGridPosition);
@@ -121,6 +166,7 @@ public class GridCursorFase1 : MonoBehaviour
         }
         else
         {
+            HideCursor();
             return Vector3Int.zero;
         }
     }
@@ -179,13 +225,13 @@ public class GridCursorFase1 : MonoBehaviour
     private void SetCursorToValid()
     {
         cursorImage.sprite = greenCursorSprite;
-        CursorPositionIsValid = true;
+        _cursorPositionIsValid = true;
     }
 
     private void SetCursorToInvalid()
     {
         cursorImage.sprite = redCursorSprite;
-        CursorPositionIsValid = false;
+        _cursorPositionIsValid = false;
     }
 
     /// <summary>
