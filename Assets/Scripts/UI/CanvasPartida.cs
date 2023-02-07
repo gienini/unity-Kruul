@@ -21,16 +21,6 @@ public class CanvasPartida : MonoBehaviour
         EventHandler.PuntoEnCuadranteEvent += PuntoEvent;
         EventHandler.EmpiezaFase1Event += EmpiezaFase1;
         EventHandler.EmpiezaFase2Event += EmpiezaFase2;
-    }
-    private void OnDisable()
-    {
-        EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
-        EventHandler.PuntoEnCuadranteEvent -= PuntoEvent;
-        EventHandler.EmpiezaFase1Event -= EmpiezaFase1;
-        EventHandler.EmpiezaFase2Event -= EmpiezaFase2;
-    }
-    void Start()
-    {
         List<TextMeshProUGUI> textos = new List<TextMeshProUGUI>(GetComponentsInChildren<TextMeshProUGUI>());
         foreach (TextMeshProUGUI reg in textos)
         {
@@ -55,6 +45,17 @@ public class CanvasPartida : MonoBehaviour
                 _faseTexto = reg;
             }
         }
+    }
+    private void OnDisable()
+    {
+        EventHandler.PopCartaEnPosicionEvent -= PopCartaEnPosicionEvent;
+        EventHandler.PuntoEnCuadranteEvent -= PuntoEvent;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFase2;
+    }
+    void Start()
+    {
+        
     }
     void Update()
     {
