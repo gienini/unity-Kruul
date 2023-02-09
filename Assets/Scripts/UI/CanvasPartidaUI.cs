@@ -10,6 +10,10 @@ public class CanvasPartidaUI : MonoBehaviour
     [SerializeField] private GameObject GrupoDorsosUI = null;
     [SerializeField] private GameObject DorsoPrefab = null;
     [SerializeField] private GameObject FaderPartidaUI = null;
+    private List<Image> _piezasColor1;
+    private List<Image> _piezasColor2;
+    private int _numPiezasColor1 = 9;
+    private int _numPiezasColor2 = 9;
     private Camera mainCamera;
     private bool _esTurnoJugador1 = true;
     private List<GameObject> _listDorsos;
@@ -25,6 +29,16 @@ public class CanvasPartidaUI : MonoBehaviour
         FaderPartidaUI.GetComponent<Image>().color = new Color(0f,0f,0f,1f);
         faderCanvasGroup = FaderPartidaUI.GetComponent<CanvasGroup>();
         faderCanvasGroup.alpha = 0f;
+        _piezasColor1 = new List<Image>();
+        foreach (Image child in GrupoPiezasColor1.GetComponentsInChildren<Image>())
+        {
+            _piezasColor1.Add(child);
+        }
+        _piezasColor2 = new List<Image>();
+        foreach (Image child in GrupoPiezasColor2.GetComponentsInChildren<Image>())
+        {
+            _piezasColor2.Add(child);
+        }
     }
     private void OnEnable()
     {
@@ -46,11 +60,15 @@ public class CanvasPartidaUI : MonoBehaviour
     public void BotonPilaGrupoPiezas1()
     {
         escondeOpcionesAccion();
+        _piezasColor1[_numPiezasColor1 - 1].enabled = false;
+        _numPiezasColor1--;
         EventHandler.CallAccionSeleccionadaEvent(false);
     }
     public void BotonPilaGrupoPiezas2()
     {
         escondeOpcionesAccion();
+        _piezasColor2[_numPiezasColor2 - 1].enabled = false;
+        _numPiezasColor2--;
         EventHandler.CallAccionSeleccionadaEvent(false);
     }
     private void escondeOpcionesAccion()
@@ -60,6 +78,11 @@ public class CanvasPartidaUI : MonoBehaviour
     }
     private void muestraOpcionesAccion(bool esJugador1)
     {
+        StartCoroutine(AnimacionFade(1f, esJugador1));
+    }
+    private IEnumerator AnimacionFade(float finalAlpha, bool esJugador1)
+    {
+        yield return Fade(1f);
         FaderPartidaUI.transform.SetAsLastSibling();
         if (esJugador1)
         {
@@ -71,9 +94,8 @@ public class CanvasPartidaUI : MonoBehaviour
         }
         GrupoDorsosUI.transform.SetAsLastSibling();
         GrupoDorsosUI.GetComponentInChildren<Button>().transform.SetAsLastSibling();
-        StartCoroutine(Fade(1f));
+        yield return null;
     }
-    
     private IEnumerator Fade(float finalAlpha)
     {
         //Seteamos a true para que no salte la corutine
@@ -98,7 +120,7 @@ public class CanvasPartidaUI : MonoBehaviour
     private void JugadaHechaEvent(bool esTurnoColor1)
     {
         List<ValorCasilla> casillasConPunto = PropiedadesCasillasManager.Instance.CheckPuntoEnTablero(!esTurnoColor1);
-        if (casillasConPunto.Count > 0)
+        if (casillasConPunto.Count > 0 && ((!esTurnoColor1 && _numPiezasColor1 > 0) || (esTurnoColor1 && _numPiezasColor2 > 0)))
         {
             muestraOpcionesAccion(!esTurnoColor1);
 

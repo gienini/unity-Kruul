@@ -203,7 +203,10 @@ public class GridCursorFase1 : MonoBehaviour
         bool retorno = false;
         if (_esCursorPieza)
         {
-            retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, _esTurnoColor1, null, false);
+            if (!PropiedadesCasillasManager.Instance.DictCoordenadasPieza.TryGetValue(PropiedadesCasillasManager.Instance.GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Pieza p))
+            {
+                retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, _esTurnoColor1, null, false);
+            }
         }
         else
         {

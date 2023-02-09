@@ -342,11 +342,11 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             EsDictCargado = true;
         }
     }
-    private string GeneraKey(float x, float y)
+    public string GeneraKey(float x, float y)
     {
         return GeneraKey((int)x, (int)y);
     }
-    private string GeneraKey(int x, int y)
+    public string GeneraKey(int x, int y)
     {
         return "x:" + x + "y:" +y;
     }
