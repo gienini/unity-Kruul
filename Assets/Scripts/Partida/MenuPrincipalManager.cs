@@ -13,14 +13,12 @@ public class MenuPrincipalManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
         EventHandler.MenuPrincipalEvent += MenuPrincipalEvent;
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
     }
     private void OnDisable()
     {
-        EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
         EventHandler.MenuPrincipalEvent -= MenuPrincipalEvent;
         EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
@@ -43,17 +41,5 @@ public class MenuPrincipalManager : MonoBehaviour
     private void AntesFadeOutEvent()
     {
         //gameObject.SetActive(false);
-    }
-
-    private void DespuesFadeOutEvent()
-    {
-        //if (_esMenuPrincipalCargado)
-        //{
-        //    gameObject.SetActive(true);
-        //}else
-        //{
-        //    gameObject.SetActive(false);
-        //}
-        
     }
 }

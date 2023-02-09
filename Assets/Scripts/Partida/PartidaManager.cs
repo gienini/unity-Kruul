@@ -18,9 +18,15 @@ public class PartidaManager : MonoBehaviour
     private bool _esFase1 = false;
     private bool _esFase2 = false;
 
+    
+
     //test
     //[SerializeField] private GameObject cartaBasePrefab2 = null;
     private bool _esTurnoJugador1 = true;
+    List<GameObject> listDorsos;
+
+    public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
+
     private void OnEnable()
     {
         EventHandler.ClickEnTableroFase1Event += ClickEnTableroFase1Event;
@@ -92,9 +98,11 @@ public class PartidaManager : MonoBehaviour
         _esTurnoJugador1 = !_esTurnoJugador1;
 
     }
-    private void ClickEnTableroFase1Event(Vector3 posicion)
+    private void ClickEnTableroFase1Event(Vector3 posicion, bool esAccionCarta)
     {
-        ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
+        if (esAccionCarta)
+        {
+            ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
         if (valorCasilla != null && valorCasilla.esTablero)
         {
             PonCartaEnTableroFase1(posicion);
@@ -104,6 +112,12 @@ public class PartidaManager : MonoBehaviour
                 SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
                 EventHandler.CallEmpiezaFase2Event();
             }
+            _esTurnoJugador1 = !_esTurnoJugador1;
+        }
+        }else
+        {
+            PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(true, posicion, _esTurnoJugador1, null, false);
+            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
             _esTurnoJugador1 = !_esTurnoJugador1;
         }
     }
@@ -123,7 +137,6 @@ public class PartidaManager : MonoBehaviour
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, -mainCamera.transform.position.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
         
         EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
-        StartCoroutine(volteaCartaSiguiente());
     }
 
     private void PonCartaEnTableroFase2(Vector3 posicion, Carta carta)
@@ -208,96 +221,12 @@ public class PartidaManager : MonoBehaviour
     {
         EventHandler.CallEmpiezaFase1Event();
     }
-    List<GameObject> listDorsos;
+    
     private void inicializaBaraja()
     {
         _baraja = new Baraja(so_baraja.cartas);
-
-        listDorsos = new List<GameObject>();
-        StartCoroutine(instanciaDorsos(Settings.PosicionFinalSpawnCartas));
-
     }
-
-    private IEnumerator instanciaDorsos(Vector3 posicion)
-    {
-        for (int i = 0; i < _baraja.Count(); i++)
-        {
-            yield return new WaitForSeconds(0.15f);
-            if (i == _baraja.Count() - 1)
-            {
-                //Ultima vuelta, la carta va al medio
-                yield return new WaitForSeconds(0.30f);
-                StartCoroutine(instanciaDorso(new Vector3(0, 0, -mainCamera.transform.position.z), true));
-            }
-            else
-            {
-                StartCoroutine(instanciaDorso(new Vector3(posicion.x + Random.Range(-0.01f, 0.01f), posicion.y + Random.Range(-0.1f, 0.1f), -mainCamera.transform.position.z)));
-                posicion = new Vector3(posicion.x + 0.5f, posicion.y, 0);
-            }
-            
-        }
-        yield return null;
-    }
-    private IEnumerator instanciaDorso(Vector3 posicionFinal)
-    {
-        return instanciaDorso(posicionFinal, false);
-    }
-    private IEnumerator instanciaDorso(Vector3 posicionFinal, bool esUltima)
-    {
-        Vector3 posicionInicial = new Vector3(Random.Range(-12, 21), 10, -mainCamera.transform.position.z);
-        Vector3 porcionViaje = (posicionFinal - posicionInicial) / 100;
-        GameObject dorso = Instantiate(dorsoPrefab, posicionInicial, Quaternion.AngleAxis(90, Vector3.left));
-        float escalaRND = Random.Range(5 , 7.5f);
-        dorso.transform.localScale = new Vector3(escalaRND, escalaRND);
-        escalaRND = escalaRND - 1;
-        listDorsos.Add(dorso);
-        for (int i = 0; i < 100; i++)//(dorso.transform.position != posicionFinal)
-        {
-            dorso.transform.rotation = Quaternion.AngleAxis(10, Vector3.right) * dorso.transform.rotation;
-            dorso.transform.position = dorso.transform.position + porcionViaje;
-            dorso.transform.localScale = new Vector3((dorso.transform.localScale.x - (escalaRND/100)), (dorso.transform.localScale.y - (escalaRND / 100)));
-            yield return new WaitForSeconds(0.01f);
-
-        }
-        dorso.transform.rotation = Quaternion.identity;
-        if (esUltima)
-        {
-            EventHandler.CallDespuesIntroFase1Event();
-            StartCoroutine(volteaCartaSiguiente());
-        }
-        
-        yield return null;
-    }
-    private GameObject GetDorsoSiguiente()
-    {
-        GameObject dorsoSiguiente = listDorsos[listDorsos.Count - 1];
-        listDorsos.RemoveAt(listDorsos.Count - 1);
-        return dorsoSiguiente;
-    }
-
-    private IEnumerator volteaCartaSiguiente()
-    {
-        GameObject dorsoSiguiente = GetDorsoSiguiente();
-        dorsoSiguiente.GetComponent<Dorso>().ToggleParticulasEsperar();
-        Vector3 posicionFinal = _esTurnoJugador1 ? Settings.PosicionRobaCartaColor1 : Settings.PosicionRobaCartaColor2;
-        Vector3 porcionViaje = (posicionFinal - dorsoSiguiente.transform.position) / 100;
-        for (int i = 0; i < 100; i++)
-        {
-            dorsoSiguiente.transform.position = dorsoSiguiente.transform.position + porcionViaje;
-            dorsoSiguiente.transform.localScale += new Vector3(0.03f, 0.03f, 0);
-            dorsoSiguiente.GetComponent<Dorso>().ParticulasVoltear.gameObject.transform.localScale += new Vector3(0.03f, 0.03f, 0);
-            yield return new WaitForSeconds(0.01f);
-        }
-        dorsoSiguiente.transform.rotation = Quaternion.identity;
-        yield return new WaitForSeconds(2f);
-
-        //Mostramos la carta
-        dorsoSiguiente.GetComponent<Dorso>().ToggleDorsoCarta();
-        dorsoSiguiente.GetComponentInChildren<Carta>().ValorCuartosCarta = _baraja.GetSiguiente();
-        EventHandler.CallDespuesVoltearCartaEvent();
-        Destroy(dorsoSiguiente);
-        yield return null;
-    }
+    
 
     #region eventosFASE
     private void EmpiezaFase1Event()

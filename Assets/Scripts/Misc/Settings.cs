@@ -4,10 +4,15 @@ using UnityEngine;
 
 public static class Settings
 {
+    //Efectos
+    public static float TiempoLevantarCarta = 1f;
+    public static float FadeDuration = 1f;
+    //Posiciones
     public static Vector3 PosicionRobaCartaColor1 = new Vector3(9.03f, -4.2f, 0);
     public static Vector3 PosicionRobaCartaColor2 = new Vector3(9.03f, -4.2f, 0);
     public static Vector3 PosicionRobaCartaCentroArriba = new Vector3(9.5f, -7.1f, 0);
     public static Vector3 PosicionFinalSpawnCartas = new Vector3(-3.4f, -7.1f, 0);
+    public static Vector3 PosicionFinalSpawnCartasUI = new Vector3(521f, 70f, 0f);
 
 
     //AUTO

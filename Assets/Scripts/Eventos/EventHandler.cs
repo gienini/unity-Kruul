@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class EventHandler
 {
-    public static event Action<Vector3> ClickEnTableroFase1Event;
+    public static event Action<Vector3, bool> ClickEnTableroFase1Event;
 
-    public static void CallClickEnTableroFase1Event(Vector3 posicion)
+    public static void CallClickEnTableroFase1Event(Vector3 posicion, bool esAccionCarta)
     {
         if (ClickEnTableroFase1Event != null)
         {
-            ClickEnTableroFase1Event(posicion);
+            ClickEnTableroFase1Event(posicion, esAccionCarta);
         }
     }
 
@@ -134,12 +134,12 @@ public class EventHandler
         }
     }
 
-    public static event Action DespuesVoltearCartaEvent;
-    public static void CallDespuesVoltearCartaEvent()
+    public static event Action<bool> AccionSeleccionadaEvent;
+    public static void CallAccionSeleccionadaEvent(bool esCarta)
     {
-        if (DespuesVoltearCartaEvent != null)
+        if (AccionSeleccionadaEvent != null)
         {
-            DespuesVoltearCartaEvent();
+            AccionSeleccionadaEvent(esCarta);
         }
     }
 }

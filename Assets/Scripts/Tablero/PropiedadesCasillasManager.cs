@@ -28,6 +28,18 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         EventHandler.PopCartaEnPosicionEvent -= RegistraCartaEnPosicion;
     }
+    public List<ValorCasilla> CheckPuntoEnTablero(bool esTurnoColor1)
+    {
+        List<ValorCasilla> retorno = new List<ValorCasilla>();
+        foreach (ValorCasilla casilla in DictValoresCasilla.Values)
+        {
+            if (!DictCoordenadasPieza.TryGetValue(GeneraKey(casilla.x, casilla.y), out Pieza p) && checkPuntoEnPosicion(false, new Vector3(casilla.x, casilla.y), esTurnoColor1, null, false))
+            {
+                retorno.Add(casilla);
+            }
+        }
+        return retorno;
+    }
     public void EscondeCartaDePosicion(Vector3 posicion)
     {
         if (DictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x, posicion.y), out Carta carta))
@@ -226,11 +238,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             PutValorEnDict(nuevoValorCasillaOcupada);
         }
 
-        checkPuntoEnPosicion(posicion);
-    }
-    private bool checkPuntoEnPosicion(Vector3 posicion)
-    {
-        return checkPuntoEnPosicion(true, posicion, true, null);
+        //checkPuntoEnPosicion(posicion);
     }
     /// <summary>
     /// Checkea si se produce punto en la posicion. Si registraPunto es true solo mira los valores del dict. Si es false hay que pasarle una carta para que haga la comprobacion
@@ -239,10 +247,10 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     /// <param name="posicion"></param>
     /// <param name="esCheckColor1"></param>
     /// <returns></returns>
-    public bool checkPuntoEnPosicion(bool esRegistraPunto, Vector3 posicion, bool esCheckColor1, Carta cartaToCheck)
+    public bool checkPuntoEnPosicion(bool esRegistraPunto, Vector3 posicion, bool esCheckColor1, Carta cartaToCheck, bool esCheckAdyacentes)
     {
         List<ValorCasilla> cartaVirtual = null;
-        if (!esRegistraPunto)
+        if (!esRegistraPunto && cartaToCheck != null)
         {
             if (cartaToCheck.PosicionTablero.x == posicion.x && cartaToCheck.PosicionTablero.y == posicion.y)
             {
@@ -262,8 +270,18 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         }
 
         bool esAlgunPuntoEnPosicion = false;
-        //Cuadrantes adyacentes teniendo en cuenta la carta virtual si se ha pedido
-        List<List<ValorCasilla>> cuadrantesAdyacentes = GetCuadrantesAdyacentes((int)posicion.x, (int)posicion.y, cartaVirtual);
+        List<List<ValorCasilla>> cuadrantesAdyacentes = new List<List<ValorCasilla>>();
+        if (esCheckAdyacentes)
+        {
+            //Cuadrantes adyacentes teniendo en cuenta la carta virtual si se ha pedido
+            cuadrantesAdyacentes = GetCuadrantesAdyacentes((int)posicion.x, (int)posicion.y, cartaVirtual);
+        }
+        else
+        {
+            //El cuadrante de la posicion
+            cuadrantesAdyacentes.Add(GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y));
+        }
+        
         foreach (List<ValorCasilla> cuadranteAdyacente in cuadrantesAdyacentes)
         {
             bool esPuntoColor1 = true;

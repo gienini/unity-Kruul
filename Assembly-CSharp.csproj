@@ -90,6 +90,7 @@
     <Compile Include="Assets\Scripts\Tablero\PropiedadesCasillasManager.cs" />
     <Compile Include="Assets\Scripts\Tablero\ValorCasilla.cs" />
     <Compile Include="Assets\Scripts\UI\CanvasPartida.cs" />
+    <Compile Include="Assets\Scripts\UI\CanvasPartidaUI.cs" />
     <Compile Include="Assets\Scripts\UI\GridCursorFase1.cs" />
     <Compile Include="Assets\Scripts\UI\GridCursorFase2.cs" />
     <Compile Include="Assets\Scripts\UI\JugadorActivoImagen.cs" />

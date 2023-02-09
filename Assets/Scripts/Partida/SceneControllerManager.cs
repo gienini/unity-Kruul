@@ -9,7 +9,6 @@ using UnityEngine.UI;
 public class SceneControllerManager : SingletonMonobehaviour<SceneControllerManager>
 {
     private bool isFading;
-    [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private CanvasGroup faderCanvasGroup = null;
     [SerializeField] private Image faderImage = null;
     [SerializeField] private GameObject MenuPrincipalCanvas = null;
@@ -30,6 +29,14 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
         EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
+    }
+    private void OnDisable()
+    {
+        EventHandler.AcabaFase1Event -= AcabaFaseEvent;
+        EventHandler.AcabaFase2Event -= AcabaFaseEvent;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
+        EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
     }
 
     private void DespuesFadeOutEvent()
@@ -167,7 +174,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
 
         faderCanvasGroup.blocksRaycasts = true;
 
-        float fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / fadeDuration;
+        float fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / Settings.FadeDuration;
 
         while (!Mathf.Approximately(faderCanvasGroup.alpha, finalAlpha))
         {

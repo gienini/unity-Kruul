@@ -71,7 +71,7 @@ public class InputManager : MonoBehaviour
                 
                 Vector3Int cursorGridPosition = gridCursorFase1.GetGridPositionForCursor();
                 gridCursorFase1.CongelaYEsperaCarta();
-                EventHandler.CallClickEnTableroFase1Event(cursorGridPosition);
+                EventHandler.CallClickEnTableroFase1Event(cursorGridPosition, !gridCursorFase1.EsCursorPieza);
             }
         }
         if (Input.GetKeyDown(KeyCode.Escape))

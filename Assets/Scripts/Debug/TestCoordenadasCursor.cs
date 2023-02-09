@@ -19,7 +19,7 @@ public class TestCoordenadasCursor : MonoBehaviour
         EventHandler.ClickEnTableroFase1Event -= UpdateTextoCoordenadasUltimoClick;
     }
 
-    private void UpdateTextoCoordenadasUltimoClick(Vector3 posicion)
+    private void UpdateTextoCoordenadasUltimoClick(Vector3 posicion, bool esAccionCarta)
     {
         textoCoordenadasUltimoClick.SetText("Coo Ultimo click = X: " + posicion.x + "Y: " + posicion.y);
     }

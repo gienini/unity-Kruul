@@ -157,7 +157,7 @@ public class GridCursorFase2 : MonoBehaviour
         if (CartaGO != null)
         {
             //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
-            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>()))
+            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>(), true))
             {
                 retorno = true;
             }
@@ -186,7 +186,7 @@ public class GridCursorFase2 : MonoBehaviour
         if (CartaGO != null)
         {
             //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
-            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>()))
+            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>(), true))
             {
                 SetCursorToValidCarta();
             }

@@ -10,6 +10,8 @@ public class GridCursorFase1 : MonoBehaviour
     [SerializeField] private Sprite greenCursorSprite = null;
     [SerializeField] private Sprite redCursorSprite = null;
     [SerializeField] private GameObject cartaBasePrefab = null;
+    [SerializeField] private Sprite greenCursorSpritePieza = null;
+    [SerializeField] private Sprite redCursorSpritePieza = null;
 
     private Vector2 _rectTransformPosFinalVolteaCartaColor1;
     private Vector2 _rectTransformPosFinalVolteaCartaColor2;
@@ -21,8 +23,10 @@ public class GridCursorFase1 : MonoBehaviour
     private bool _cursorPositionIsValid = false;
     private bool _cursorIsEnabled = false;
     private bool _esTurnoColor1 = true;
+    private bool _esCursorPieza = false;
     public bool CursorPositionIsValid { get => _cursorPositionIsValid && _cursorIsEnabled; set => _cursorPositionIsValid = value; }
     public GameObject CartaGO { get => _cartaGO; set => _cartaGO = value; }
+    public bool EsCursorPieza { get => _esCursorPieza; set => _esCursorPieza = value; }
 
     private void OnEnable()
     {
@@ -33,8 +37,8 @@ public class GridCursorFase1 : MonoBehaviour
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
-        EventHandler.DespuesVoltearCartaEvent += DespuesVoltearCartaEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
+        EventHandler.AccionSeleccionadaEvent += AccionSeleccionadaEvent;
     }
     private void OnDisable()
     {
@@ -45,8 +49,15 @@ public class GridCursorFase1 : MonoBehaviour
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
-        EventHandler.DespuesVoltearCartaEvent -= DespuesVoltearCartaEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
+        EventHandler.AccionSeleccionadaEvent -= AccionSeleccionadaEvent;
+    }
+
+    private void AccionSeleccionadaEvent(bool esAccionCarta)
+    {
+        _cursorIsEnabled = true;
+        _esCursorPieza = !esAccionCarta;
+        DisplayCursor();
     }
 
     private void EmpiezaFase1Event()
@@ -59,12 +70,6 @@ public class GridCursorFase1 : MonoBehaviour
     private void JugadaHechaEvent(bool obj)
     {
         _esTurnoColor1 = !_esTurnoColor1;
-    }
-
-    private void DespuesVoltearCartaEvent()
-    {
-        _cursorIsEnabled = true;
-        
     }
 
     public void CongelaYEsperaCarta()
@@ -129,6 +134,7 @@ public class GridCursorFase1 : MonoBehaviour
         {
             _rectTransformPosFinalVolteaCartaColor2 = GetRectTransformPositionForCursor(Settings.PosicionRobaCartaColor2Int);
         }
+        _cursorIsEnabled = true;
     }
 
     private void EmpiezaFase2Event()
@@ -150,7 +156,19 @@ public class GridCursorFase1 : MonoBehaviour
     }
     private Vector3Int DisplayCursor()
     {
-        if (_grid != null && _cursorIsEnabled)
+        if(_grid != null && _cursorIsEnabled && _esCursorPieza)
+        {
+            cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 1f);
+            cursorRectTransform.gameObject.SetActive(true);
+            _cartaGO.gameObject.SetActive(false);
+            Vector3Int cursorGridPosition = GetGridPositionForCursor();
+
+            SetCursorValidity(cursorGridPosition);
+
+            cursorRectTransform.position = GetRectTransformPositionForCursor(cursorGridPosition);
+            return cursorGridPosition;
+        }
+        else if (_grid != null && _cursorIsEnabled)
         {
             cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 1f);
             cursorRectTransform.gameObject.SetActive(true);
@@ -183,29 +201,36 @@ public class GridCursorFase1 : MonoBehaviour
     public bool CheckPositionValidity(Vector3Int cursorGridPosition)
     {
         bool retorno = false;
-        List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
-        bool esNoOcupada = true;
-        bool esDentroTablero = true;
-        bool esAdyacenteAotra = PropiedadesCasillasManager.Instance.EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
-
-        bool esValida = true;
-        if (valoresCuadrante != null)
+        if (_esCursorPieza)
         {
-            foreach (ValorCasilla valorCasilla in valoresCuadrante)
+            retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, _esTurnoColor1, null, false);
+        }
+        else
+        {
+            List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
+            bool esNoOcupada = true;
+            bool esDentroTablero = true;
+            bool esAdyacenteAotra = PropiedadesCasillasManager.Instance.EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
+
+            bool esValida = true;
+            if (valoresCuadrante != null)
             {
-                if (valorCasilla.esOcupado)
+                foreach (ValorCasilla valorCasilla in valoresCuadrante)
                 {
-                    esNoOcupada = false;
+                    if (valorCasilla.esOcupado)
+                    {
+                        esNoOcupada = false;
+                    }
+                    if (!valorCasilla.esTablero)
+                    {
+                        esDentroTablero = false;
+                    }
                 }
-                if (!valorCasilla.esTablero)
+                esValida = esNoOcupada && esDentroTablero && esAdyacenteAotra;
+                if (esValida)
                 {
-                    esDentroTablero = false;
+                    retorno = true;
                 }
-            }
-            esValida = esNoOcupada && esDentroTablero && esAdyacenteAotra;
-            if (esValida)
-            {
-                retorno = true;
             }
         }
         return retorno;
@@ -224,13 +249,26 @@ public class GridCursorFase1 : MonoBehaviour
 
     private void SetCursorToValid()
     {
-        cursorImage.sprite = greenCursorSprite;
+        if (_esCursorPieza)
+        {
+            cursorImage.sprite = greenCursorSpritePieza;
+        }
+        else
+        {
+            cursorImage.sprite = greenCursorSprite;
+        }
         _cursorPositionIsValid = true;
     }
 
     private void SetCursorToInvalid()
     {
-        cursorImage.sprite = redCursorSprite;
+        if (_esCursorPieza)
+        {
+            cursorImage.sprite = redCursorSpritePieza;
+        } else
+        {
+            cursorImage.sprite = redCursorSprite;
+        }
         _cursorPositionIsValid = false;
     }
 
