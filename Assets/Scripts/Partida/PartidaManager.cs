@@ -105,10 +105,11 @@ public class PartidaManager : MonoBehaviour
             ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
         if (valorCasilla != null && valorCasilla.esTablero)
         {
-            PonCartaEnTableroFase1(posicion);
+            PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
             if (_baraja.Count() == 0)
             {
                 EventHandler.CallAcabaFase1Event();
+                EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
                 SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
                 EventHandler.CallEmpiezaFase2Event();
             }
@@ -121,7 +122,7 @@ public class PartidaManager : MonoBehaviour
             _esTurnoJugador1 = !_esTurnoJugador1;
         }
     }
-    private void PonCartaEnTableroFase1(Vector3 posicion)
+    private void PonCartaEnTableroFase1(Vector3 posicion, bool esUltima)
     {
         //Posicion. Se pasa la X / 2 para la representacion visual en el tablero
         Vector3 posicionFinal = new Vector3(posicion.x / 2, posicion.y, -mainCamera.transform.position.z);
@@ -135,8 +136,11 @@ public class PartidaManager : MonoBehaviour
         //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, -mainCamera.transform.position.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
+        if (!esUltima)
+        {
+            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+        }
         
-        EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
     }
 
     private void PonCartaEnTableroFase2(Vector3 posicion, Carta carta)
@@ -192,7 +196,7 @@ public class PartidaManager : MonoBehaviour
         Vector3 posicionFinal = new Vector3(0, 0, -mainCamera.transform.position.z);
         //GameObject carta
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
-        cartaGO.GetComponent<Carta>().OrdenCarta = _baraja.Count();
+        cartaGO.GetComponent<Carta>().OrdenCarta = _baraja.Count()+1;
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = valoresPrimeraCarta;
         cartaGO.GetComponent<Carta>().CartasVecinas = new HashSet<int>();
         //Inicializar diccionario casillas

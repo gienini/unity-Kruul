@@ -19,6 +19,7 @@ public class CanvasPartidaUI : MonoBehaviour
     private float _camaraPosicionZ;
     private bool _esTriggerAnimacionInicial = false;
     private bool isFading;
+    private bool _esFase1= false;
     void Start()
     {
         //Orden inicial de los componentes
@@ -43,14 +44,20 @@ public class CanvasPartidaUI : MonoBehaviour
     private void OnEnable()
     {
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
+        EventHandler.AcabaFase1Event += AcabaFase1Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
     }
     private void OnDisable()
     {
         EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
+        EventHandler.AcabaFase1Event -= AcabaFase1Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
+    }
+    private void AcabaFase1Event()
+    {
+        _esFase1 = false;
     }
     public void BotonPilaCartas()
     {
@@ -131,21 +138,25 @@ public class CanvasPartidaUI : MonoBehaviour
     //}
     private void JugadaHechaEvent(bool esTurnoColor1)
     {
-        List<ValorCasilla> casillasConPunto = PropiedadesCasillasManager.Instance.CheckPuntoEnTablero(!esTurnoColor1);
-        if (casillasConPunto.Count > 0 && ((!esTurnoColor1 && _numPiezasColor1 > 0) || (esTurnoColor1 && _numPiezasColor2 > 0)))
+        if (_esFase1)
         {
-            muestraOpcionesAccion(!esTurnoColor1);
-
-            //DEBUG
-            Debug.Log("POSICIONES CON PUNTO");
-            foreach(ValorCasilla casilla in casillasConPunto)
+            List<ValorCasilla> casillasConPunto = PropiedadesCasillasManager.Instance.CheckPuntoEnTablero(!esTurnoColor1);
+            if (casillasConPunto.Count > 0 && ((!esTurnoColor1 && _numPiezasColor1 > 0) || (esTurnoColor1 && _numPiezasColor2 > 0)))
             {
-                Debug.Log("X:" + casilla.x + "Y:" + casilla.y);
+                muestraOpcionesAccion(!esTurnoColor1);
+
+                //DEBUG
+                Debug.Log("POSICIONES CON PUNTO");
+                foreach (ValorCasilla casilla in casillasConPunto)
+                {
+                    Debug.Log("X:" + casilla.x + "Y:" + casilla.y);
+                }
             }
-        }else
-        {
-            //No hay decision, se juega carta
-            EventHandler.CallAccionSeleccionadaEvent(true);
+            else
+            {
+                //No hay decision, se juega carta
+                EventHandler.CallAccionSeleccionadaEvent(true);
+            }
         }
     }
 
@@ -163,7 +174,9 @@ public class CanvasPartidaUI : MonoBehaviour
         mainCamera = Camera.main;
         _camaraPosicionZ = mainCamera.transform.position.z;
         _esTriggerAnimacionInicial = true;
-        
+        _esFase1 = true;
+
+
     }
     private IEnumerator instanciaPilaDorsos(int barajaCount)
     {
