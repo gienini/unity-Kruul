@@ -167,7 +167,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         }
     }
 
-    private IEnumerator Fade(float finalAlpha)
+    public IEnumerator Fade(float finalAlpha)
     {
         //Seteamos a true para que no salte la corutine
         isFading = true;
