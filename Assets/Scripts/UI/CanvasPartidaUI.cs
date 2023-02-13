@@ -8,6 +8,7 @@ public class CanvasPartidaUI : MonoBehaviour
     [SerializeField] private GameObject GrupoPiezasColor1 = null;
     [SerializeField] private GameObject GrupoPiezasColor2 = null;
     [SerializeField] private GameObject GrupoDorsosUI = null;
+    [SerializeField] private GameObject DisplayDorsosUI = null;
     [SerializeField] private GameObject DorsoPrefab = null;
     private List<Image> _piezasColor1;
     private List<Image> _piezasColor2;
@@ -47,6 +48,7 @@ public class CanvasPartidaUI : MonoBehaviour
         EventHandler.AcabaFase1Event += AcabaFase1Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
+        EventHandler.AccionSeleccionadaEvent += AccionSeleccionadaEvent;
     }
     private void OnDisable()
     {
@@ -54,7 +56,17 @@ public class CanvasPartidaUI : MonoBehaviour
         EventHandler.AcabaFase1Event -= AcabaFase1Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
+        EventHandler.AccionSeleccionadaEvent -= AccionSeleccionadaEvent;
     }
+
+    private void AccionSeleccionadaEvent(bool esCarta)
+    {
+        if (esCarta)
+        {
+            StartCoroutine(GetDorsoSiguiente());
+        }
+    }
+
     private void AcabaFase1Event()
     {
         _esFase1 = false;
@@ -180,25 +192,25 @@ public class CanvasPartidaUI : MonoBehaviour
     }
     private IEnumerator instanciaPilaDorsos(int barajaCount)
     {
-        Vector3 posicion = new Vector3(-((barajaCount/2)*Settings.SeparacionSpawnCartasUI), 0, 0);
+        Vector3 posicionDestino = new Vector3(-((barajaCount/2)*Settings.SeparacionSpawnCartasUI), 0, 0);
         _listDorsos = new List<GameObject>();
         for (int i = 0; i < barajaCount; i++)
         {
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(0.05f);
             if (i == (barajaCount - 1))
             {
                 //Ultima vuelta, la carta va al medio
                 //yield return new WaitForSeconds(0.30f);
                 //StartCoroutine(instanciaDorso(new Vector3(0, 0, -_camaraPosicionZ), true));
-                StartCoroutine(instanciaDorso(new Vector3(posicion.x, posicion.y, -_camaraPosicionZ), true));
-                posicion = new Vector3(posicion.x + Settings.SeparacionSpawnCartasUI, posicion.y, 0);
+                StartCoroutine(instanciaDorso(new Vector3(posicionDestino.x, posicionDestino.y, -_camaraPosicionZ), true));
+                posicionDestino = new Vector3(posicionDestino.x + Settings.SeparacionSpawnCartasUI, posicionDestino.y, 0);
 
             }
             else
             {
                 //StartCoroutine(instanciaDorso(new Vector3(posicion.x + Random.Range(-0.01f, 0.01f), posicion.y + Random.Range(-0.1f, 0.1f), -_camaraPosicionZ)));
-                StartCoroutine(instanciaDorso(new Vector3(posicion.x , posicion.y , -_camaraPosicionZ), false));
-                posicion = new Vector3(posicion.x + Settings.SeparacionSpawnCartasUI, posicion.y, 0);
+                StartCoroutine(instanciaDorso(new Vector3(posicionDestino.x , posicionDestino.y , -_camaraPosicionZ), false));
+                posicionDestino = new Vector3(posicionDestino.x + Settings.SeparacionSpawnCartasUI, posicionDestino.y, 0);
             }
 
         }
@@ -207,9 +219,10 @@ public class CanvasPartidaUI : MonoBehaviour
 
     private IEnumerator instanciaDorso(Vector3 posicionFinal, bool esUltima)
     {
-        Vector3 posicionInicial = new Vector3(Random.Range(-12f, 21f), 10f, -_camaraPosicionZ);
+        //Vector3 posicionInicial = new Vector3(Random.Range(-12f, 21f), 10f, -_camaraPosicionZ);
+        Vector3 posicionInicial = new Vector3(0, 0, 0);
         Vector3 porcionViaje = (posicionFinal - posicionInicial) / 100f;
-        GameObject dorso = Instantiate(DorsoPrefab, GrupoDorsosUI.transform, false);
+        GameObject dorso = Instantiate(DorsoPrefab, DisplayDorsosUI.transform, false);
         dorso.transform.localScale = new Vector3(3f, 3f, 1f);
         _listDorsos.Add(dorso);
         for (int i = 0; i < 100; i++)//(dorso.transform.position != posicionFinal)
@@ -220,39 +233,20 @@ public class CanvasPartidaUI : MonoBehaviour
         if (esUltima)
         {
             EventHandler.CallDespuesIntroFase1Event();
-            Destroy(GetDorsoSiguiente());
-            //StartCoroutine(VolteaCartaSiguiente());
+            StartCoroutine(GetDorsoSiguiente());
         }
 
         yield return null;
     }
-
-    public IEnumerator VolteaCartaSiguiente()
-    {
-        GameObject dorsoSiguiente = GetDorsoSiguiente();
-        dorsoSiguiente.GetComponent<Dorso>().ToggleParticulasEsperar();
-        Vector3 posicionFinal = _esTurnoJugador1 ? Settings.PosicionRobaCartaColor1 : Settings.PosicionRobaCartaColor2;
-        Vector3 porcionViaje = (posicionFinal - dorsoSiguiente.transform.position) / 100;
-        for (int i = 0; i < 100; i++)
-        {
-            dorsoSiguiente.transform.position = dorsoSiguiente.transform.position + porcionViaje;
-            dorsoSiguiente.transform.localScale += new Vector3(0.03f, 0.03f, 0);
-            dorsoSiguiente.GetComponent<Dorso>().ParticulasVoltear.gameObject.transform.localScale += new Vector3(0.03f, 0.03f, 0);
-            yield return new WaitForSeconds(0.01f);
-        }
-        yield return new WaitForSeconds(2f);
-
-        //Mostramos la carta
-        dorsoSiguiente.GetComponent<Dorso>().ToggleDorsoCarta();
-        //dorsoSiguiente.GetComponentInChildren<Carta>().ValorCuartosCarta = _baraja.GetSiguiente();
-        dorsoSiguiente.GetComponentInChildren<Carta>().ValorCuartosCarta = "1111";
-        Destroy(dorsoSiguiente);
-        yield return null;
-    }
-    private GameObject GetDorsoSiguiente()
+    public IEnumerator GetDorsoSiguiente()
     {
         GameObject dorsoSiguiente = _listDorsos[_listDorsos.Count - 1];
         _listDorsos.RemoveAt(_listDorsos.Count - 1);
-        return dorsoSiguiente;
+        for (int i = 0; i < 100; i++)
+        {
+            dorsoSiguiente.transform.position += Vector3.up;
+            yield return new WaitForSeconds(0.01f);
+        }
+        yield return null;
     }
 }
