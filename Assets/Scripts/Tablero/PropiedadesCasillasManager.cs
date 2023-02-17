@@ -14,27 +14,66 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     private List<List<ValorCasilla>> _cuadrantesEscondidos;
     [SerializeField] private SO_PropiedadesCasilla[] propiedadesCasillaArray = null;
 
+    private bool _esTurnoColor1;
+    private bool _esFase1 = false;
+    private bool _esFase2 = false;
+
     public bool EsDictCargado { get => _esDictCargado; set => _esDictCargado = value; }
     public Dictionary<string, ValorCasilla> DictValoresCasilla { get => _dictValoresCasilla; set => _dictValoresCasilla = value; }
     public Dictionary<string, Carta> DictCoordenadasCarta { get => _dictCoordenadasCarta; set => _dictCoordenadasCarta = value; }
     public Dictionary<string, Pieza> DictCoordenadasPieza { get => _dictCoordenadasPieza; set => _dictCoordenadasPieza = value; }
+    public List<Carta> CartasEscondidas { get => _cartasEscondidas; set => _cartasEscondidas = value; }
+    public Carta CartaEscondidaCursor { get => _cartaEscondidaCursor; set => _cartaEscondidaCursor = value; }
+
+    //SAVE
     private string _iSaveableUniqueID;
     public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
     public GameObjectSave _gameObjectSave;
     public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
-    public List<Carta> CartasEscondidas { get => _cartasEscondidas; set => _cartasEscondidas = value; }
-    public Carta CartaEscondidaCursor { get => _cartaEscondidaCursor; set => _cartaEscondidaCursor = value; }
+    public bool EsTurnoColor1 { get => _esTurnoColor1; set => _esTurnoColor1 = value; }
+    public bool EsFase1 { get => _esFase1; set => _esFase1 = value; }
+    public bool EsFase2 { get => _esFase2; set => _esFase2 = value; }
 
     private void OnEnable()
     {
         EventHandler.PopCartaEnPosicionEvent += RegistraCartaEnPosicion;
+        EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
+        EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
+        EventHandler.AcabaFase1Event += AcabaFase1Event;
+        EventHandler.AcabaFase2Event += AcabaFase2Event;
     }
 
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= RegistraCartaEnPosicion;
+        EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
+        EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
+        EventHandler.AcabaFase1Event -= AcabaFase1Event;
+        EventHandler.AcabaFase2Event -= AcabaFase2Event;
         ISaveableDeregister();
     }
+
+    private void AcabaFase1Event()
+    {
+        _esFase1 = false;
+    }
+
+    private void EmpiezaFase1Event()
+    {
+        _esFase1 = true;
+        _esTurnoColor1 = true;
+    }
+
+    private void EmpiezaFase2Event()
+    {
+        _esFase2 = true;
+    }
+
+    private void AcabaFase2Event()
+    {
+        _esFase2 = false;
+    }
+
     protected override void Awake()
     {
         base.Awake();

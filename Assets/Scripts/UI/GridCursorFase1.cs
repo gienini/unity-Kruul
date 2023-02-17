@@ -16,7 +16,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
     
     private bool _cursorPositionIsValid = false;
     public bool cursorIsEnabled = false;
-    private bool _esTurnoColor1 = true;
     private bool _esCursorPieza = false;
 
     private GameObject _cartaGO;
@@ -41,7 +40,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
-        EventHandler.JugadaHechaEvent += JugadaHechaEvent;
         EventHandler.AccionSeleccionadaEvent += AccionSeleccionadaEvent;
     }
     private void OnDisable()
@@ -53,7 +51,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
-        EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
         EventHandler.AccionSeleccionadaEvent -= AccionSeleccionadaEvent;
     }
 
@@ -69,11 +66,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         
         CongelaYEsperaCarta();
         _grid = null;
-    }
-
-    private void JugadaHechaEvent(bool obj)
-    {
-        _esTurnoColor1 = !_esTurnoColor1;
     }
 
     public void CongelaYEsperaCarta()
@@ -204,7 +196,7 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         {
             if (!PropiedadesCasillasManager.Instance.DictCoordenadasPieza.TryGetValue(PropiedadesCasillasManager.Instance.GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Pieza p))
             {
-                retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, _esTurnoColor1, null, false);
+                retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, PropiedadesCasillasManager.Instance.EsTurnoColor1, null, false);
             }
         }
         else
@@ -240,7 +232,7 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
 
     private void SetCursorValidity(Vector3Int cursorGridPosition)
     {
-        if (PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(cursorGridPosition, _esCursorPieza, _esTurnoColor1))
+        if (PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(cursorGridPosition, _esCursorPieza, PropiedadesCasillasManager.Instance.EsTurnoColor1))
         {
             SetCursorToValid();
         }else
@@ -320,7 +312,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
         sceneSave.boolDictionary = new Dictionary<string, bool>();
         sceneSave.boolDictionary.Add("cursorIsEnabled", cursorIsEnabled);
-        sceneSave.boolDictionary.Add("esTurnoColor1", _esTurnoColor1);
         sceneSave.boolDictionary.Add("esCursorPieza", _esCursorPieza);
         if (_cartaGO != null)
         {
@@ -344,10 +335,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
                     if (sceneSave.boolDictionary.TryGetValue("cursorIsEnabled", out bool cursorIsEnabled))
                     {
                         this.cursorIsEnabled = cursorIsEnabled;
-                    }
-                    if (sceneSave.boolDictionary.TryGetValue("esTurnoColor1", out bool esTurnoColor1))
-                    {
-                        _esTurnoColor1 = esTurnoColor1;
                     }
                     if (sceneSave.boolDictionary.TryGetValue("esCursorPieza", out bool esCursorPieza))
                     {

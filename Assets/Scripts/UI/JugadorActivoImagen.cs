@@ -6,7 +6,6 @@ public class JugadorActivoImagen : MonoBehaviour
     [SerializeField] private Sprite imagenJugador1 = null;
     [SerializeField] private Sprite imagenJugador2 = null;
     private Image _imageComponent;
-    private bool _esTurnoJugador1;
     private void OnEnable()
     {
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
@@ -18,15 +17,13 @@ public class JugadorActivoImagen : MonoBehaviour
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
     }
 
-    private void JugadaHechaEvent(bool obj)
+    private void JugadaHechaEvent()
     {
-        _esTurnoJugador1 = !_esTurnoJugador1;
         RefrescaTextos();
     }
 
     private void EmpiezaFase1Event()
     {
-        _esTurnoJugador1 = true;
         RefrescaTextos();
     }
 
@@ -36,7 +33,7 @@ public class JugadorActivoImagen : MonoBehaviour
         {
             _imageComponent = GetComponent<Image>();
         }
-        if (_esTurnoJugador1)
+        if (PropiedadesCasillasManager.Instance.EsTurnoColor1)
         {
             _imageComponent.sprite = imagenJugador1;
         }else

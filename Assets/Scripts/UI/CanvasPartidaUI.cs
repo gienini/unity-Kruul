@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +18,10 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     private int _numPiezasColor1 = 9;
     private int _numPiezasColor2 = 9;
     private Camera mainCamera;
-    private bool _esTurnoJugador1 = true;
     private List<GameObject> _listDorsos;
     private float _camaraPosicionZ;
     private bool _esTriggerAnimacionInicial = false;
     private bool isFading;
-    private bool _esFase1= false;
 
     private string _iSaveableUniqueID;
     public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
@@ -36,12 +35,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
 
     void Start()
     {
-        //Orden inicial de los componentes
-        //FaderPartidaUI.SetActive(true);
-        //FaderPartidaUI.transform.SetAsLastSibling();
-        //FaderPartidaUI.GetComponent<Image>().color = new Color(0f,0f,0f,1f);
-        //faderCanvasGroup = FaderPartidaUI.GetComponent<CanvasGroup>();
-        //faderCanvasGroup.alpha = 0f;
         _piezasColor1 = new List<Image>();
         foreach (Image child in GrupoPiezasColor1.GetComponentsInChildren<Image>())
         {
@@ -61,10 +54,13 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         GrupoPiezasColor1.GetComponentInChildren<Button>().interactable = false;
         GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = false;
     }
+    void Update()
+    {
+        displayNombreJugador();
+    }
     private void OnEnable()
     {
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
-        EventHandler.AcabaFase1Event += AcabaFase1Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
         EventHandler.AccionSeleccionadaEvent += AccionSeleccionadaEvent;
@@ -73,7 +69,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     private void OnDisable()
     {
         EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
-        EventHandler.AcabaFase1Event -= AcabaFase1Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
         EventHandler.AccionSeleccionadaEvent -= AccionSeleccionadaEvent;
@@ -86,11 +81,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         {
             StartCoroutine(GetDorsoSiguiente());
         }
-    }
-
-    private void AcabaFase1Event()
-    {
-        _esFase1 = false;
     }
     public void BotonPilaCartas()
     {
@@ -123,6 +113,17 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     private void muestraOpcionesAccion(bool esJugador1)
     {
         StartCoroutine(AnimacionFade(1f, esJugador1));
+    }
+    private void displayNombreJugador()
+    {
+        if (PropiedadesCasillasManager.Instance.EsTurnoColor1)
+        {
+            GrupoPiezasColor1.GetComponentInChildren<TextMeshProUGUI>().alpha = 1f;
+            GrupoPiezasColor2.GetComponentInChildren<TextMeshProUGUI>().alpha = 0f;
+        } else {
+            GrupoPiezasColor1.GetComponentInChildren<TextMeshProUGUI>().alpha = 0f;
+            GrupoPiezasColor2.GetComponentInChildren<TextMeshProUGUI>().alpha = 1f;
+        }
     }
     private IEnumerator AnimacionFade(float finalAlpha, bool esJugador1)
     {
@@ -169,14 +170,14 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
 
     //    faderCanvasGroup.blocksRaycasts = true;
     //}
-    private void JugadaHechaEvent(bool esTurnoColor1)
+    private void JugadaHechaEvent()
     {
-        if (_esFase1)
+        if (PropiedadesCasillasManager.Instance.EsFase1)
         {
-            List<ValorCasilla> casillasConPunto = PropiedadesCasillasManager.Instance.CheckPuntoEnTablero(!esTurnoColor1);
-            if (casillasConPunto.Count > 0 && ((!esTurnoColor1 && _numPiezasColor1 > 0) || (esTurnoColor1 && _numPiezasColor2 > 0)))
+            List<ValorCasilla> casillasConPunto = PropiedadesCasillasManager.Instance.CheckPuntoEnTablero(PropiedadesCasillasManager.Instance.EsTurnoColor1);
+            if (casillasConPunto.Count > 0 && ((PropiedadesCasillasManager.Instance.EsTurnoColor1 && _numPiezasColor1 > 0) || (!PropiedadesCasillasManager.Instance.EsTurnoColor1 && _numPiezasColor2 > 0)))
             {
-                muestraOpcionesAccion(!esTurnoColor1);
+                muestraOpcionesAccion(PropiedadesCasillasManager.Instance.EsTurnoColor1);
 
                 //DEBUG
                 Debug.Log("POSICIONES CON PUNTO");
@@ -207,9 +208,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         mainCamera = Camera.main;
         _camaraPosicionZ = mainCamera.transform.position.z;
         _esTriggerAnimacionInicial = true;
-        _esFase1 = true;
-
-
     }
     private IEnumerator instanciaPilaDorsos(int barajaCount)
     {
@@ -318,8 +316,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         sceneSave.intDictionary.Add("_numPiezasColor1", _numPiezasColor1);
         sceneSave.intDictionary.Add("_numPiezasColor2", _numPiezasColor2);
         sceneSave.boolDictionary = new Dictionary<string, bool>();
-        sceneSave.boolDictionary.Add("_esTurnoJugador1", _esTurnoJugador1);
-        sceneSave.boolDictionary.Add("_esFase1", _esFase1);
         GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
         return GameObjectSave;
     }
@@ -379,13 +375,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
                 if (sceneSave.intDictionary != null && sceneSave.intDictionary.TryGetValue("_numPiezasColor2", out int numPiezasColor2))
                 {
                     _numPiezasColor2 = numPiezasColor2;
-                }
-                if (sceneSave.boolDictionary != null && sceneSave.boolDictionary.TryGetValue("_esTurnoJugador1", out bool esTurnoJugador1))
-                {
-                    _esTurnoJugador1 = esTurnoJugador1;
-                }
-                if (sceneSave.boolDictionary != null && sceneSave.boolDictionary.TryGetValue("_esFase1", out bool esFase1)){
-                    _esFase1 = esFase1;
                 }
             }
         }

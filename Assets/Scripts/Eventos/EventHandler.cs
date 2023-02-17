@@ -81,13 +81,14 @@ public class EventHandler
         }
     }
 
-    public static event Action<bool> JugadaHechaEvent;
+    public static event Action JugadaHechaEvent;
 
-    public static void CallJugadaHechaEvent(bool esJugador1)
+    public static void CallJugadaHechaEvent()
     {
         if (JugadaHechaEvent != null)
         {
-            JugadaHechaEvent(esJugador1);
+            PropiedadesCasillasManager.Instance.EsTurnoColor1 = !PropiedadesCasillasManager.Instance.EsTurnoColor1;
+            JugadaHechaEvent();
         }
     }
 

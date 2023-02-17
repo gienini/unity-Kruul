@@ -20,7 +20,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     private bool _cursorPositionIsValid = false;
     private bool _cursorPositionIsPieza = false;
     private bool _cursorIsEnabled = false;
-    private bool _esTurnoColor1 = false;
     private string _iSaveableUniqueID;
     public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
     public GameObjectSave _gameObjectSave;
@@ -37,7 +36,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
-        EventHandler.JugadaHechaEvent += JugadaHechaEvent;
         ISaveableRegister();
     }
     private void OnDisable()
@@ -47,13 +45,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
-        EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
         ISaveableDeregister();
-    }
-
-    private void JugadaHechaEvent(bool esJugador1)
-    {
-        _esTurnoColor1 = !_esTurnoColor1;
     }
 
     private void AntesFadeOutEvent()
@@ -165,13 +157,13 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         if (CartaGO != null)
         {
             //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
-            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>(), true))
+            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), PropiedadesCasillasManager.Instance.EsTurnoColor1, CartaGO.GetComponent<Carta>(), true))
             {
                 retorno = true;
             }
         }
         //Posicion pieza para retirar
-        else if (pieza != null && ((_esTurnoColor1 && pieza.EsColor1) || (!_esTurnoColor1 && !pieza.EsColor1)))
+        else if (pieza != null && ((PropiedadesCasillasManager.Instance.EsTurnoColor1 && pieza.EsColor1) || (!PropiedadesCasillasManager.Instance.EsTurnoColor1 && !pieza.EsColor1)))
         {
             retorno = true;
         }
@@ -194,7 +186,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         if (CartaGO != null)
         {
             //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
-            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), _esTurnoColor1, CartaGO.GetComponent<Carta>(), true))
+            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), PropiedadesCasillasManager.Instance.EsTurnoColor1, CartaGO.GetComponent<Carta>(), true))
             {
                 SetCursorToValidCarta();
             }
@@ -204,7 +196,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
             }
         }
         //Posicion pieza para retirar
-        else if (pieza != null && ((_esTurnoColor1 && pieza.EsColor1) || (!_esTurnoColor1 && !pieza.EsColor1)))
+        else if (pieza != null && ((PropiedadesCasillasManager.Instance.EsTurnoColor1 && pieza.EsColor1) || (!PropiedadesCasillasManager.Instance.EsTurnoColor1 && !pieza.EsColor1)))
         {
             SetCursorToValidPieza();
             
@@ -278,7 +270,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     {
         PropiedadesCasillasManager.Instance.JugadaEliminar();
         Destroy(CartaGO);
-        EventHandler.CallJugadaHechaEvent(_esTurnoColor1);
+        EventHandler.CallJugadaHechaEvent();
         SceneControllerManager.Instance.ToggleAcciones();
 
     }
@@ -306,7 +298,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
         sceneSave.boolDictionary = new Dictionary<string, bool>();
         sceneSave.boolDictionary.Add("cursorIsEnabled", _cursorIsEnabled);
-        sceneSave.boolDictionary.Add("esTurnoColor1", _esTurnoColor1);
         sceneSave.boolDictionary.Add("cursorPositionIsPieza", _cursorPositionIsPieza);
         if (_cartaGO != null)
         {
@@ -329,10 +320,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
                     if (sceneSave.boolDictionary.TryGetValue("cursorIsEnabled", out bool cursorIsEnabled))
                     {
                         _cursorIsEnabled = cursorIsEnabled;
-                    }
-                    if (sceneSave.boolDictionary.TryGetValue("esTurnoColor1", out bool esTurnoColor1))
-                    {
-                        _esTurnoColor1 = esTurnoColor1;
                     }
                     if (sceneSave.boolDictionary.TryGetValue("cursorPositionIsPieza", out bool cursorPositionIsPieza))
                     {

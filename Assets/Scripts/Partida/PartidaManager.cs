@@ -13,14 +13,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
     //CuentasJugadores
     private int _fichasPuestasJugador1 = 0;
     private int _fichasPuestasJugador2 = 0;
-    //CuentasFase
-    private bool _esFase1 = false;
-    private bool _esFase2 = false;
-
-
-    //test
-    //[SerializeField] private GameObject cartaBasePrefab2 = null;
-    private bool _esTurnoJugador1 = true;
 
     public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
     private string _iSaveableUniqueID;
@@ -34,9 +26,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.ClickEnTableroFase2Event += ClickEnTableroFase2Event;
         EventHandler.PuntoEnCuadranteEvent += PuntoEnCuadranteEvent;
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
-        EventHandler.AcabaFase1Event += AcabaFase1Event;
-        EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
-        EventHandler.AcabaFase2Event += AcabaFase2Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
         ISaveableRegister();
@@ -47,9 +36,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.ClickEnTableroFase2Event -= ClickEnTableroFase2Event;
         EventHandler.PuntoEnCuadranteEvent -= PuntoEnCuadranteEvent;
         EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
-        EventHandler.AcabaFase1Event -= AcabaFase1Event;
-        EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
-        EventHandler.AcabaFase2Event -= AcabaFase2Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
         ISaveableDeregister();
@@ -76,7 +62,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
 
     private void DespuesFadeOutEvent()
     {
-        if (_esFase1)
+        if (PropiedadesCasillasManager.Instance.EsFase1)
         {
             inicializaBaraja();
 
@@ -93,7 +79,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         {
             //Selecciona ficha
             PropiedadesCasillasManager.Instance.EliminaPiezaEnTablero(PropiedadesCasillasManager.Instance.getPiezaEnPosicion(cursor.GetGridPositionForCursor()));
-            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+            EventHandler.CallJugadaHechaEvent();
         }
         else
         {
@@ -102,7 +88,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
             cursor.SetCartaFlotante(tmpCarta);
             PropiedadesCasillasManager.Instance.EscondeCartaDePosicion(cursor.GetGridPositionForCursor());
         }
-        _esTurnoJugador1 = !_esTurnoJugador1;
 
     }
     private void ClickEnTableroFase1Event(Vector3 posicion, bool esAccionCarta)
@@ -110,23 +95,21 @@ public class PartidaManager : MonoBehaviour, ISaveable
         if (esAccionCarta)
         {
             ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
-        if (valorCasilla != null && valorCasilla.esTablero && PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(Vector3Int.FloorToInt(posicion), false, _esTurnoJugador1))
+        if (valorCasilla != null && valorCasilla.esTablero && PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(Vector3Int.FloorToInt(posicion), false, PropiedadesCasillasManager.Instance.EsTurnoColor1))
         {
             PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
             if (_baraja.Count() == 0)
             {
                 EventHandler.CallAcabaFase1Event();
-                EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+                EventHandler.CallJugadaHechaEvent();
                 SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
                 EventHandler.CallEmpiezaFase2Event();
             }
-            _esTurnoJugador1 = !_esTurnoJugador1;
         }
         }else
         {
-            PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(true, posicion, _esTurnoJugador1, null, false);
-            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
-            _esTurnoJugador1 = !_esTurnoJugador1;
+            PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(true, posicion, PropiedadesCasillasManager.Instance.EsTurnoColor1, null, false);
+            EventHandler.CallJugadaHechaEvent();
         }
     }
     private void PonCartaEnTableroFase1(Vector3 posicion, bool esUltima)
@@ -145,7 +128,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, -mainCamera.transform.position.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
         if (!esUltima)
         {
-            EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+            EventHandler.CallJugadaHechaEvent();
         }
         
     }
@@ -166,7 +149,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), 0, null);
         PropiedadesCasillasManager.Instance.JugadaEliminar();
         SceneControllerManager.Instance.ToggleAcciones();
-        EventHandler.CallJugadaHechaEvent(_esTurnoJugador1);
+        EventHandler.CallJugadaHechaEvent();
         //Representacion visual de la carta flotante
         Destroy(carta.gameObject);
         
@@ -271,7 +254,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
         SceneSave sceneSave = new SceneSave();
         GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
         sceneSave.boolDictionary = new Dictionary<string, bool>();
-        sceneSave.boolDictionary.Add("_esTurnoJugador1", _esTurnoJugador1);
         
         if (_baraja._pilaCartas != null && _baraja._pilaCartas.Count > 0)
         {
@@ -323,10 +305,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
             GameObjectSave = gameObjectSave;
             if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
             {
-                if (sceneSave.boolDictionary != null && sceneSave.boolDictionary.TryGetValue("_esTurnoJugador1", out bool esTurnoJugador1))
-                {
-                    _esTurnoJugador1 = esTurnoJugador1;
-                }
                 
                 if (sceneSave.stringDictionary != null && sceneSave.stringDictionary.Count > 0)
                 {
@@ -375,27 +353,8 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         //
     }
-
-
-    #region eventosFASE
     private void EmpiezaFase1Event()
     {
         PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
-        _esFase1 = true;
     }
-    private void AcabaFase1Event()
-    {
-        _esFase1 = false;
-    }
-
-    private void EmpiezaFase2Event()
-    {
-        _esFase2 = true;
-    }
-
-    private void AcabaFase2Event()
-    {
-        _esFase2 = false;
-    }
-    #endregion
 }
