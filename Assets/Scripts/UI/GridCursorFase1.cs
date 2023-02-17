@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GridCursorFase1 : MonoBehaviour
+public class GridCursorFase1 : MonoBehaviour, ISaveable
 {
     [SerializeField] private Image cursorImage = null;
     [SerializeField] private RectTransform cursorRectTransform = null;
@@ -13,18 +13,22 @@ public class GridCursorFase1 : MonoBehaviour
     [SerializeField] private Sprite greenCursorSpritePieza = null;
     [SerializeField] private Sprite redCursorSpritePieza = null;
 
-    private Vector2 _rectTransformPosFinalVolteaCartaColor1;
-    private Vector2 _rectTransformPosFinalVolteaCartaColor2;
+    
+    private bool _cursorPositionIsValid = false;
+    public bool cursorIsEnabled = false;
+    private bool _esTurnoColor1 = true;
+    private bool _esCursorPieza = false;
+
     private GameObject _cartaGO;
     private Canvas _canvas;
     private Grid _grid;
     private Camera _mainCamera;
-    //private Carta _cartaBaseCursor;
-    private bool _cursorPositionIsValid = false;
-    private bool _cursorIsEnabled = false;
-    private bool _esTurnoColor1 = true;
-    private bool _esCursorPieza = false;
-    public bool CursorPositionIsValid { get => _cursorPositionIsValid && _cursorIsEnabled; set => _cursorPositionIsValid = value; }
+
+    private string _iSaveableUniqueID;
+    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
+    public GameObjectSave _gameObjectSave;
+    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
+    public bool CursorPositionIsValid { get => _cursorPositionIsValid && cursorIsEnabled; set => _cursorPositionIsValid = value; }
     public GameObject CartaGO { get => _cartaGO; set => _cartaGO = value; }
     public bool EsCursorPieza { get => _esCursorPieza; set => _esCursorPieza = value; }
 
@@ -55,7 +59,7 @@ public class GridCursorFase1 : MonoBehaviour
 
     private void AccionSeleccionadaEvent(bool esAccionCarta)
     {
-        _cursorIsEnabled = true;
+        cursorIsEnabled = true;
         _esCursorPieza = !esAccionCarta;
         DisplayCursor();
     }
@@ -74,17 +78,17 @@ public class GridCursorFase1 : MonoBehaviour
 
     public void CongelaYEsperaCarta()
     {
-        _cursorIsEnabled = false;
+        cursorIsEnabled = false;
         HideCursor();
     }
 
     private void AntesFadeOutEvent()
     {
-        if (_cartaGO != null)
+        if (_cartaGO != null && _cartaGO.transform.GetChild(0).gameObject != null)
         {
             _cartaGO.SetActive(false);
         }
-        _cursorIsEnabled = false;
+        cursorIsEnabled = false;
     }
 
     private void DespuesFadeOutEvent()
@@ -97,25 +101,28 @@ public class GridCursorFase1 : MonoBehaviour
 
     private void AcabaFase1Event()
     {
-        _cursorIsEnabled = false;
+        cursorIsEnabled = false;
         gameObject.SetActive(false);
     }
-
-    private void Start()
+    private void Awake()
     {
         _mainCamera = Camera.main;
         _canvas = GetComponentInParent<Canvas>();
-        //_cartaBaseCursor = GetComponentInChildren<Carta>();
+        cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 0f);
+        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+        GameObjectSave = new GameObjectSave();
+    }
+    private void Start()
+    {
         if (_cartaGO != null)
         {
             _cartaGO.SetActive(false);
         }
-        cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 0f);
     }
 
     private void Update()
     {
-        if (_cursorIsEnabled && PropiedadesCasillasManager.Instance.EsDictCargado )
+        if (cursorIsEnabled && PropiedadesCasillasManager.Instance.EsDictCargado )
         {
             DisplayCursor();
         }else {
@@ -123,18 +130,10 @@ public class GridCursorFase1 : MonoBehaviour
         }
     }
 
-    private void DespuesIntroFase1Event()
+    public void DespuesIntroFase1Event()
     {
         _grid = GameObject.FindObjectOfType<Grid>();
-        if (_rectTransformPosFinalVolteaCartaColor1 == null)
-        {
-            _rectTransformPosFinalVolteaCartaColor1 = GetRectTransformPositionForCursor(Settings.PosicionRobaCartaColor1Int);
-        }
-        if (_rectTransformPosFinalVolteaCartaColor2 == null)
-        {
-            _rectTransformPosFinalVolteaCartaColor2 = GetRectTransformPositionForCursor(Settings.PosicionRobaCartaColor2Int);
-        }
-        _cursorIsEnabled = true;
+        cursorIsEnabled = true;
     }
 
     private void EmpiezaFase2Event()
@@ -156,7 +155,7 @@ public class GridCursorFase1 : MonoBehaviour
     }
     private Vector3Int DisplayCursor()
     {
-        if(_grid != null && _cursorIsEnabled && _esCursorPieza)
+        if(_grid != null && cursorIsEnabled && _esCursorPieza)
         {
             cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 1f);
             cursorRectTransform.gameObject.SetActive(true);
@@ -168,7 +167,7 @@ public class GridCursorFase1 : MonoBehaviour
             cursorRectTransform.position = GetRectTransformPositionForCursor(cursorGridPosition);
             return cursorGridPosition;
         }
-        else if (_grid != null && _cursorIsEnabled)
+        else if (_grid != null && cursorIsEnabled)
         {
             cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 1f);
             cursorRectTransform.gameObject.SetActive(true);
@@ -241,7 +240,7 @@ public class GridCursorFase1 : MonoBehaviour
 
     private void SetCursorValidity(Vector3Int cursorGridPosition)
     {
-        if (CheckPositionValidity(cursorGridPosition))
+        if (PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(cursorGridPosition, _esCursorPieza, _esTurnoColor1))
         {
             SetCursorToValid();
         }else
@@ -303,5 +302,76 @@ public class GridCursorFase1 : MonoBehaviour
         _cartaGO.GetComponent<Carta>().ValorCuartosCarta = cuartosProximaCarta;
         _cartaGO.transform.SetParent(gameObject.transform);
         _cartaGO.transform.SetAsFirstSibling();
+    }
+
+    public void ISaveableRegister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
+    }
+
+    public void ISaveableDeregister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+
+    public GameObjectSave IsaveableSave()
+    {
+        SceneSave sceneSave = new SceneSave();
+        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
+        sceneSave.boolDictionary = new Dictionary<string, bool>();
+        sceneSave.boolDictionary.Add("cursorIsEnabled", cursorIsEnabled);
+        sceneSave.boolDictionary.Add("esTurnoColor1", _esTurnoColor1);
+        sceneSave.boolDictionary.Add("esCursorPieza", _esCursorPieza);
+        if (_cartaGO != null)
+        {
+            sceneSave.cartaEscondidaCursor = new CartaSerializable(_cartaGO.GetComponent<Carta>());
+        }
+        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
+        return GameObjectSave;
+    }
+
+
+    public void IsaveableLoad(GameSave gameSave)
+    {
+        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
+            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
+            {
+                _grid = GameObject.FindObjectOfType<Grid>();
+                if (sceneSave.boolDictionary != null)
+                {
+                    if (sceneSave.boolDictionary.TryGetValue("cursorIsEnabled", out bool cursorIsEnabled))
+                    {
+                        this.cursorIsEnabled = cursorIsEnabled;
+                    }
+                    if (sceneSave.boolDictionary.TryGetValue("esTurnoColor1", out bool esTurnoColor1))
+                    {
+                        _esTurnoColor1 = esTurnoColor1;
+                    }
+                    if (sceneSave.boolDictionary.TryGetValue("esCursorPieza", out bool esCursorPieza))
+                    {
+                        _esCursorPieza = esCursorPieza;
+                    }
+                }
+                if (sceneSave.cartaEscondidaCursor != null)
+                {
+                    _cartaGO = Instantiate(cartaBasePrefab, _canvas.transform);
+                    _cartaGO.GetComponent<Carta>().ValorCuartosCarta = sceneSave.cartaEscondidaCursor.valorCuartosCarta;
+                    _cartaGO.transform.SetParent(gameObject.transform);
+                    _cartaGO.transform.SetAsFirstSibling();
+                }
+            }
+        }
+    }
+
+    public void IsaveableStoreScene(string sceneName)
+    {
+        //
+    }
+
+    public void IsaveableRestoreScene(string sceneName)
+    {
+        //
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Baraja
 {
-    private List<string> _pilaCartas;
+    public List<string> _pilaCartas;
     public void Barajar(List<string> so_barajaCartas)
     {
         _pilaCartas = new List<string>();

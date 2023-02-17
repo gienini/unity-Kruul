@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasillasManager>
+public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasillasManager>, ISaveable
 {
     private Dictionary<string, ValorCasilla> _dictValoresCasilla;
     private Dictionary<string, Carta> _dictCoordenadasCarta;
@@ -18,6 +18,12 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     public Dictionary<string, ValorCasilla> DictValoresCasilla { get => _dictValoresCasilla; set => _dictValoresCasilla = value; }
     public Dictionary<string, Carta> DictCoordenadasCarta { get => _dictCoordenadasCarta; set => _dictCoordenadasCarta = value; }
     public Dictionary<string, Pieza> DictCoordenadasPieza { get => _dictCoordenadasPieza; set => _dictCoordenadasPieza = value; }
+    private string _iSaveableUniqueID;
+    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
+    public GameObjectSave _gameObjectSave;
+    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
+    public List<Carta> CartasEscondidas { get => _cartasEscondidas; set => _cartasEscondidas = value; }
+    public Carta CartaEscondidaCursor { get => _cartaEscondidaCursor; set => _cartaEscondidaCursor = value; }
 
     private void OnEnable()
     {
@@ -27,6 +33,13 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     private void OnDisable()
     {
         EventHandler.PopCartaEnPosicionEvent -= RegistraCartaEnPosicion;
+        ISaveableDeregister();
+    }
+    protected override void Awake()
+    {
+        base.Awake();
+        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+        GameObjectSave = new GameObjectSave();
     }
     public List<ValorCasilla> CheckPuntoEnTablero(bool esTurnoColor1)
     {
@@ -321,7 +334,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
 
     private void Start()
     {
-        
+        //PROBANDO a ver si va bien
+        ISaveableRegister();
     }
 
     public void InicializaDictValoresCasilla()
@@ -623,5 +637,105 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         Pieza retorno = null;
         _dictCoordenadasPieza.TryGetValue(GeneraKey(posicion.x, posicion.y), out retorno);
         return retorno;
+    }
+    public bool CheckPositionValidityFase1(Vector3Int cursorGridPosition, bool esCursorPieza, bool esTurnoColor1)
+    {
+        bool retorno = false;
+        if (esCursorPieza)
+        {
+            if (!PropiedadesCasillasManager.Instance.DictCoordenadasPieza.TryGetValue(PropiedadesCasillasManager.Instance.GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Pieza p))
+            {
+                retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, esTurnoColor1, null, false);
+            }
+        }
+        else
+        {
+            List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
+            bool esNoOcupada = true;
+            bool esDentroTablero = true;
+            bool esAdyacenteAotra = PropiedadesCasillasManager.Instance.EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
+
+            bool esValida = true;
+            if (valoresCuadrante != null)
+            {
+                foreach (ValorCasilla valorCasilla in valoresCuadrante)
+                {
+                    if (valorCasilla.esOcupado)
+                    {
+                        esNoOcupada = false;
+                    }
+                    if (!valorCasilla.esTablero)
+                    {
+                        esDentroTablero = false;
+                    }
+                }
+                esValida = esNoOcupada && esDentroTablero && esAdyacenteAotra;
+                if (esValida)
+                {
+                    retorno = true;
+                }
+            }
+        }
+        return retorno;
+    }
+
+    public void ISaveableRegister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
+    }
+
+    public void ISaveableDeregister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+
+    public GameObjectSave IsaveableSave()
+    {
+        SceneSave sceneSave = new SceneSave();
+        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
+        sceneSave.dictValoresCasilla = _dictValoresCasilla;
+        sceneSave.boolDictionary = new Dictionary<string, bool>();
+        sceneSave.boolDictionary.Add("_esDictCargado", _esDictCargado);
+        sceneSave.cuadranteEscondidoCursor = _cuadranteEscondidoCursor;
+        sceneSave.cuadrantesEscondidos = _cuadrantesEscondidos;
+        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
+        return GameObjectSave;
+    }
+
+    public void IsaveableLoad(GameSave gameSave)
+    {
+        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
+            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
+            {
+                if (sceneSave.dictValoresCasilla != null)
+                {
+                    _dictValoresCasilla = sceneSave.dictValoresCasilla;
+                }
+                if (sceneSave.boolDictionary != null && sceneSave.boolDictionary.TryGetValue("_esDictCargado", out bool esDictCargado))
+                {
+                    _esDictCargado = esDictCargado;
+                }
+                if (sceneSave.cuadranteEscondidoCursor != null)
+                {
+                    _cuadranteEscondidoCursor = sceneSave.cuadranteEscondidoCursor;
+                }
+                if (sceneSave.cuadrantesEscondidos != null)
+                {
+                    _cuadrantesEscondidos = sceneSave.cuadrantesEscondidos;
+                }
+            }
+        }
+    }
+
+    public void IsaveableStoreScene(string sceneName)
+    {
+        //
+    }
+
+    public void IsaveableRestoreScene(string sceneName)
+    {
+        //
     }
 }

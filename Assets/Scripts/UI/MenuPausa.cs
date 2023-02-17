@@ -30,4 +30,15 @@ public class MenuPausa : MonoBehaviour
     {
         SceneControllerManager.Instance.Quit();
     }
+
+    public void BotonGuardar()
+    {
+        SaveLoadManager.Instance.SaveDataToFile();
+    }
+
+    public void BotonCargar()
+    {
+        PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
+        SceneControllerManager.Instance.FadeAndLoadSceneCargar(NombresEscena.Escena_PartidaNormal.ToString());
+    }
 }

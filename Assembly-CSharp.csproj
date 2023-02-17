@@ -64,7 +64,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Clases\GameObjectSave.cs" />
+    <Compile Include="Assets\Scripts\Clases\GameSave.cs" />
+    <Compile Include="Assets\Scripts\Clases\GenerateGUID.cs" />
+    <Compile Include="Assets\Scripts\Clases\ISaveable.cs" />
+    <Compile Include="Assets\Scripts\Clases\SceneSave.cs" />
     <Compile Include="Assets\Scripts\Clases\SingletonMonobehaviour.cs" />
+    <Compile Include="Assets\Scripts\Clases\Vector3Serializable.cs" />
     <Compile Include="Assets\Scripts\Controles\InputManager.cs" />
     <Compile Include="Assets\Scripts\Debug\DorsoAnimacionDebug.cs" />
     <Compile Include="Assets\Scripts\Debug\TestCoordenadasCursor.cs" />
@@ -74,10 +80,13 @@
     <Compile Include="Assets\Scripts\Misc\Settings.cs" />
     <Compile Include="Assets\Scripts\Partida\Carta.cs" />
     <Compile Include="Assets\Scripts\Partida\CartaCuartaParte.cs" />
+    <Compile Include="Assets\Scripts\Partida\CartaSerializable.cs" />
     <Compile Include="Assets\Scripts\Partida\Dorso.cs" />
     <Compile Include="Assets\Scripts\Partida\MenuPrincipalManager.cs" />
     <Compile Include="Assets\Scripts\Partida\PartidaManager.cs" />
     <Compile Include="Assets\Scripts\Partida\Pieza.cs" />
+    <Compile Include="Assets\Scripts\Partida\PiezaSerializable.cs" />
+    <Compile Include="Assets\Scripts\Partida\SaveLoadManager.cs" />
     <Compile Include="Assets\Scripts\Partida\SceneControllerManager.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\Baraja.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\CoordenadaCasilla.cs" />

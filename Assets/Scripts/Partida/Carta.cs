@@ -14,7 +14,14 @@ public class Carta : MonoBehaviour
 
     public string ValorCuartosCarta { get => _valorCuartosCarta; set => setValorCuartosCarta(value); }
     public int NumCuartosConFicha { get => _numCuartosConFicha; set => _numCuartosConFicha = value; }
-
+    public void SetValoresFromSerializable(CartaSerializable cartaSerializable)
+    {
+        _numCuartosConFicha = cartaSerializable.numCuartosConFicha;
+        _valorCuartosCarta = cartaSerializable.valorCuartosCarta;
+        PosicionTablero = new Vector3(cartaSerializable.PosicionTablero.x, cartaSerializable.PosicionTablero.y, cartaSerializable.PosicionTablero.z);
+        OrdenCarta = cartaSerializable.OrdenCarta;
+        CartasVecinas = cartaSerializable.CartasVecinas;
+    }
     private void setValorCuartosCarta(string valor)
     {
         _valorCuartosCarta = valor;
@@ -33,7 +40,7 @@ public class Carta : MonoBehaviour
             _cuartasPartes = GetComponentsInChildren<CartaCuartaParte>();
             for (int i = 0; i < _cuartasPartes.Length; i++)
             {
-                _cuartasPartes[i].InicializaCuarto(ValorCuartosCarta);
+                _cuartasPartes[i].InicializaCuarto(_valorCuartosCarta);
             }
         }
     }

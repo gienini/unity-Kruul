@@ -15,6 +15,9 @@ public static class Settings
     public static Vector3 PosicionRobaCartaCentroArriba = new Vector3(9.5f, -7.1f, 0);
     public static float SeparacionSpawnCartasUI = 8f;
 
+    //SAVE
+    public const string RutaRelativaSaveGame = "/KruulSave.dat";
+
 
     //AUTO
     public static Vector3Int PosicionRobaCartaColor1Int = new Vector3Int((int)PosicionRobaCartaColor1.x, (int)PosicionRobaCartaColor1.y, (int)PosicionRobaCartaColor1.z);

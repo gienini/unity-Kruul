@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PartidaManager : MonoBehaviour
+public class PartidaManager : MonoBehaviour, ISaveable
 {
     [SerializeField] private GameObject cartaBasePrefab = null;
     [SerializeField] private GameObject piezaPrefab = null;
@@ -14,18 +14,19 @@ public class PartidaManager : MonoBehaviour
     private int _fichasPuestasJugador1 = 0;
     private int _fichasPuestasJugador2 = 0;
     //CuentasFase
-
     private bool _esFase1 = false;
     private bool _esFase2 = false;
 
-    
 
     //test
     //[SerializeField] private GameObject cartaBasePrefab2 = null;
     private bool _esTurnoJugador1 = true;
-    List<GameObject> listDorsos;
 
     public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
+    private string _iSaveableUniqueID;
+    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
+    public GameObjectSave _gameObjectSave;
+    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
 
     private void OnEnable()
     {
@@ -38,6 +39,7 @@ public class PartidaManager : MonoBehaviour
         EventHandler.AcabaFase2Event += AcabaFase2Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
+        ISaveableRegister();
     }
     private void OnDisable()
     {
@@ -50,9 +52,14 @@ public class PartidaManager : MonoBehaviour
         EventHandler.AcabaFase2Event -= AcabaFase2Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
+        ISaveableDeregister();
     }
 
-    
+    private void Awake()
+    {
+        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+        GameObjectSave = new GameObjectSave();
+    }
 
     private void Start()
     {
@@ -103,7 +110,7 @@ public class PartidaManager : MonoBehaviour
         if (esAccionCarta)
         {
             ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
-        if (valorCasilla != null && valorCasilla.esTablero)
+        if (valorCasilla != null && valorCasilla.esTablero && PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(Vector3Int.FloorToInt(posicion), false, _esTurnoJugador1))
         {
             PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
             if (_baraja.Count() == 0)
@@ -230,7 +237,145 @@ public class PartidaManager : MonoBehaviour
     {
         _baraja = new Baraja(so_baraja.cartas);
     }
-    
+    private Pieza InstanciaPieza(string key, PiezaSerializable piezaSerializable)
+    {
+        Vector3 posicionFinal = new Vector3(piezaSerializable._cuadrante[2].x / 2, piezaSerializable._cuadrante[2].y, -mainCamera.transform.position.z);
+        GameObject piezaGO = Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
+        piezaGO.GetComponent<Pieza>().EsColor1 = piezaSerializable._esColor1;
+        PropiedadesCasillasManager.Instance.DictCoordenadasPieza.Add(key, piezaGO.GetComponent<Pieza>());
+        return piezaGO.GetComponent<Pieza>();
+    }
+    private Carta InstanciaCarta(string key, CartaSerializable cartaSerializable)
+    {
+        Vector3 posicionFinal = new Vector3(cartaSerializable.PosicionTablero.x / 2, cartaSerializable.PosicionTablero.y, -mainCamera.transform.position.z);
+        GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
+        cartaGO.GetComponent<Carta>().SetValoresFromSerializable(cartaSerializable);
+        PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Add(key, cartaGO.GetComponent<Carta>());
+        return cartaGO.GetComponent<Carta>();
+
+    }
+
+
+    public void ISaveableRegister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
+    }
+
+    public void ISaveableDeregister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+
+    public GameObjectSave IsaveableSave()
+    {
+        SceneSave sceneSave = new SceneSave();
+        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
+        sceneSave.boolDictionary = new Dictionary<string, bool>();
+        sceneSave.boolDictionary.Add("_esTurnoJugador1", _esTurnoJugador1);
+        
+        if (_baraja._pilaCartas != null && _baraja._pilaCartas.Count > 0)
+        {
+            sceneSave.stringDictionary = new Dictionary<string, string>();
+            for (int i = 0; i < _baraja._pilaCartas.Count; i++)
+            {
+                sceneSave.stringDictionary.Add(i.ToString(), _baraja._pilaCartas[i]);
+            }
+        }
+        if(PropiedadesCasillasManager.Instance.DictCoordenadasCarta != null)
+        {
+            Dictionary<string, CartaSerializable>  dictCoordenadasCartaSerializable = new Dictionary<string, CartaSerializable>();
+            foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Keys)
+            {
+                dictCoordenadasCartaSerializable.Add(key, new CartaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasCarta[key]));
+            }
+            sceneSave.dictCoordenadasCarta = dictCoordenadasCartaSerializable;
+        }
+        if (PropiedadesCasillasManager.Instance.DictCoordenadasPieza != null)
+        {
+            Dictionary<string, PiezaSerializable>  dictCoordenadasPiezaSerializable = new Dictionary<string, PiezaSerializable>();
+            foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasPieza.Keys)
+            {
+                dictCoordenadasPiezaSerializable.Add(key, new PiezaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasPieza[key]));
+            }
+            sceneSave.dictCoordenadasPieza = dictCoordenadasPiezaSerializable;
+        }
+        if (PropiedadesCasillasManager.Instance.CartasEscondidas != null)
+        {
+            List<CartaSerializable>  cartasEscondidasSerializable = new List<CartaSerializable>();
+            foreach (Carta c in PropiedadesCasillasManager.Instance.CartasEscondidas)
+            {
+                cartasEscondidasSerializable.Add(new CartaSerializable(c));
+            }
+            sceneSave.cartasEscondidas = cartasEscondidasSerializable;
+        }
+        if (PropiedadesCasillasManager.Instance.CartaEscondidaCursor != null)
+        {
+            sceneSave.cartaEscondidaCursor = new CartaSerializable(PropiedadesCasillasManager.Instance.CartaEscondidaCursor);
+        }
+        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
+        return GameObjectSave;
+}
+
+    public void IsaveableLoad(GameSave gameSave)
+    {
+        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
+            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
+            {
+                if (sceneSave.boolDictionary != null && sceneSave.boolDictionary.TryGetValue("_esTurnoJugador1", out bool esTurnoJugador1))
+                {
+                    _esTurnoJugador1 = esTurnoJugador1;
+                }
+                
+                if (sceneSave.stringDictionary != null && sceneSave.stringDictionary.Count > 0)
+                {
+                    List<string> cartasBaraja = new List<string>();
+                    foreach(string cartaSave in sceneSave.stringDictionary.Values)
+                    {
+                        cartasBaraja.Add(cartaSave);
+                    }
+                    _baraja = new Baraja(cartasBaraja);
+                }
+                if (sceneSave.dictCoordenadasCarta != null && sceneSave.dictCoordenadasCarta.Count > 0)
+                {
+                    PropiedadesCasillasManager.Instance.DictCoordenadasCarta = new Dictionary<string, Carta>();
+                    foreach (string key in sceneSave.dictCoordenadasCarta.Keys)
+                    {
+                        InstanciaCarta(key, sceneSave.dictCoordenadasCarta[key]);
+                    }
+                }
+                if (sceneSave.dictCoordenadasPieza != null && sceneSave.dictCoordenadasPieza.Count > 0)
+                {
+                    PropiedadesCasillasManager.Instance.DictCoordenadasPieza = new Dictionary<string, Pieza>();
+                    foreach (string key in sceneSave.dictCoordenadasPieza.Keys)
+                    {
+                        InstanciaPieza(key, sceneSave.dictCoordenadasPieza[key]);
+                    }
+                }
+                //if (sceneSave.cartasEscondidas != null && sceneSave.cartasEscondidas.Count > 0)
+                //{
+                //    foreach(CartaSerializable cartaSer in sceneSave.cartasEscondidas)
+                //    {
+                //        InstanciaCarta(cartaSer);
+                //    }
+                //}
+                //private List<CartaSerializable> cartasEscondidasSerializable;
+                //private CartaSerializable cartaEscondidaCursorSerializable;
+            }
+        }
+    }
+
+    public void IsaveableStoreScene(string sceneName)
+    {
+        //
+    }
+
+    public void IsaveableRestoreScene(string sceneName)
+    {
+        //
+    }
+
 
     #region eventosFASE
     private void EmpiezaFase1Event()
