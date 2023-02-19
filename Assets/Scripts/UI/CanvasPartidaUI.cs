@@ -259,14 +259,17 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     }
     public IEnumerator GetDorsoSiguiente()
     {
-        GameObject dorsoSiguiente = _listDorsos[_listDorsos.Count - 1];
-        _listDorsos.RemoveAt(_listDorsos.Count - 1);
-        for (int i = 0; i < 100; i++)
+        if (_listDorsos.Count > 0)
         {
-            dorsoSiguiente.transform.position += Vector3.up;
-            yield return new WaitForSeconds(0.01f);
+            GameObject dorsoSiguiente = _listDorsos[_listDorsos.Count - 1];
+            _listDorsos.RemoveAt(_listDorsos.Count - 1);
+            for (int i = 0; i < 100; i++)
+            {
+                dorsoSiguiente.transform.position += Vector3.up;
+                yield return new WaitForSeconds(0.01f);
+            }
+            Destroy(dorsoSiguiente);
         }
-        Destroy(dorsoSiguiente);
         yield return null;
     }
 

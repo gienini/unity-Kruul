@@ -68,6 +68,7 @@ public class EventHandler
     {
         if (AcabaFase1Event != null)
         {
+            PropiedadesCasillasManager.Instance.EsTurnoColor1 = !PropiedadesCasillasManager.Instance.EsTurnoColor1;
             AcabaFase1Event();
         }
     }

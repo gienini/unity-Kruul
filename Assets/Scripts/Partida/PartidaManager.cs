@@ -99,9 +99,8 @@ public class PartidaManager : MonoBehaviour, ISaveable
         {
             PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
             if (_baraja.Count() == 0)
-            {
+            { 
                 EventHandler.CallAcabaFase1Event();
-                EventHandler.CallJugadaHechaEvent();
                 SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
                 EventHandler.CallEmpiezaFase2Event();
             }
