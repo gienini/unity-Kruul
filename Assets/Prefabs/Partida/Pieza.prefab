@@ -98,7 +98,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2942802447260452051}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a70f0b68dbb27da489d54260a3a78924, type: 3}
+  m_Script: {fileID: 11500000, guid: 50234af21d5319e4a987767d8deacf49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   spriteColor1: {fileID: -2203102603614712754, guid: b2713bbf286ea3b4d8cf4478d348ee16,

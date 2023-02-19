@@ -301,7 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cartaBasePrefab: {fileID: 4667310535363786593, guid: 9e36d90406bb8f24ab108e73e1cc51e9,
     type: 3}
-  piezaPrefab: {fileID: 2942802447260452051, guid: 8626fdd5711fdf747af9f9a05d48f9ed,
+  fichaPrefab: {fileID: 2942802447260452051, guid: 8626fdd5711fdf747af9f9a05d48f9ed,
     type: 3}
   dorsoPrefab: {fileID: 4039894899240866247, guid: 838d15d2c2847a548a070128567dcb57,
     type: 3}

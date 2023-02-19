@@ -152,7 +152,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     public bool CheckPositionValidity(Vector3Int cursorGridPosition)
     {
         bool retorno = false;
-        Pieza pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
+        Ficha pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
         //Tiene carta flotante
         if (CartaGO != null)
         {
@@ -181,7 +181,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
 
     private void SetCursorValidity(Vector3Int cursorGridPosition)
     {
-        Pieza pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
+        Ficha pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
         //Tiene carta flotante
         if (CartaGO != null)
         {
@@ -195,11 +195,14 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
                 SetCursorToInvalid();
             }
         }
-        //Posicion pieza para retirar
-        else if (pieza != null && ((PropiedadesCasillasManager.Instance.EsTurnoColor1 && pieza.EsColor1) || (!PropiedadesCasillasManager.Instance.EsTurnoColor1 && !pieza.EsColor1)))
+        //Posicion pieza para retirar. No se puede retirar piezas ajenas NI la ultima pieza de un jugador
+        else if (pieza != null && PropiedadesCasillasManager.Instance.EsTurnoColor1 == pieza.EsColor1)
         {
-            SetCursorToValidPieza();
-            
+            //No se puede retirar la ultima pieza propia
+            if ((PropiedadesCasillasManager.Instance.EsTurnoColor1 ? PropiedadesCasillasManager.Instance.NumFichasPuestasJ1 : PropiedadesCasillasManager.Instance.NumFichasPuestasJ2) > 1)
+            {
+                SetCursorToValidPieza();
+            }
         }else
         {
             //Posicion carta para retirar

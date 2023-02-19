@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pieza : MonoBehaviour
+public class Ficha : MonoBehaviour
 {
     [SerializeField] private Sprite spriteColor1 = null;
     [SerializeField] private Sprite spriteColor2 = null;

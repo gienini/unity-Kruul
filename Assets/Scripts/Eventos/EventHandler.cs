@@ -144,4 +144,14 @@ public class EventHandler
             AccionSeleccionadaEvent(esCarta);
         }
     }
+
+    public static event Action<int, int> FinalPartidaEvent;
+
+    public static void CallFinalPartidaEvent(int fichasPuestasJ1, int fichasPuestasJ2)
+    {
+        if (FinalPartidaEvent != null)
+        {
+            FinalPartidaEvent(fichasPuestasJ1, fichasPuestasJ2);
+        }
+    }
 }

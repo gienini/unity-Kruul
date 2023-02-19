@@ -82,10 +82,10 @@
     <Compile Include="Assets\Scripts\Partida\CartaCuartaParte.cs" />
     <Compile Include="Assets\Scripts\Partida\CartaSerializable.cs" />
     <Compile Include="Assets\Scripts\Partida\Dorso.cs" />
+    <Compile Include="Assets\Scripts\Partida\Ficha.cs" />
+    <Compile Include="Assets\Scripts\Partida\FichaSerializable.cs" />
     <Compile Include="Assets\Scripts\Partida\MenuPrincipalManager.cs" />
     <Compile Include="Assets\Scripts\Partida\PartidaManager.cs" />
-    <Compile Include="Assets\Scripts\Partida\Pieza.cs" />
-    <Compile Include="Assets\Scripts\Partida\PiezaSerializable.cs" />
     <Compile Include="Assets\Scripts\Partida\SaveLoadManager.cs" />
     <Compile Include="Assets\Scripts\Partida\SceneControllerManager.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\Baraja.cs" />

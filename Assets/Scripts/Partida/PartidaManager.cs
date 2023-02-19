@@ -5,14 +5,12 @@ using UnityEngine;
 public class PartidaManager : MonoBehaviour, ISaveable
 {
     [SerializeField] private GameObject cartaBasePrefab = null;
-    [SerializeField] private GameObject piezaPrefab = null;
+    [SerializeField] private GameObject fichaPrefab = null;
     [SerializeField] private GameObject dorsoPrefab = null;
     [SerializeField] private SO_Baraja so_baraja = null;
     private Camera mainCamera;
     private Baraja _baraja;
-    //CuentasJugadores
-    private int _fichasPuestasJugador1 = 0;
-    private int _fichasPuestasJugador2 = 0;
+    
 
     public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
     private string _iSaveableUniqueID;
@@ -51,10 +49,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         mainCamera = Camera.main;
     }
-
-    private void Update()
-    {
-    }
     private void DespuesIntroFase1Event()
     {
         PrimeraCartaFase1();
@@ -63,23 +57,32 @@ public class PartidaManager : MonoBehaviour, ISaveable
     private void DespuesFadeOutEvent()
     {
         if (PropiedadesCasillasManager.Instance.EsFase1)
-        {
             inicializaBaraja();
-
-        }
     }
-    private void ClickEnTableroFase2Event(GridCursorFase2 cursor, bool esClickEnPieza)
+    public void EmpiezaPartida()
+    {
+        EventHandler.CallEmpiezaFase1Event();
+    }
+    private void EmpiezaFase1Event()
+    {
+        PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
+    }
+    private void inicializaBaraja()
+    {
+        _baraja = new Baraja(so_baraja.cartas);
+    }
+    private void ClickEnTableroFase2Event(GridCursorFase2 cursor, bool esClickEnFicha)
     {
         if (cursor.CartaGO != null)
         {
             //Tiene carta flotante
             PonCartaEnTableroFase2(cursor.GetGridPositionForCursor(), cursor.CartaGO.GetComponent<Carta>());
         }
-        else if (esClickEnPieza)
+        else if (esClickEnFicha)
         {
             //Selecciona ficha
             PropiedadesCasillasManager.Instance.EliminaPiezaEnTablero(PropiedadesCasillasManager.Instance.getPiezaEnPosicion(cursor.GetGridPositionForCursor()));
-            EventHandler.CallJugadaHechaEvent();
+            callJugadaHechaFase2();
         }
         else
         {
@@ -90,25 +93,78 @@ public class PartidaManager : MonoBehaviour, ISaveable
         }
 
     }
+
+    private bool checkFinalPartidaFase2()
+    {
+        bool retorno = false;
+        int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
+        int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
+        
+        //Check final de partida prematuro, si los dos jugadores no tienen ficha = empate
+        if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
+        {
+            SceneControllerManager.Instance.FadeAndKeepScene("EMPATE");
+            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+            retorno = true;
+        }
+        //Check final de partida prematuro, si alguno de los dos jugadores no tienen ficha en tablero
+        else if (fichasPuestasJugador1 == 0 || fichasPuestasJugador2 == 0)
+        {
+            bool esVictoriaJ1 = fichasPuestasJugador1 > 0;
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esVictoriaJ1 ? "1" : "2"));
+            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+            retorno = true;
+        }
+        //Check final partida en fase 2, si el jugador solo tiene una ficha puesta Y no hay cartas arrancables
+        else if (PropiedadesCasillasManager.Instance.EsFase2)
+        {
+            int fichasJugadorActual = PropiedadesCasillasManager.Instance.EsTurnoColor1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
+            int numeroCartasArrancables = 0;
+            foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
+            {
+                if (c.NumCuartosConFicha == 0)
+                {
+                    numeroCartasArrancables++;
+                }
+            }
+            if (fichasJugadorActual == 1 && numeroCartasArrancables == 0)
+            {
+                SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
+                EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+                retorno = true;
+            }
+
+
+        }
+        return retorno;
+    }
     private void ClickEnTableroFase1Event(Vector3 posicion, bool esAccionCarta)
     {
         if (esAccionCarta)
         {
+            //Colocar carta en tablero
             ValorCasilla valorCasilla = PropiedadesCasillasManager.Instance.GetValorEnCoordenada((int)posicion.x, (int)posicion.y);
-        if (valorCasilla != null && valorCasilla.esTablero && PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(Vector3Int.FloorToInt(posicion), false, PropiedadesCasillasManager.Instance.EsTurnoColor1))
-        {
-            PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
-            if (_baraja.Count() == 0)
-            { 
-                EventHandler.CallAcabaFase1Event();
-                SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
-                EventHandler.CallEmpiezaFase2Event();
+            if (valorCasilla != null && valorCasilla.esTablero && PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(Vector3Int.FloorToInt(posicion), false, PropiedadesCasillasManager.Instance.EsTurnoColor1))
+            {
+                PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
+                //Check final de baraja = final de fase1
+                if (_baraja.Count() == 0)
+                {
+                    EventHandler.CallAcabaFase1Event();
+                    if (!checkFinalPartidaFase2())
+                    {
+                        //Si no acaba partida, empieza fase 2
+                        SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
+                        EventHandler.CallEmpiezaFase2Event();
+                    }
+                }
             }
         }
-        }else
+        else
         {
+            //Colocar ficha en tablero
             PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(true, posicion, PropiedadesCasillasManager.Instance.EsTurnoColor1, null, false);
-            EventHandler.CallJugadaHechaEvent();
+            callJugadaHechaFase1();
         }
     }
     private void PonCartaEnTableroFase1(Vector3 posicion, bool esUltima)
@@ -125,11 +181,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, -mainCamera.transform.position.z), cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
-        if (!esUltima)
-        {
-            EventHandler.CallJugadaHechaEvent();
-        }
-        
+        callJugadaHechaFase1();
     }
 
     private void PonCartaEnTableroFase2(Vector3 posicion, Carta carta)
@@ -148,7 +200,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.CallPopCartaEnPosicion(new Vector3(posicion.x, posicion.y, posicion.z), cartaGO.GetComponent<Carta>(), 0, null);
         PropiedadesCasillasManager.Instance.JugadaEliminar();
         SceneControllerManager.Instance.ToggleAcciones();
-        EventHandler.CallJugadaHechaEvent();
+        callJugadaHechaFase2();
         //Representacion visual de la carta flotante
         Destroy(carta.gameObject);
         
@@ -161,21 +213,19 @@ public class PartidaManager : MonoBehaviour, ISaveable
         //Debug.Log("Crea Punto en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
         //Debug.Log("Crea Punto en posicion x=" + cuadrante[2].x + " y=" + cuadrante[2].y);
 
-        GameObject pieza;
+        GameObject ficha;
         if (esPuntoColor1)
         {
-            pieza = Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
-            pieza.GetComponent<Pieza>().EsColor1 = true;
-            _fichasPuestasJugador1++;
+            ficha = Instantiate(fichaPrefab, posicionFinal, Quaternion.identity);
+            ficha.GetComponent<Ficha>().EsColor1 = true;
         }
         else
         {
-            pieza = Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
-            pieza.GetComponent<Pieza>().EsColor1 = false;
-            _fichasPuestasJugador2++;
+            ficha = Instantiate(fichaPrefab, posicionFinal, Quaternion.identity);
+            ficha.GetComponent<Ficha>().EsColor1 = false;
         }
-        pieza.GetComponent<Pieza>().Cuadrante = cuadrante;
-        PropiedadesCasillasManager.Instance.registraPiezaEnTablero(cuadrante[2], pieza.GetComponent<Pieza>());
+        ficha.GetComponent<Ficha>().Cuadrante = cuadrante;
+        PropiedadesCasillasManager.Instance.registraFichaEnTablero(cuadrante[2], ficha.GetComponent<Ficha>());
     }
 
     private void PrimeraCartaFase1()
@@ -193,7 +243,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         //LLamamos evento con el componente carta seteado por la baraja
         EventHandler.CallPopCartaEnPosicion(posicionFinal, cartaGO.GetComponent<Carta>(), _baraja.Count(), _baraja.GetSiguiente());
     }
-    private void SetVecinosNuevaCarta(Carta cartaNueva, Vector3 posicion)
+    private void SetVecinosNuevaCarta(Carta cartaNueva, Vector3 posicionNueva)
     {
         //Quitamos referencia de antiguos vecinos
         foreach (Carta oldVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)cartaNueva.PosicionTablero.x, (int)cartaNueva.PosicionTablero.y))
@@ -202,30 +252,21 @@ public class PartidaManager : MonoBehaviour, ISaveable
         }
         //Seteamos nuevos vecinos
         HashSet<int> idsVecinos = new HashSet<int>();
-        foreach (Carta newVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)posicion.x, (int)posicion.y))
+        foreach (Carta newVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)posicionNueva.x, (int)posicionNueva.y))
         {
             newVecina.CartasVecinas.Add(cartaNueva.OrdenCarta);
             idsVecinos.Add(newVecina.OrdenCarta);
         }
-        cartaNueva.PosicionTablero = posicion;
+        cartaNueva.PosicionTablero = posicionNueva;
         cartaNueva.CartasVecinas = idsVecinos;
     }
-    public void EmpiezaPartida()
+    private Ficha InstanciaPieza(string key, FichaSerializable fichaSerializable)
     {
-        EventHandler.CallEmpiezaFase1Event();
-    }
-    
-    private void inicializaBaraja()
-    {
-        _baraja = new Baraja(so_baraja.cartas);
-    }
-    private Pieza InstanciaPieza(string key, PiezaSerializable piezaSerializable)
-    {
-        Vector3 posicionFinal = new Vector3(piezaSerializable._cuadrante[2].x / 2, piezaSerializable._cuadrante[2].y, -mainCamera.transform.position.z);
-        GameObject piezaGO = Instantiate(piezaPrefab, posicionFinal, Quaternion.identity);
-        piezaGO.GetComponent<Pieza>().EsColor1 = piezaSerializable._esColor1;
-        PropiedadesCasillasManager.Instance.DictCoordenadasPieza.Add(key, piezaGO.GetComponent<Pieza>());
-        return piezaGO.GetComponent<Pieza>();
+        Vector3 posicionFinal = new Vector3(fichaSerializable._cuadrante[2].x / 2, fichaSerializable._cuadrante[2].y, -mainCamera.transform.position.z);
+        GameObject fichaGO = Instantiate(fichaPrefab, posicionFinal, Quaternion.identity);
+        fichaGO.GetComponent<Ficha>().EsColor1 = fichaSerializable._esColor1;
+        PropiedadesCasillasManager.Instance.DictCoordenadasFicha.Add(key, fichaGO.GetComponent<Ficha>());
+        return fichaGO.GetComponent<Ficha>();
     }
     private Carta InstanciaCarta(string key, CartaSerializable cartaSerializable)
     {
@@ -236,8 +277,73 @@ public class PartidaManager : MonoBehaviour, ISaveable
         return cartaGO.GetComponent<Carta>();
 
     }
+    private void callJugadaHechaFase1()
+    {
+        //Check final de baraja = final de fase1
+        if (_baraja.Count() == 0)
+        {
+            EventHandler.CallAcabaFase1Event();
+            if (!checkFinalPartidaFase2())
+            {
+                //Si no acaba partida, empieza fase 2
+                SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
+                EventHandler.CallEmpiezaFase2Event();
+            }
+        }
+        //Check final de baraja = final de fase1
+        if (_baraja.Count() == 0)
+        {
+            EventHandler.CallAcabaFase1Event();
+            int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
+            int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
+            //Check final de partida prematuro, si los dos jugadores no tienen ficha = empate
+            if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
+            {
+                SceneControllerManager.Instance.FadeAndKeepScene("EMPATE");
+                EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+            }
+            //Check final de partida prematuro, si alguno de los dos jugadores no tienen ficha en tablero
+            else if (fichasPuestasJugador1 == 0 || fichasPuestasJugador2 == 0)
+            {
+                bool esVictoriaJ1 = fichasPuestasJugador1 > 0;
+                SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esVictoriaJ1 ? "1" : "2"));
+                EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+            }else
+            {
+                //Si no acaba partida, empieza fase 2
+                SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
+                EventHandler.CallEmpiezaFase2Event();
+                return;
+            }
+        }
+        EventHandler.CallJugadaHechaEvent();
 
+    }
+    private void callJugadaHechaFase2()
+    {
+        int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
+        int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
+        int fichasJugadorActual = PropiedadesCasillasManager.Instance.EsTurnoColor1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
+        int numeroCartasArrancables = 0;
+        foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
+        {
+            if (c.NumCuartosConFicha == 0)
+            {
+                numeroCartasArrancables++;
+            }
+        }
+        //Final partida si el jugador siguiente (que ya esta seteado)
+        if (fichasJugadorActual == 1 && numeroCartasArrancables == 0)
+        {
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
+            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+        }else
+        {
+            EventHandler.CallJugadaHechaEvent();
+        }
+    }
 
+    #region
     public void ISaveableRegister()
     {
         SaveLoadManager.Instance.iSaveableObjectList.Add(this);
@@ -253,7 +359,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         SceneSave sceneSave = new SceneSave();
         GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
         sceneSave.boolDictionary = new Dictionary<string, bool>();
-        
+
         if (_baraja._pilaCartas != null && _baraja._pilaCartas.Count > 0)
         {
             sceneSave.stringDictionary = new Dictionary<string, string>();
@@ -262,27 +368,27 @@ public class PartidaManager : MonoBehaviour, ISaveable
                 sceneSave.stringDictionary.Add(i.ToString(), _baraja._pilaCartas[i]);
             }
         }
-        if(PropiedadesCasillasManager.Instance.DictCoordenadasCarta != null)
+        if (PropiedadesCasillasManager.Instance.DictCoordenadasCarta != null)
         {
-            Dictionary<string, CartaSerializable>  dictCoordenadasCartaSerializable = new Dictionary<string, CartaSerializable>();
+            Dictionary<string, CartaSerializable> dictCoordenadasCartaSerializable = new Dictionary<string, CartaSerializable>();
             foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Keys)
             {
                 dictCoordenadasCartaSerializable.Add(key, new CartaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasCarta[key]));
             }
             sceneSave.dictCoordenadasCarta = dictCoordenadasCartaSerializable;
         }
-        if (PropiedadesCasillasManager.Instance.DictCoordenadasPieza != null)
+        if (PropiedadesCasillasManager.Instance.DictCoordenadasFicha != null)
         {
-            Dictionary<string, PiezaSerializable>  dictCoordenadasPiezaSerializable = new Dictionary<string, PiezaSerializable>();
-            foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasPieza.Keys)
+            Dictionary<string, FichaSerializable> dictCoordenadasPiezaSerializable = new Dictionary<string, FichaSerializable>();
+            foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasFicha.Keys)
             {
-                dictCoordenadasPiezaSerializable.Add(key, new PiezaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasPieza[key]));
+                dictCoordenadasPiezaSerializable.Add(key, new FichaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasFicha[key]));
             }
             sceneSave.dictCoordenadasPieza = dictCoordenadasPiezaSerializable;
         }
         if (PropiedadesCasillasManager.Instance.CartasEscondidas != null)
         {
-            List<CartaSerializable>  cartasEscondidasSerializable = new List<CartaSerializable>();
+            List<CartaSerializable> cartasEscondidasSerializable = new List<CartaSerializable>();
             foreach (Carta c in PropiedadesCasillasManager.Instance.CartasEscondidas)
             {
                 cartasEscondidasSerializable.Add(new CartaSerializable(c));
@@ -295,7 +401,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         }
         GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
         return GameObjectSave;
-}
+    }
 
     public void IsaveableLoad(GameSave gameSave)
     {
@@ -304,11 +410,11 @@ public class PartidaManager : MonoBehaviour, ISaveable
             GameObjectSave = gameObjectSave;
             if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
             {
-                
+
                 if (sceneSave.stringDictionary != null && sceneSave.stringDictionary.Count > 0)
                 {
                     List<string> cartasBaraja = new List<string>();
-                    foreach(string cartaSave in sceneSave.stringDictionary.Values)
+                    foreach (string cartaSave in sceneSave.stringDictionary.Values)
                     {
                         cartasBaraja.Add(cartaSave);
                     }
@@ -324,10 +430,10 @@ public class PartidaManager : MonoBehaviour, ISaveable
                 }
                 if (sceneSave.dictCoordenadasPieza != null && sceneSave.dictCoordenadasPieza.Count > 0)
                 {
-                    PropiedadesCasillasManager.Instance.DictCoordenadasPieza = new Dictionary<string, Pieza>();
+                    PropiedadesCasillasManager.Instance.DictCoordenadasFicha = new Dictionary<string, Ficha>();
                     foreach (string key in sceneSave.dictCoordenadasPieza.Keys)
                     {
-                        InstanciaPieza(key, sceneSave.dictCoordenadasPieza[key]);
+                        //InstanciaPieza(key, sceneSave.dictCoordenadasPieza[key]);
                     }
                 }
                 //if (sceneSave.cartasEscondidas != null && sceneSave.cartasEscondidas.Count > 0)
@@ -352,8 +458,5 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         //
     }
-    private void EmpiezaFase1Event()
-    {
-        PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
-    }
+    #endregion
 }
