@@ -99,42 +99,24 @@ public class PartidaManager : MonoBehaviour, ISaveable
         bool retorno = false;
         int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
         int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
-        
-        //Check final de partida prematuro, si los dos jugadores no tienen ficha = empate
-        if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
-        {
-            SceneControllerManager.Instance.FadeAndKeepScene("EMPATE");
-            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
-            retorno = true;
-        }
-        //Check final de partida prematuro, si alguno de los dos jugadores no tienen ficha en tablero
-        else if (fichasPuestasJugador1 == 0 || fichasPuestasJugador2 == 0)
-        {
-            bool esVictoriaJ1 = fichasPuestasJugador1 > 0;
-            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esVictoriaJ1 ? "1" : "2"));
-            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
-            retorno = true;
-        }
-        //Check final partida en fase 2, si el jugador solo tiene una ficha puesta Y no hay cartas arrancables
-        else if (PropiedadesCasillasManager.Instance.EsFase2)
-        {
-            int fichasJugadorActual = PropiedadesCasillasManager.Instance.EsTurnoColor1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
-            int numeroCartasArrancables = 0;
-            foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
-            {
-                if (c.NumCuartosConFicha == 0)
-                {
-                    numeroCartasArrancables++;
-                }
-            }
-            if (fichasJugadorActual == 1 && numeroCartasArrancables == 0)
-            {
-                SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
-                EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
-                retorno = true;
-            }
 
 
+        //Check final partida en fase 2, si (el jugador solo tiene una ficha puesta Y no hay cartas arrancables= O no le quedan fichas (caso de arrancar grupo)
+
+        int fichasJugadorActual = PropiedadesCasillasManager.Instance.EsTurnoColor1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
+        int numeroCartasArrancables = 0;
+        foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
+        {
+            if (c.NumCuartosConFicha == 0)
+            {
+                numeroCartasArrancables++;
+            }
+        }
+        if (fichasJugadorActual == 0 || (fichasJugadorActual == 1 && numeroCartasArrancables == 0))
+        {
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
+            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+            retorno = true;
         }
         return retorno;
     }
@@ -147,17 +129,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
             if (valorCasilla != null && valorCasilla.esTablero && PropiedadesCasillasManager.Instance.CheckPositionValidityFase1(Vector3Int.FloorToInt(posicion), false, PropiedadesCasillasManager.Instance.EsTurnoColor1))
             {
                 PonCartaEnTableroFase1(posicion, _baraja.Count() == 0);
-                //Check final de baraja = final de fase1
-                if (_baraja.Count() == 0)
-                {
-                    EventHandler.CallAcabaFase1Event();
-                    if (!checkFinalPartidaFase2())
-                    {
-                        //Si no acaba partida, empieza fase 2
-                        SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
-                        EventHandler.CallEmpiezaFase2Event();
-                    }
-                }
             }
         }
         else
@@ -283,17 +254,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
         if (_baraja.Count() == 0)
         {
             EventHandler.CallAcabaFase1Event();
-            if (!checkFinalPartidaFase2())
-            {
-                //Si no acaba partida, empieza fase 2
-                SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
-                EventHandler.CallEmpiezaFase2Event();
-            }
-        }
-        //Check final de baraja = final de fase1
-        if (_baraja.Count() == 0)
-        {
-            EventHandler.CallAcabaFase1Event();
             int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
             int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
             //Check final de partida prematuro, si los dos jugadores no tienen ficha = empate
@@ -313,7 +273,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
                 //Si no acaba partida, empieza fase 2
                 SceneControllerManager.Instance.FadeAndKeepScene("FASE 2");
                 EventHandler.CallEmpiezaFase2Event();
-                return;
             }
         }
         EventHandler.CallJugadaHechaEvent();
@@ -333,7 +292,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
             }
         }
         //Final partida si el jugador siguiente (que ya esta seteado)
-        if (fichasJugadorActual == 1 && numeroCartasArrancables == 0)
+        if (fichasJugadorActual == 0 || (fichasJugadorActual == 1 && numeroCartasArrancables == 0))
         {
             SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
             EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);

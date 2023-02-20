@@ -199,8 +199,8 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         if (_esTriggerAnimacionInicial)
         {
             //nos saltamos la animacion de la carta que aparece en el tablero, se hace directamente la del cursor
-            StartCoroutine(instanciaPilaDorsos(Settings.NumCartasTotal));
-            //StartCoroutine(instanciaPilaDorsos(Settings.NumCartasTotal -1));
+            //StartCoroutine(instanciaPilaDorsos(Settings.NumCartasTotal));
+            StartCoroutine(instanciaPilaDorsos(Settings.NumCartasTotal -1));
             _esTriggerAnimacionInicial = false;
         }
     }
