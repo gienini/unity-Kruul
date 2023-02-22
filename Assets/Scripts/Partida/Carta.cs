@@ -9,11 +9,18 @@ public class Carta : MonoBehaviour
     [SerializeField] private int _numCuartosConFicha = 0;
     [SerializeField] private string _valorCuartosCarta = null;
     public Vector3 PosicionTablero;
-    public int OrdenCarta;
+    private int _ordenCarta;
     public HashSet<int> CartasVecinas;
 
     public string ValorCuartosCarta { get => _valorCuartosCarta; set => setValorCuartosCarta(value); }
     public int NumCuartosConFicha { get => _numCuartosConFicha; set => _numCuartosConFicha = value; }
+    public int OrdenCarta { get => _ordenCarta; set => setOrdenCarta(value); }
+
+    private void setOrdenCarta(int i)
+    {
+        Debug.Log("ORDEN CARTA SET =" + i);
+        _ordenCarta = i;
+    }
     public void SetValoresFromSerializable(CartaSerializable cartaSerializable)
     {
         _numCuartosConFicha = cartaSerializable.numCuartosConFicha;

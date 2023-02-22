@@ -274,6 +274,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         CartaGO = Instantiate(cartaBasePrefab, _canvas.transform);
         CartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
         CartaGO.GetComponent<Carta>().PosicionTablero = carta.PosicionTablero;
+        CartaGO.GetComponent<Carta>().OrdenCarta = carta.OrdenCarta;
         CartaGO.transform.SetParent(gameObject.transform);
         CartaGO.transform.SetAsFirstSibling();
         SceneControllerManager.Instance.ToggleAcciones();
