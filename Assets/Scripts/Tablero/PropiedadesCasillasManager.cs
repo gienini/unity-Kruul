@@ -35,7 +35,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     public bool EsTurnoColor1 { get => _esTurnoColor1; set => _esTurnoColor1 = value; }
     public bool EsFase1 { get => _esFase1; set => _esFase1 = value; }
     public bool EsFase2 { get => _esFase2; set => _esFase2 = value; }
-    public int NumFichasPuestasJ1 { get => _numPiezasPuestasJ1; set => _numPiezasPuestasJ1 = value; } 
+    public int NumFichasPuestasJ1 { get => _numPiezasPuestasJ1; set => _numPiezasPuestasJ1 = value; }
     public int NumFichasPuestasJ2 { get => _numPiezasPuestasJ2; set => _numPiezasPuestasJ2 = value; }
 
     private void OnEnable()
@@ -111,7 +111,13 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 Dictionary<int, Carta> dictCartasPorOrden = new Dictionary<int, Carta>();
                 foreach (Carta cartaDict in DictCoordenadasCarta.Values)
                 {
-                    dictCartasPorOrden.Add(cartaDict.OrdenCarta, cartaDict);
+                    if (dictCartasPorOrden.TryGetValue(cartaDict.OrdenCarta, out Carta c))
+                    {
+                        Debug.Log("ERROR");
+                    }else
+                    {
+                        dictCartasPorOrden.Add(cartaDict.OrdenCarta, cartaDict);
+                    }
                 }
                 Dictionary<int, HashSet<int>> treeNodoVecinos = new Dictionary<int, HashSet<int>>();
                 HashSet<int> resultadoFetch;
@@ -142,7 +148,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                                     escondeCarta(cartaEsconder, false);
                                 }
                             }
-                        }else
+                        }
+                        else
                         {
                             //Se mantiene el arbol de nodos
                             nodosMantener.Add(ordenNodo, new SortedSet<int>(set));
@@ -174,7 +181,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         {
             _cartaEscondidaCursor = carta;
             _cuadranteEscondidoCursor = RemoveCuadranteEnDict(carta.PosicionTablero);
-        }else
+        }
+        else
         {
             _cartasEscondidas.Add(carta);
             _cuadrantesEscondidos.Add(RemoveCuadranteEnDict(carta.PosicionTablero));
@@ -205,11 +213,11 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             Destroy(_cartaEscondidaCursor.gameObject);
             if (_cartasEscondidas != null)
             {
-                for (int i = 0; i < _cartasEscondidas.Count ; i++)
+                for (int i = 0; i < _cartasEscondidas.Count; i++)
                 {
                     RemoveCuadranteEnDict(_cartasEscondidas[i].PosicionTablero);
                     DictCoordenadasCarta.Remove(GeneraKey(_cartasEscondidas[i].PosicionTablero.x, _cartasEscondidas[i].PosicionTablero.y));
-                    Destroy(_cartasEscondidas[i].gameObject);
+                    //Destroy(_cartasEscondidas[i].gameObject);
                 }
             }
         }
@@ -234,7 +242,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         }
         return retorno;
     }
-    
+
     private List<ValorCasilla> GeneraCartaVirtual(Vector3 posicion, Carta carta)
     {
         //Representa el espacio que ocupa la carta
@@ -248,7 +256,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 return null;
             }
         }
-        
+
         List<ValorCasilla> retornoCartaVirtual = new List<ValorCasilla>();
         //Setea valores de casillas
         for (int i = 0; i < cuadrante.Count; i++)
@@ -263,7 +271,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             casillaRetornoVirtual.y = cuadrante[i].y;
             retornoCartaVirtual.Add(casillaRetornoVirtual);
         }
-        
+
         return retornoCartaVirtual;
     }
     private void RegistraCartaEnPosicion(Vector3 posicion, Carta carta, int cartasRestantes, string cuartosProximaCarta)
@@ -275,6 +283,10 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         //Representa el espacio que ocupa la carta
         List<ValorCasilla> cuadrante = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);
+        if (EsFase2)
+        {
+            DictCoordenadasCarta.Remove(GeneraKey(carta.PosicionTablero.x, carta.PosicionTablero.y));
+        }
         carta.PosicionTablero = posicion;
         //Setea dict de Cartas
         DictCoordenadasCarta.Add(GeneraKey(posicion.x, posicion.y), carta);
@@ -288,12 +300,16 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             PropiedadCasilla nuevoValorColor1 = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esColor1, casilla.esColor1);
             PropiedadCasilla nuevoValorColor2 = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esColor2, casilla.esColor2);
             PropiedadCasilla nuevoValorCasillaOcupada = new PropiedadCasilla(new CoordenadaCasilla(casilla.x, casilla.y), CasillaPropiedadBool.esOcupada, true);
-            
+
             PutValorEnDict(nuevoValorColor1);
             PutValorEnDict(nuevoValorColor2);
             PutValorEnDict(nuevoValorCasillaOcupada);
         }
-
+        if (EsFase2)
+        {
+            ponFichaFase2(posicion);
+        }
+        
         //checkPuntoEnPosicion(posicion);
     }
     /// <summary>
@@ -337,7 +353,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             //El cuadrante de la posicion
             cuadrantesAdyacentes.Add(GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y));
         }
-        
+
         foreach (List<ValorCasilla> cuadranteAdyacente in cuadrantesAdyacentes)
         {
             bool esPuntoColor1 = true;
@@ -365,7 +381,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 {
                     esAlgunPuntoEnPosicion = true;
                 }
-                
+
                 if (esRegistraPunto)
                 {
                     EventHandler.CallPuntoEnCuadranteEvent(cuadranteAdyacente, esPuntoColor1);
@@ -373,6 +389,41 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             }
         }
         return esAlgunPuntoEnPosicion;
+    }
+
+    public void ponFichaFase2(Vector3 posicion)
+    {
+        List<List<ValorCasilla>> cuadrantesAdyacentes =  GetCuadrantesAdyacentes((int)posicion.x, (int)posicion.y);
+
+        foreach (List<ValorCasilla> cuadranteAdyacente in cuadrantesAdyacentes)
+        {
+            bool esPuntoColor1 = true;
+            bool esPuntoColor2 = true;
+            foreach (ValorCasilla casillaCuadrante in cuadranteAdyacente)
+            {
+                if (!casillaCuadrante.esOcupado)
+                {
+                    esPuntoColor1 = false;
+                    esPuntoColor2 = false;
+                }
+                if (casillaCuadrante.esColor1)
+                {
+                    esPuntoColor2 = false;
+                }
+                if (casillaCuadrante.esColor2)
+                {
+                    esPuntoColor1 = false;
+                }
+            }
+            if (esPuntoColor1)
+            {
+                EventHandler.CallPuntoEnCuadranteEvent(cuadranteAdyacente, true);
+            }
+            else if (esPuntoColor2)
+            {
+                EventHandler.CallPuntoEnCuadranteEvent(cuadranteAdyacente, false);
+            }
+        }
     }
 
     private void Start()
@@ -407,12 +458,12 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     }
     public string GeneraKey(int x, int y)
     {
-        return "x:" + x + "y:" +y;
+        return "x:" + x + "y:" + y;
     }
 
     public void PutCuadranteEnDict(List<ValorCasilla> cuadrante)
     {
-        foreach(ValorCasilla casilla in cuadrante)
+        foreach (ValorCasilla casilla in cuadrante)
         {
             string key = GeneraKey(casilla.x, casilla.y);
             DictValoresCasilla.Remove(key);
@@ -549,7 +600,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     public List<ValorCasilla> GetCuadranteEnCoordenada(int x, int y, List<ValorCasilla> cartaVirtual)
     {
         List<ValorCasilla> valorCasillas = new List<ValorCasilla>();
-        for (int offsetY = 1; offsetY >=0; offsetY--)
+        for (int offsetY = 1; offsetY >= 0; offsetY--)
         {
             for (int offsetX = 0; offsetX < 2; offsetX++)
             {
@@ -598,7 +649,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             _numPiezasPuestasJ2++;
 
         List<Carta> cartasAdyacentes = cartasAdyacentesACoordenada(valorCasilla);
-        foreach(Carta c in cartasAdyacentes)
+        foreach (Carta c in cartasAdyacentes)
         {
             //se incrementa el valor de piezas de las cartas que esta tocando
             c.NumCuartosConFicha++;
@@ -667,7 +718,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         {
             retorno.Add(c);
         }
-        if (_dictCoordenadasCarta.TryGetValue(GeneraKey(x , y + 1), out c))
+        if (_dictCoordenadasCarta.TryGetValue(GeneraKey(x, y + 1), out c))
         {
             retorno.Add(c);
         }
@@ -697,17 +748,17 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         bool retorno = false;
         if (esCursorPieza)
         {
-            if (!_dictCoordenadasPieza.TryGetValue(PropiedadesCasillasManager.Instance.GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Ficha p))
+            if (!_dictCoordenadasPieza.TryGetValue(GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Ficha p))
             {
-                retorno = PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, cursorGridPosition, esTurnoColor1, null, false);
+                retorno = checkPuntoEnPosicion(false, cursorGridPosition, esTurnoColor1, null, false);
             }
         }
         else
         {
-            List<ValorCasilla> valoresCuadrante = PropiedadesCasillasManager.Instance.GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
+            List<ValorCasilla> valoresCuadrante = GetCuadranteEnCoordenada(cursorGridPosition.x, cursorGridPosition.y);
             bool esNoOcupada = true;
             bool esDentroTablero = true;
-            bool esAdyacenteAotra = PropiedadesCasillasManager.Instance.EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
+            bool esAdyacenteAotra = EsAlgunOcupadoEnCuadrantesOrtoAdyacente(cursorGridPosition.x, cursorGridPosition.y);
 
             bool esValida = true;
             if (valoresCuadrante != null)

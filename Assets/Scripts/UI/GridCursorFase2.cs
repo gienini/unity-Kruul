@@ -36,6 +36,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.EmpiezaFase2Event += EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
+        EventHandler.JugadaHechaEvent += JugadaHechaEvent;
         ISaveableRegister();
     }
     private void OnDisable()
@@ -45,7 +46,16 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.EmpiezaFase2Event -= EmpiezaFase2Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
+        EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
         ISaveableDeregister();
+    }
+
+    private void JugadaHechaEvent()
+    {
+        if (CartaGO != null)
+        {
+            Destroy(CartaGO);
+        }
     }
 
     private void AntesFadeOutEvent()
@@ -271,8 +281,8 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
 
     public void BotonEliminar()
     {
-        PropiedadesCasillasManager.Instance.JugadaEliminar();
         Destroy(CartaGO);
+        PropiedadesCasillasManager.Instance.JugadaEliminar();
         EventHandler.CallJugadaHechaEvent();
         SceneControllerManager.Instance.ToggleAcciones();
 

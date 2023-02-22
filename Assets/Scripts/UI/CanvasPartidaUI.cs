@@ -178,13 +178,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
             if (casillasConPunto.Count > 0 && ((PropiedadesCasillasManager.Instance.EsTurnoColor1 && _numPiezasColor1 > 0) || (!PropiedadesCasillasManager.Instance.EsTurnoColor1 && _numPiezasColor2 > 0)))
             {
                 muestraOpcionesAccion(PropiedadesCasillasManager.Instance.EsTurnoColor1);
-
-                //DEBUG
-                Debug.Log("POSICIONES CON PUNTO");
-                foreach (ValorCasilla casilla in casillasConPunto)
-                {
-                    Debug.Log("X:" + casilla.x + "Y:" + casilla.y);
-                }
             }
             else
             {

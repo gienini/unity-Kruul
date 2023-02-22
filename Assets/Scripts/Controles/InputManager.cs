@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private GridCursorFase1 gridCursorFase1 = null;
     [SerializeField] private GridCursorFase2 gridCursorFase2 = null;
     private bool _esMenuPausa = false;
+    private bool _esClicando = false;
     private void Update()
     {
         if (SceneControllerManager.Instance.EscenaActual == NombresEscena.Escena_PartidaNormal.ToString())
@@ -68,15 +69,30 @@ public class InputManager : MonoBehaviour
     {
         if (!_esMenuPausa)
         {
-            if (Input.GetMouseButton(0) && gridCursorFase2.CursorPositionIsValid)
+            if (Input.GetMouseButtonDown(0) && gridCursorFase2.CursorPositionIsValid)
             {
-                EventHandler.CallClickEnTableroFase2Event(gridCursorFase2, gridCursorFase2.CursorPositionIsPieza);
+                //EventHandler.CallClickEnTableroFase2Event(gridCursorFase2, gridCursorFase2.CursorPositionIsPieza);
+                StartCoroutine(callClickRoutine());
             }
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AccionEscape();
         }
+    }
+    private IEnumerator callClickRoutine()
+    {
+        if (!_esClicando)
+        {
+            _esClicando = true;
+            EventHandler.CallClickEnTableroFase2Event(gridCursorFase2, gridCursorFase2.CursorPositionIsPieza);
+            gridCursorFase2.CursorIsEnabled = false;
+            yield return new WaitForSeconds(0.1f);
+            gridCursorFase2.CursorIsEnabled = true;
+            _esClicando = false;
+            yield return null;
+        }
+        
     }
 
     public void AccionEscape()

@@ -75,17 +75,20 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         if (cursor.CartaGO != null)
         {
+            Debug.Log("click PONER carta");
             //Tiene carta flotante
             PonCartaEnTableroFase2(cursor.GetGridPositionForCursor(), cursor.CartaGO.GetComponent<Carta>());
         }
         else if (esClickEnFicha)
         {
+            Debug.Log("click QUITAR ficha");
             //Selecciona ficha
             PropiedadesCasillasManager.Instance.EliminaPiezaEnTablero(PropiedadesCasillasManager.Instance.getPiezaEnPosicion(cursor.GetGridPositionForCursor()));
             callJugadaHechaFase2();
         }
         else
         {
+            Debug.Log("click QUITAR carta");
             //Selecciona carta
             Carta tmpCarta = PropiedadesCasillasManager.Instance.getCartaEnPosicion(cursor.GetGridPositionForCursor());
             cursor.SetCartaFlotante(tmpCarta);
@@ -165,6 +168,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         cartaGO.GetComponent<Carta>().OrdenCarta = carta.OrdenCarta;
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
         SetVecinosNuevaCarta(cartaGO.GetComponent<Carta>(), posicion);
+        cartaGO.GetComponent<Carta>().PosicionTablero = carta.PosicionTablero;
         //Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
         //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
@@ -172,8 +176,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         PropiedadesCasillasManager.Instance.JugadaEliminar();
         SceneControllerManager.Instance.ToggleAcciones();
         callJugadaHechaFase2();
-        //Representacion visual de la carta flotante
-        Destroy(carta.gameObject);
+        
         
     }
     private void PuntoEnCuadranteEvent(List<ValorCasilla> cuadrante, bool esPuntoColor1)
