@@ -275,6 +275,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         CartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
         CartaGO.GetComponent<Carta>().PosicionTablero = carta.PosicionTablero;
         CartaGO.GetComponent<Carta>().OrdenCarta = carta.OrdenCarta;
+        CartaGO.GetComponent<Carta>().CartasVecinas = carta.CartasVecinas;
         CartaGO.transform.SetParent(gameObject.transform);
         CartaGO.transform.SetAsFirstSibling();
         SceneControllerManager.Instance.ToggleAcciones();
@@ -284,7 +285,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     {
         Destroy(CartaGO);
         PropiedadesCasillasManager.Instance.JugadaEliminar();
-        EventHandler.CallJugadaHechaEvent();
+        EventHandler.CallJugadaEliminarEvent();
         SceneControllerManager.Instance.ToggleAcciones();
 
     }

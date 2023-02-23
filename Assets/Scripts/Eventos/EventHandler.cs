@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class EventHandler
 {
+    public static event Action JugadaEliminarEvent;
+    public static void CallJugadaEliminarEvent()
+    {
+        if (JugadaEliminarEvent != null)
+        {
+            JugadaEliminarEvent();
+        }
+    }
     public static event Action<Vector3, bool> ClickEnTableroFase1Event;
 
     public static void CallClickEnTableroFase1Event(Vector3 posicion, bool esAccionCarta)

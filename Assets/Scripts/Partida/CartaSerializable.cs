@@ -8,7 +8,7 @@ public class CartaSerializable
     public string valorCuartosCarta = null;
     public Vector3Serializable PosicionTablero;
     public int OrdenCarta;
-    public HashSet<int> CartasVecinas;
+    public List<int> CartasVecinas;
     public CartaSerializable()
     {
 

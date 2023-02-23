@@ -306,6 +306,7 @@ MonoBehaviour:
     type: 3}
   redCursorSpritePieza: {fileID: 21300000, guid: 3b6c5c14ae86a4f46bd8a21e121e6d36,
     type: 3}
+  cursorIsEnabled: 0
 --- !u!114 &34048836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2559,6 +2560,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac466458ceaa6864cada415d419547f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameSave:
+    fase: 
 --- !u!4 &575219934
 Transform:
   m_ObjectHideFlags: 0
@@ -2722,6 +2725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174b43e909175a24286e9f0933f9eb70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  esCambiandoEscena: 0
   faderCanvasGroup: {fileID: 1510454008}
   faderImage: {fileID: 1510454006}
   MenuPrincipalCanvas: {fileID: 1897257264}
@@ -2733,6 +2737,7 @@ MonoBehaviour:
   gridCursorFase1: {fileID: 34048835}
   gridCursorFase2: {fileID: 1309858592}
   startingSceneName: 2
+  faseActual: 
 --- !u!4 &603517077
 Transform:
   m_ObjectHideFlags: 0

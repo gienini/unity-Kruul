@@ -80,6 +80,7 @@
     <Compile Include="Assets\Scripts\Misc\Settings.cs" />
     <Compile Include="Assets\Scripts\Partida\Carta.cs" />
     <Compile Include="Assets\Scripts\Partida\CartaCuartaParte.cs" />
+    <Compile Include="Assets\Scripts\Partida\CartaDebug.cs" />
     <Compile Include="Assets\Scripts\Partida\CartaSerializable.cs" />
     <Compile Include="Assets\Scripts\Partida\Dorso.cs" />
     <Compile Include="Assets\Scripts\Partida\Ficha.cs" />

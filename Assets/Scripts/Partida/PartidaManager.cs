@@ -26,6 +26,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.EmpiezaFase1Event += EmpiezaFase1Event;
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
+        EventHandler.JugadaEliminarEvent += callJugadaHechaFase2;
         ISaveableRegister();
     }
     private void OnDisable()
@@ -36,6 +37,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.EmpiezaFase1Event -= EmpiezaFase1Event;
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
+        EventHandler.JugadaEliminarEvent -= callJugadaHechaFase2;
         ISaveableDeregister();
     }
 
@@ -151,6 +153,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         cartaGO.GetComponent<Carta>().OrdenCarta = _baraja.Count();
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = _baraja.Pop();
         SetVecinosNuevaCarta(cartaGO.GetComponent<Carta>(), posicion);
+        cartaGO.name = "carta" + cartaGO.GetComponent<Carta>().OrdenCarta;
         //Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
         //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
@@ -167,8 +170,10 @@ public class PartidaManager : MonoBehaviour, ISaveable
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
         cartaGO.GetComponent<Carta>().OrdenCarta = carta.OrdenCarta;
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = carta.ValorCuartosCarta;
+        cartaGO.GetComponent<Carta>().CartasVecinas = carta.CartasVecinas;
         SetVecinosNuevaCarta(cartaGO.GetComponent<Carta>(), posicion);
         cartaGO.GetComponent<Carta>().PosicionTablero = carta.PosicionTablero;
+        cartaGO.name = "carta" + cartaGO.GetComponent<Carta>().OrdenCarta;
         //Debug.Log("Crea Carta en posicionFinal x=" + posicionFinal.x + " y=" + posicionFinal.y);
         //Debug.Log("Crea Carta en posicion x=" + posicion.x + " y=" + posicion.y);
         //LLamamos evento con el componente carta seteado por la baraja. Pasar las coordenadas reales
@@ -211,7 +216,8 @@ public class PartidaManager : MonoBehaviour, ISaveable
         GameObject cartaGO = Instantiate(cartaBasePrefab, posicionFinal, Quaternion.identity);
         cartaGO.GetComponent<Carta>().OrdenCarta = _baraja.Count()+1;
         cartaGO.GetComponent<Carta>().ValorCuartosCarta = valoresPrimeraCarta;
-        cartaGO.GetComponent<Carta>().CartasVecinas = new HashSet<int>();
+        cartaGO.GetComponent<Carta>().CartasVecinas = new List<int>();
+        cartaGO.name = "carta" + cartaGO.GetComponent<Carta>().OrdenCarta;
         //Inicializar diccionario casillas
         PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
         //LLamamos evento con el componente carta seteado por la baraja
@@ -220,9 +226,13 @@ public class PartidaManager : MonoBehaviour, ISaveable
     private void SetVecinosNuevaCarta(Carta cartaNueva, Vector3 posicionNueva)
     {
         //Quitamos referencia de antiguos vecinos
-        foreach (Carta oldVecina in PropiedadesCasillasManager.Instance.cartasEnCuadrantesOrtogonalesACoordenada((int)cartaNueva.PosicionTablero.x, (int)cartaNueva.PosicionTablero.y))
+        
+        foreach (Carta carta in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
         {
-            oldVecina.CartasVecinas.Remove(cartaNueva.OrdenCarta);
+            if (cartaNueva.CartasVecinas.Contains(carta.OrdenCarta))
+            {
+                carta.CartasVecinas.Remove(cartaNueva.OrdenCarta);
+            }
         }
         //Seteamos nuevos vecinos
         HashSet<int> idsVecinos = new HashSet<int>();
@@ -232,7 +242,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
             idsVecinos.Add(newVecina.OrdenCarta);
         }
         cartaNueva.PosicionTablero = posicionNueva;
-        cartaNueva.CartasVecinas = idsVecinos;
+        cartaNueva.CartasVecinas = new List<int>(idsVecinos);
     }
     private Ficha InstanciaPieza(string key, FichaSerializable fichaSerializable)
     {
