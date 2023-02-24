@@ -90,15 +90,11 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     public void BotonPilaGrupoPiezas1()
     {
         escondeOpcionesAccion();
-        _piezasColor1[_numPiezasColor1 - 1].enabled = false;
-        _numPiezasColor1--;
         EventHandler.CallAccionSeleccionadaEvent(false);
     }
     public void BotonPilaGrupoPiezas2()
     {
         escondeOpcionesAccion();
-        _piezasColor2[_numPiezasColor2 - 1].enabled = false;
-        _numPiezasColor2--;
         EventHandler.CallAccionSeleccionadaEvent(false);
     }
     private void escondeOpcionesAccion()
@@ -185,6 +181,21 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
                 EventHandler.CallAccionSeleccionadaEvent(true);
             }
         }
+        refreshFichas();
+    }
+
+    private void refreshFichas()
+    {
+        for (int i = 0; i < _piezasColor1.Count; i++)
+        {
+            _piezasColor1[i].enabled = i >= PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
+        }
+
+        for (int i = 0; i < _piezasColor2.Count; i++)
+        {
+            _piezasColor2[i].enabled = i >= PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
+        }
+
     }
 
     private void DespuesFadeOutEvent()

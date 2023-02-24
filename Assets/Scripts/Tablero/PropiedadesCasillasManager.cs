@@ -6,37 +6,39 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
 {
     private Dictionary<string, ValorCasilla> _dictValoresCasilla;
     private Dictionary<string, Carta> _dictCoordenadasCarta;
-    private Dictionary<string, Ficha> _dictCoordenadasPieza;
+    private Dictionary<string, Ficha> _dictCoordenadasFicha;
     private bool _esDictCargado = false;
     private Carta _cartaEscondidaCursor;
     private List<ValorCasilla> _cuadranteEscondidoCursor;
     private List<Carta> _cartasEscondidas;
+    private List<Ficha> _fichasEscondidas;
     private List<List<ValorCasilla>> _cuadrantesEscondidos;
     [SerializeField] private SO_PropiedadesCasilla[] propiedadesCasillaArray = null;
 
     private bool _esTurnoColor1;
     private bool _esFase1 = false;
     private bool _esFase2 = false;
-    private int _numPiezasPuestasJ1 = 0;
-    private int _numPiezasPuestasJ2 = 0;
-
-    public bool EsDictCargado { get => _esDictCargado; set => _esDictCargado = value; }
-    public Dictionary<string, ValorCasilla> DictValoresCasilla { get => _dictValoresCasilla; set => _dictValoresCasilla = value; }
-    public Dictionary<string, Carta> DictCoordenadasCarta { get => _dictCoordenadasCarta; set => _dictCoordenadasCarta = value; }
-    public Dictionary<string, Ficha> DictCoordenadasFicha { get => _dictCoordenadasPieza; set => _dictCoordenadasPieza = value; }
-    public List<Carta> CartasEscondidas { get => _cartasEscondidas; set => _cartasEscondidas = value; }
-    public Carta CartaEscondidaCursor { get => _cartaEscondidaCursor; set => _cartaEscondidaCursor = value; }
+    private int _numFichasPuestasJ1 = 0;
+    private int _numFichasPuestasJ2 = 0;
 
     //SAVE
     private string _iSaveableUniqueID;
-    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
+
     public GameObjectSave _gameObjectSave;
+    public bool EsDictCargado { get => _esDictCargado; set => _esDictCargado = value; }
+    public Dictionary<string, ValorCasilla> DictValoresCasilla { get => _dictValoresCasilla; set => _dictValoresCasilla = value; }
+    public Dictionary<string, Carta> DictCoordenadasCarta { get => _dictCoordenadasCarta; set => _dictCoordenadasCarta = value; }
+    public Dictionary<string, Ficha> DictCoordenadasFicha { get => _dictCoordenadasFicha; set => _dictCoordenadasFicha = value; }
+    public List<Carta> CartasEscondidas { get => _cartasEscondidas; set => _cartasEscondidas = value; }
+    public Carta CartaEscondidaCursor { get => _cartaEscondidaCursor; set => _cartaEscondidaCursor = value; }
+
+    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
     public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
     public bool EsTurnoColor1 { get => _esTurnoColor1; set => _esTurnoColor1 = value; }
     public bool EsFase1 { get => _esFase1; set => _esFase1 = value; }
     public bool EsFase2 { get => _esFase2; set => _esFase2 = value; }
-    public int NumFichasPuestasJ1 { get => _numPiezasPuestasJ1; set => _numPiezasPuestasJ1 = value; }
-    public int NumFichasPuestasJ2 { get => _numPiezasPuestasJ2; set => _numPiezasPuestasJ2 = value; }
+    public int NumFichasPuestasJ1 { get => _numFichasPuestasJ1; set => _numFichasPuestasJ1 = value; }
+    public int NumFichasPuestasJ2 { get => _numFichasPuestasJ2; set => _numFichasPuestasJ2 = value; }
 
     private void OnEnable()
     {
@@ -81,15 +83,15 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     protected override void Awake()
     {
         base.Awake();
-        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
-        GameObjectSave = new GameObjectSave();
+        _iSaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+        _gameObjectSave = new GameObjectSave();
     }
     public List<ValorCasilla> CheckPuntoEnTablero(bool esTurnoColor1)
     {
         List<ValorCasilla> retorno = new List<ValorCasilla>();
-        foreach (ValorCasilla casilla in DictValoresCasilla.Values)
+        foreach (ValorCasilla casilla in _dictValoresCasilla.Values)
         {
-            if (!_dictCoordenadasPieza.TryGetValue(GeneraKey(casilla.x, casilla.y), out Ficha p) && checkPuntoEnPosicion(false, new Vector3(casilla.x, casilla.y), esTurnoColor1, null, false))
+            if (!_dictCoordenadasFicha.TryGetValue(GeneraKey(casilla.x, casilla.y), out Ficha p) && checkPuntoEnPosicion(false, new Vector3(casilla.x, casilla.y), esTurnoColor1, null, false))
             {
                 retorno.Add(casilla);
             }
@@ -106,10 +108,11 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             if (carta.CartasVecinas.Count > 1)
             {
                 _cartasEscondidas = new List<Carta>();
+                _fichasEscondidas = new List<Ficha>();
                 _cuadrantesEscondidos = new List<List<ValorCasilla>>();
 
                 Dictionary<int, Carta> dictCartasPorOrden = new Dictionary<int, Carta>();
-                foreach (Carta cartaDict in DictCoordenadasCarta.Values)
+                foreach (Carta cartaDict in _dictCoordenadasCarta.Values)
                 {
                     if (dictCartasPorOrden.TryGetValue(cartaDict.OrdenCarta, out Carta c))
                     {
@@ -185,7 +188,27 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         else
         {
             _cartasEscondidas.Add(carta);
+            
             _cuadrantesEscondidos.Add(RemoveCuadranteEnDict(carta.PosicionTablero));
+            if (_cuadrantesEscondidos != null & _cuadrantesEscondidos.Count> 0)
+            {
+                foreach(List<ValorCasilla> list in _cuadrantesEscondidos)
+                {
+                    foreach(ValorCasilla valor in list)
+                    {
+                        if (_dictCoordenadasFicha.TryGetValue(GeneraKey(valor.x, valor.y), out Ficha f))
+                        {
+                            _fichasEscondidas.Add(f);
+                            f.gameObject.SetActive(false);
+                            if (f.EsColor1)
+                                _numFichasPuestasJ1--;
+                            else
+                                _numFichasPuestasJ2--;
+                        }
+                    }
+                }
+            }
+            
         }
         carta.gameObject.SetActive(false);
     }
@@ -202,6 +225,18 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 PutCuadranteEnDict(_cuadrantesEscondidos[i]);
             }
         }
+        if (_fichasEscondidas != null && _fichasEscondidas.Count > 0)
+        {
+            foreach(Ficha f in _fichasEscondidas)
+            {
+                f.gameObject.SetActive(true);
+                if (f.EsColor1)
+                    _numFichasPuestasJ1++;
+                else
+                    _numFichasPuestasJ2++;
+            }
+        }
+        _fichasEscondidas = null;
         _cartaEscondidaCursor = null;
         _cuadranteEscondidoCursor = null;
     }
@@ -209,18 +244,27 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         if (_cartaEscondidaCursor != null)
         {
-            DictCoordenadasCarta.Remove(GeneraKey(_cartaEscondidaCursor.PosicionTablero.x, _cartaEscondidaCursor.PosicionTablero.y));
+            _dictCoordenadasCarta.Remove(GeneraKey(_cartaEscondidaCursor.PosicionTablero.x, _cartaEscondidaCursor.PosicionTablero.y));
             Destroy(_cartaEscondidaCursor.gameObject);
             if (_cartasEscondidas != null)
             {
                 for (int i = 0; i < _cartasEscondidas.Count; i++)
                 {
                     RemoveCuadranteEnDict(_cartasEscondidas[i].PosicionTablero);
-                    DictCoordenadasCarta.Remove(GeneraKey(_cartasEscondidas[i].PosicionTablero.x, _cartasEscondidas[i].PosicionTablero.y));
+                    _dictCoordenadasCarta.Remove(GeneraKey(_cartasEscondidas[i].PosicionTablero.x, _cartasEscondidas[i].PosicionTablero.y));
                     //Destroy(_cartasEscondidas[i].gameObject);
                 }
             }
         }
+        if (_fichasEscondidas != null && _fichasEscondidas.Count> 0)
+        {
+            foreach(Ficha f in _fichasEscondidas)
+            {
+                _dictCoordenadasFicha.Remove(GeneraKey(f.Cuadrante[2].x, f.Cuadrante[2].y));
+                Destroy(f.gameObject);
+            }
+        }
+        _fichasEscondidas = null;
         _cartaEscondidaCursor = null;
         _cuadranteEscondidoCursor = null;
     }
@@ -283,13 +327,13 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         //Representa el espacio que ocupa la carta
         List<ValorCasilla> cuadrante = GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y);
-        if (EsFase2)
+        if (_esFase2)
         {
-            DictCoordenadasCarta.Remove(GeneraKey(carta.PosicionTablero.x, carta.PosicionTablero.y));
+            _dictCoordenadasCarta.Remove(GeneraKey(carta.PosicionTablero.x, carta.PosicionTablero.y));
         }
         carta.PosicionTablero = posicion;
         //Setea dict de Cartas
-        DictCoordenadasCarta.Add(GeneraKey(posicion.x, posicion.y), carta);
+        _dictCoordenadasCarta.Add(GeneraKey(posicion.x, posicion.y), carta);
         //Setea valores de casillas
         for (int i = 0; i < cuadrante.Count; i++)
         {
@@ -305,7 +349,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             PutValorEnDict(nuevoValorColor2);
             PutValorEnDict(nuevoValorCasillaOcupada);
         }
-        if (EsFase2)
+        if (_esFase2)
         {
             ponFichaFase2(posicion);
         }
@@ -329,7 +373,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 //Caso de que carta flotante pase por coordenada inicial
                 return false;
             }
-            if (DictValoresCasilla.TryGetValue(GeneraKey(posicion.x, posicion.y), out ValorCasilla v))
+            if (_dictValoresCasilla.TryGetValue(GeneraKey(posicion.x, posicion.y), out ValorCasilla v))
             {
                 if (v.esOcupado || !v.esTablero)
                 {
@@ -435,12 +479,12 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     public void InicializaDictValoresCasilla()
     {
         _dictCoordenadasCarta = new Dictionary<string, Carta>();
-        _dictCoordenadasPieza = new Dictionary<string, Ficha>();
-        _numPiezasPuestasJ1 = 0;
-        _numPiezasPuestasJ2 = 0;
+        _dictCoordenadasFicha = new Dictionary<string, Ficha>();
+        _numFichasPuestasJ1 = 0;
+        _numFichasPuestasJ2 = 0;
         if (propiedadesCasillaArray != null && propiedadesCasillaArray.Length > 0)
         {
-            DictValoresCasilla = new Dictionary<string, ValorCasilla>();
+            _dictValoresCasilla = new Dictionary<string, ValorCasilla>();
             for (int i = 0; i < propiedadesCasillaArray.Length; i++)
             {
                 //Elemento SO de una capa de propiedades
@@ -449,7 +493,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     PutValorEnDict(casilla);
                 }
             }
-            EsDictCargado = true;
+            _esDictCargado = true;
         }
     }
     public string GeneraKey(float x, float y)
@@ -466,8 +510,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         foreach (ValorCasilla casilla in cuadrante)
         {
             string key = GeneraKey(casilla.x, casilla.y);
-            DictValoresCasilla.Remove(key);
-            DictValoresCasilla.Add(key, casilla);
+            _dictValoresCasilla.Remove(key);
+            _dictValoresCasilla.Add(key, casilla);
         }
     }
     public List<ValorCasilla> RemoveCuadranteEnDict(Vector3 posicion)
@@ -485,10 +529,10 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         ValorCasilla nuevoValor;
         string key = GeneraKey(x, y);
-        if (DictValoresCasilla.TryGetValue(key, out ValorCasilla value))
+        if (_dictValoresCasilla.TryGetValue(key, out ValorCasilla value))
         {
             nuevoValor = value;
-            DictValoresCasilla.Remove(key);
+            _dictValoresCasilla.Remove(key);
         }
         else
         {
@@ -499,17 +543,17 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         nuevoValor.esOcupado = false;
         nuevoValor.esColor1 = false;
         nuevoValor.esColor2 = false;
-        DictValoresCasilla.Add(key, nuevoValor);
+        _dictValoresCasilla.Add(key, nuevoValor);
 
     }
     private void PutValorEnDict(PropiedadCasilla casilla)
     {
         ValorCasilla nuevoValor;
         string key = GeneraKey(casilla.coordenada.x, casilla.coordenada.y);
-        if (DictValoresCasilla.TryGetValue(key, out ValorCasilla value))
+        if (_dictValoresCasilla.TryGetValue(key, out ValorCasilla value))
         {
             nuevoValor = value;
-            DictValoresCasilla.Remove(key);
+            _dictValoresCasilla.Remove(key);
         }
         else
         {
@@ -534,7 +578,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             default:
                 break;
         }
-        DictValoresCasilla.Add(key, nuevoValor);
+        _dictValoresCasilla.Add(key, nuevoValor);
 
     }
 
@@ -604,7 +648,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         {
             for (int offsetX = 0; offsetX < 2; offsetX++)
             {
-                if (DictValoresCasilla.TryGetValue(GeneraKey(x + offsetX, y + offsetY), out ValorCasilla v))
+                if (_dictValoresCasilla.TryGetValue(GeneraKey(x + offsetX, y + offsetY), out ValorCasilla v))
                 {
                     if (cartaVirtual != null && cartaVirtual.Count > 0)
                     {
@@ -631,7 +675,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     }
     public ValorCasilla GetValorEnCoordenada(int x, int y)
     {
-        if (DictValoresCasilla.TryGetValue(GeneraKey(x, y), out ValorCasilla v))
+        if (_dictValoresCasilla.TryGetValue(GeneraKey(x, y), out ValorCasilla v))
         {
             return v;
         }
@@ -642,11 +686,11 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     }
     public void registraFichaEnTablero(ValorCasilla valorCasilla, Ficha pieza)
     {
-        _dictCoordenadasPieza.Add(GeneraKey(valorCasilla.x, valorCasilla.y), pieza);
+        _dictCoordenadasFicha.Add(GeneraKey(valorCasilla.x, valorCasilla.y), pieza);
         if (pieza.EsColor1)
-            _numPiezasPuestasJ1++;
+            _numFichasPuestasJ1++;
         else
-            _numPiezasPuestasJ2++;
+            _numFichasPuestasJ2++;
 
         List<Carta> cartasAdyacentes = cartasAdyacentesACoordenada(valorCasilla);
         foreach (Carta c in cartasAdyacentes)
@@ -660,7 +704,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
 
         Ficha piezaVisual;
-        _dictCoordenadasPieza.TryGetValue(GeneraKey(pieza.Cuadrante[2].x, pieza.Cuadrante[2].y), out piezaVisual);
+        _dictCoordenadasFicha.TryGetValue(GeneraKey(pieza.Cuadrante[2].x, pieza.Cuadrante[2].y), out piezaVisual);
         List<Carta> cartasAdyacentes = cartasAdyacentesACoordenada(pieza.Cuadrante[2]);
         foreach (Carta c in cartasAdyacentes)
         {
@@ -668,11 +712,11 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
             c.NumCuartosConFicha--;
         }
         Destroy(piezaVisual.gameObject);
-        _dictCoordenadasPieza.Remove(GeneraKey(pieza.Cuadrante[2].x, pieza.Cuadrante[2].y));
+        _dictCoordenadasFicha.Remove(GeneraKey(pieza.Cuadrante[2].x, pieza.Cuadrante[2].y));
         if (pieza.EsColor1)
-            _numPiezasPuestasJ1--;
+            _numFichasPuestasJ1--;
         else
-            _numPiezasPuestasJ2--;
+            _numFichasPuestasJ2--;
     }
     public List<Carta> cartasEnCuadrantesOrtogonalesACoordenada(int x, int y)
     {
@@ -740,7 +784,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     public Ficha getPiezaEnPosicion(Vector3 posicion)
     {
         Ficha retorno = null;
-        _dictCoordenadasPieza.TryGetValue(GeneraKey(posicion.x, posicion.y), out retorno);
+        _dictCoordenadasFicha.TryGetValue(GeneraKey(posicion.x, posicion.y), out retorno);
         return retorno;
     }
     public bool CheckPositionValidityFase1(Vector3Int cursorGridPosition, bool esCursorPieza, bool esTurnoColor1)
@@ -748,7 +792,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         bool retorno = false;
         if (esCursorPieza)
         {
-            if (!_dictCoordenadasPieza.TryGetValue(GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Ficha p))
+            if (!_dictCoordenadasFicha.TryGetValue(GeneraKey(cursorGridPosition.x, cursorGridPosition.y), out Ficha p))
             {
                 retorno = checkPuntoEnPosicion(false, cursorGridPosition, esTurnoColor1, null, false);
             }

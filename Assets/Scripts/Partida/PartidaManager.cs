@@ -8,6 +8,8 @@ public class PartidaManager : MonoBehaviour, ISaveable
     [SerializeField] private GameObject fichaPrefab = null;
     [SerializeField] private GameObject dorsoPrefab = null;
     [SerializeField] private SO_Baraja so_baraja = null;
+    [SerializeField] private int fichasJugadorActual;
+    [SerializeField] private int numeroCartasArrancables;
     private Camera mainCamera;
     private Baraja _baraja;
     
@@ -97,33 +99,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
             PropiedadesCasillasManager.Instance.EscondeCartaDePosicion(cursor.GetGridPositionForCursor());
         }
 
-    }
-
-    private bool checkFinalPartidaFase2()
-    {
-        bool retorno = false;
-        int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
-        int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
-
-
-        //Check final partida en fase 2, si (el jugador solo tiene una ficha puesta Y no hay cartas arrancables= O no le quedan fichas (caso de arrancar grupo)
-
-        int fichasJugadorActual = PropiedadesCasillasManager.Instance.EsTurnoColor1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
-        int numeroCartasArrancables = 0;
-        foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
-        {
-            if (c.NumCuartosConFicha == 0)
-            {
-                numeroCartasArrancables++;
-            }
-        }
-        if (fichasJugadorActual == 0 || (fichasJugadorActual == 1 && numeroCartasArrancables == 0))
-        {
-            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
-            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
-            retorno = true;
-        }
-        return retorno;
     }
     private void ClickEnTableroFase1Event(Vector3 posicion, bool esAccionCarta)
     {
@@ -244,14 +219,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
         cartaNueva.PosicionTablero = posicionNueva;
         cartaNueva.CartasVecinas = new List<int>(idsVecinos);
     }
-    private Ficha InstanciaPieza(string key, FichaSerializable fichaSerializable)
-    {
-        Vector3 posicionFinal = new Vector3(fichaSerializable._cuadrante[2].x / 2, fichaSerializable._cuadrante[2].y, -mainCamera.transform.position.z);
-        GameObject fichaGO = Instantiate(fichaPrefab, posicionFinal, Quaternion.identity);
-        fichaGO.GetComponent<Ficha>().EsColor1 = fichaSerializable._esColor1;
-        PropiedadesCasillasManager.Instance.DictCoordenadasFicha.Add(key, fichaGO.GetComponent<Ficha>());
-        return fichaGO.GetComponent<Ficha>();
-    }
     private Carta InstanciaCarta(string key, CartaSerializable cartaSerializable)
     {
         Vector3 posicionFinal = new Vector3(cartaSerializable.PosicionTablero.x / 2, cartaSerializable.PosicionTablero.y, -mainCamera.transform.position.z);
@@ -295,11 +262,12 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
         int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
-        int fichasJugadorActual = PropiedadesCasillasManager.Instance.EsTurnoColor1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
-        int numeroCartasArrancables = 0;
+        bool esActualTurnoJ1 = PropiedadesCasillasManager.Instance.EsTurnoColor1;
+        fichasJugadorActual = esActualTurnoJ1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
+        numeroCartasArrancables = 0;
         foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
         {
-            if (c.NumCuartosConFicha == 0)
+            if (c.gameObject.activeSelf && c.NumCuartosConFicha == 0)
             {
                 numeroCartasArrancables++;
             }
@@ -307,7 +275,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         //Final partida si el jugador siguiente (que ya esta seteado)
         if (fichasJugadorActual == 0 || (fichasJugadorActual == 1 && numeroCartasArrancables == 0))
         {
-            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!PropiedadesCasillasManager.Instance.EsTurnoColor1 ? "1" : "2"));
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esActualTurnoJ1 ? "1" : "2"));
             EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
         }else
         {
