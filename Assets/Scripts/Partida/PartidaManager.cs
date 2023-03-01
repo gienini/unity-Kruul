@@ -8,7 +8,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
     [SerializeField] private GameObject fichaPrefab = null;
     [SerializeField] private GameObject dorsoPrefab = null;
     [SerializeField] private SO_Baraja so_baraja = null;
-    [SerializeField] private int fichasJugadorActual;
+    [SerializeField] private int fichasJugadorProximo;
     [SerializeField] private int numeroCartasArrancables;
     private Camera mainCamera;
     private Baraja _baraja;
@@ -79,20 +79,20 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         if (cursor.CartaGO != null)
         {
-            Debug.Log("click PONER carta");
+            Debug.Log("click PONER carta X" + cursor.GetGridPositionForCursor().x + " Y" + cursor.GetGridPositionForCursor().y);
             //Tiene carta flotante
             PonCartaEnTableroFase2(cursor.GetGridPositionForCursor(), cursor.CartaGO.GetComponent<Carta>());
         }
         else if (esClickEnFicha)
         {
-            Debug.Log("click QUITAR ficha");
+            Debug.Log("click QUITAR ficha X" + cursor.GetGridPositionForCursor().x + " Y" + cursor.GetGridPositionForCursor().y);
             //Selecciona ficha
             PropiedadesCasillasManager.Instance.EliminaPiezaEnTablero(PropiedadesCasillasManager.Instance.getPiezaEnPosicion(cursor.GetGridPositionForCursor()));
             callJugadaHechaFase2();
         }
         else
         {
-            Debug.Log("click QUITAR carta");
+            Debug.Log("click QUITAR carta X" + cursor.GetGridPositionForCursor().x + " Y" + cursor.GetGridPositionForCursor().y);
             //Selecciona carta
             Carta tmpCarta = PropiedadesCasillasManager.Instance.getCartaEnPosicion(cursor.GetGridPositionForCursor());
             cursor.SetCartaFlotante(tmpCarta);
@@ -262,8 +262,16 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         int fichasPuestasJugador1 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ1;
         int fichasPuestasJugador2 = PropiedadesCasillasManager.Instance.NumFichasPuestasJ2;
-        bool esActualTurnoJ1 = PropiedadesCasillasManager.Instance.EsTurnoColor1;
-        fichasJugadorActual = esActualTurnoJ1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
+        bool esProximoTurnoJ1 = !PropiedadesCasillasManager.Instance.EsTurnoColor1;
+        //Final partida empate
+        if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
+        {
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!esProximoTurnoJ1 ? "1" : "2"));
+            EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
+            return;
+        }
+        
+        fichasJugadorProximo = esProximoTurnoJ1 ? fichasPuestasJugador1 : fichasPuestasJugador2;
         numeroCartasArrancables = 0;
         foreach (Carta c in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Values)
         {
@@ -272,10 +280,11 @@ public class PartidaManager : MonoBehaviour, ISaveable
                 numeroCartasArrancables++;
             }
         }
+        
         //Final partida si el jugador siguiente (que ya esta seteado)
-        if (fichasJugadorActual == 0 || (fichasJugadorActual == 1 && numeroCartasArrancables == 0))
+        if (fichasJugadorProximo == 0 || (fichasJugadorProximo == 1 && numeroCartasArrancables == 0))
         {
-            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esActualTurnoJ1 ? "1" : "2"));
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!esProximoTurnoJ1 ? "1" : "2"));
             EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
         }else
         {

@@ -102,16 +102,14 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         if (_dictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x, posicion.y), out Carta carta))
         {
-
+            _cartasEscondidas = new List<Carta>();
+            _fichasEscondidas = new List<Ficha>();
+            _cuadrantesEscondidos = new List<List<ValorCasilla>>();
+            Dictionary<int, Carta> dictCartasPorOrden = new Dictionary<int, Carta>();
             //Seteamos carta flotante
             escondeCarta(carta, true);
             if (carta.CartasVecinas.Count > 1)
             {
-                _cartasEscondidas = new List<Carta>();
-                _fichasEscondidas = new List<Ficha>();
-                _cuadrantesEscondidos = new List<List<ValorCasilla>>();
-
-                Dictionary<int, Carta> dictCartasPorOrden = new Dictionary<int, Carta>();
                 foreach (Carta cartaDict in _dictCoordenadasCarta.Values)
                 {
                     if (dictCartasPorOrden.TryGetValue(cartaDict.OrdenCarta, out Carta c))
@@ -188,27 +186,20 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         else
         {
             _cartasEscondidas.Add(carta);
-            
-            _cuadrantesEscondidos.Add(RemoveCuadranteEnDict(carta.PosicionTablero));
-            if (_cuadrantesEscondidos != null & _cuadrantesEscondidos.Count> 0)
+            List<ValorCasilla> nuevoCuadranteEsconder = RemoveCuadranteEnDict(carta.PosicionTablero);
+            _cuadrantesEscondidos.Add(nuevoCuadranteEsconder);
+            foreach(ValorCasilla valor in nuevoCuadranteEsconder)
             {
-                foreach(List<ValorCasilla> list in _cuadrantesEscondidos)
+                if (_dictCoordenadasFicha.TryGetValue(GeneraKey(valor.x, valor.y), out Ficha f))
                 {
-                    foreach(ValorCasilla valor in list)
-                    {
-                        if (_dictCoordenadasFicha.TryGetValue(GeneraKey(valor.x, valor.y), out Ficha f))
-                        {
-                            _fichasEscondidas.Add(f);
-                            f.gameObject.SetActive(false);
-                            if (f.EsColor1)
-                                _numFichasPuestasJ1--;
-                            else
-                                _numFichasPuestasJ2--;
-                        }
-                    }
+                    _fichasEscondidas.Add(f);
+                    f.gameObject.SetActive(false);
+                    if (f.EsColor1)
+                        _numFichasPuestasJ1--;
+                    else
+                        _numFichasPuestasJ2--;
                 }
             }
-            
         }
         carta.gameObject.SetActive(false);
     }
@@ -373,14 +364,22 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 //Caso de que carta flotante pase por coordenada inicial
                 return false;
             }
-            if (_dictValoresCasilla.TryGetValue(GeneraKey(posicion.x, posicion.y), out ValorCasilla v))
+            foreach ( ValorCasilla casilla in GetCuadranteEnCoordenada((int)posicion.x, (int)posicion.y))
             {
-                if (v.esOcupado || !v.esTablero)
+                //Caso de carta flotante pasando por encima de casillas ocupadas
+                if (casilla.esOcupado || !casilla.esTablero)
                 {
-                    //Caso de carta flotante pasando por encima de casillas ocupadas
                     return false;
                 }
             }
+            //if (_dictValoresCasilla.TryGetValue(GeneraKey(posicion.x, posicion.y), out ValorCasilla v))
+            //{
+            //    if (v.esOcupado || !v.esTablero)
+            //    {
+            //        //Caso de carta flotante pasando por encima de casillas ocupadas
+            //        return false;
+            //    }
+            //}
             //Tomamos carta virtual
             cartaVirtual = GeneraCartaVirtual(posicion, cartaToCheck);
         }
