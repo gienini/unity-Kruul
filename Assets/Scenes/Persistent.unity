@@ -8333,6 +8333,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanvasDebugText
       objectReference: {fileID: 0}
+    - target: {fileID: 7375991109827525210, guid: a14cf9ad726fdce4f9463402caf0949e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a14cf9ad726fdce4f9463402caf0949e, type: 3}
 --- !u!1 &8325148953771556678
