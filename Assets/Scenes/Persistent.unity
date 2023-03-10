@@ -4808,7 +4808,7 @@ MonoBehaviour:
   redCursorSprite: {fileID: 21300000, guid: b7da371603beeef4dbc6638e0433ae58, type: 3}
   greenCursorSpritePieza: {fileID: 21300000, guid: 099c19922d38cde4b84596a587b7f550,
     type: 3}
-  redCursorSpritePieza: {fileID: 21300000, guid: 099c19922d38cde4b84596a587b7f550,
+  redCursorSpritePieza: {fileID: 21300000, guid: 3b6c5c14ae86a4f46bd8a21e121e6d36,
     type: 3}
   cartaBasePrefab: {fileID: 4667310535363786593, guid: c78810940fcfd3c47a8ee348a2ffb7d5,
     type: 3}

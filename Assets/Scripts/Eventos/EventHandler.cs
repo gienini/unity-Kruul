@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class EventHandler
 {
+    public static event Action JugadorSeleccionaNodoEvent;
+    public static void CallJugadorSeleccionaNodoEvent() {
+        if (JugadorSeleccionaNodoEvent != null)
+        {
+            JugadorSeleccionaNodoEvent();
+        }
+    }
+
     public static event Action JugadaEliminarEvent;
     public static void CallJugadaEliminarEvent()
     {

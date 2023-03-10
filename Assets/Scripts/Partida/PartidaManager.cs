@@ -79,9 +79,19 @@ public class PartidaManager : MonoBehaviour, ISaveable
     {
         if (cursor.CartaGO != null)
         {
-            Debug.Log("click PONER carta X" + cursor.GetGridPositionForCursor().x + " Y" + cursor.GetGridPositionForCursor().y);
-            //Tiene carta flotante
-            PonCartaEnTableroFase2(cursor.GetGridPositionForCursor(), cursor.CartaGO.GetComponent<Carta>());
+            if (PropiedadesCasillasManager.Instance.EsJugadaSeleccionaNodo)
+            {
+                //Jugador selecciona nodo
+                Debug.Log("click SELECCIONAR nodo X" + cursor.GetGridPositionForCursor().x + " Y" + cursor.GetGridPositionForCursor().y);
+                PropiedadesCasillasManager.Instance.seleccionaNodo(cursor.GetGridPositionForCursor());
+            }
+            else
+            {
+                //Tiene carta flotante
+                Debug.Log("click PONER carta X" + cursor.GetGridPositionForCursor().x + " Y" + cursor.GetGridPositionForCursor().y);
+                PonCartaEnTableroFase2(cursor.GetGridPositionForCursor(), cursor.CartaGO.GetComponent<Carta>());
+            }
+            
         }
         else if (esClickEnFicha)
         {

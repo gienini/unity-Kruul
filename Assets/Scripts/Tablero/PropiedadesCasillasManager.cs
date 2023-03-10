@@ -22,6 +22,8 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     private bool _esFase2 = false;
     private int _numFichasPuestasJ1 = 0;
     private int _numFichasPuestasJ2 = 0;
+    private bool _esJugadaSeleccionaNodo = false;
+    public List<Carta>[] CartasSeleccionaNodo;
 
     //SAVE
     private string _iSaveableUniqueID;
@@ -40,6 +42,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     public bool EsFase2 { get => _esFase2; set => _esFase2 = value; }
     public int NumFichasPuestasJ1 { get => _numFichasPuestasJ1; set => _numFichasPuestasJ1 = value; }
     public int NumFichasPuestasJ2 { get => _numFichasPuestasJ2; set => _numFichasPuestasJ2 = value; }
+    public bool EsJugadaSeleccionaNodo { get => _esJugadaSeleccionaNodo; set => _esJugadaSeleccionaNodo = value; }
 
     private void OnEnable()
     {
@@ -172,6 +175,23 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     {
                         //jugador seleccione nodo
                         Debug.Log("JUGADOR SELECCIONA NODO");
+                        _esJugadaSeleccionaNodo = true;
+                        int indice = 0;
+                        CartasSeleccionaNodo = new List<Carta>[2];
+                        foreach (SortedSet<int> arbol in setArboles)
+                        {
+                            CartasSeleccionaNodo[indice] = new List<Carta>();
+                            foreach(int i in arbol)
+                            {
+                                if (dictCartasPorOrden.TryGetValue(i, out Carta c))
+                                {
+                                    CartasSeleccionaNodo[indice].Add(c);
+                                }
+                                
+                            }
+                            indice++;
+                        }
+                        EventHandler.CallJugadorSeleccionaNodoEvent();
                     }
                 }
             }
@@ -352,6 +372,53 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         }
         
         //checkPuntoEnPosicion(posicion);
+    }
+    public void seleccionaNodo(Vector3 posicion)
+    {
+        for (int offsetX = 0; offsetX < 2; offsetX++)
+        {
+            for (int offsetY = 0; offsetY < 2; offsetY++)
+            {
+                if (_dictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x + offsetX, posicion.y + offsetY), out Carta c))
+                {
+                    //Encontrada carta que pertenece al grupo
+                    if (CartasSeleccionaNodo[0].Contains(c))
+                    {
+                        Debug.Log("SE HA SELECCIONADO EL 0");
+                    }else if (CartasSeleccionaNodo[1].Contains(c))
+                    {
+                        Debug.Log("SE HA SELECCIONADO EL 1");
+                    }
+                }
+            }
+        }
+
+    }
+    /// <summary>
+    /// Busca si la posicion del cursor pasa por enciuma de un grupo de cartas
+    /// </summary>
+    /// <param name="posicion"></param>
+    /// <returns></returns>
+    public bool checkGrupoEnPosicion(Vector3 posicion)
+    {
+        if (_dictValoresCasilla.TryGetValue(GeneraKey(posicion.x, posicion.y), out ValorCasilla casilla))
+        {
+            if (casilla.esOcupado)
+            {
+                //Jugador con cursor sobre grupo de cartas
+                for (int offsetX = 0; offsetX < 2; offsetX++)
+                {
+                    for (int offsetY = 0; offsetY < 2; offsetY++)
+                    {
+                        if (_dictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x+offsetX, posicion.y + offsetY), out Carta c)) {
+                            //Encontrada carta que pertenece al grupo
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
     /// <summary>
     /// Checkea si se produce punto en la posicion. Si registraPunto es true solo mira los valores del dict. Si es false hay que pasarle una carta para que haga la comprobacion

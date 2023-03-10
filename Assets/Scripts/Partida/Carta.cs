@@ -10,8 +10,9 @@ public class Carta : MonoBehaviour
     [SerializeField] private string _valorCuartosCarta = null;
     public Vector3 PosicionTablero;
     [SerializeField] private int _ordenCarta;
-
-    [SerializeField] private List<int> _cartasVecinas;
+    [SerializeField] private List<int> _cartasVecinas = null;
+    [SerializeField] private GameObject grupoCarta = null;
+    [SerializeField] private GameObject grupoEliminar = null;
 
     public string ValorCuartosCarta { get => _valorCuartosCarta; set => setValorCuartosCarta(value); }
     public int NumCuartosConFicha { get => _numCuartosConFicha; set => _numCuartosConFicha = value; }
@@ -39,8 +40,9 @@ public class Carta : MonoBehaviour
     //private CoordenadaCasilla _coordenadaCasilla;
     //public CoordenadaCasilla CoordenadaCasilla { get => _coordenadaCasilla; set => _coordenadaCasilla = value; }
     void Start()
-    {   
-        
+    {
+        grupoCarta.SetActive(true);
+        grupoEliminar.SetActive(false);
     }
     private void Update()
     {
@@ -55,5 +57,11 @@ public class Carta : MonoBehaviour
     }
     private void OnEnable()
     {
+    }
+
+    public void ToggleCartaEliminar()
+    {
+        grupoCarta.SetActive(!grupoCarta.activeSelf);
+        grupoEliminar.SetActive(!grupoEliminar.activeSelf);
     }
 }

@@ -37,6 +37,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
+        EventHandler.JugadorSeleccionaNodoEvent += JugadorSeleccionaNodoEvent;
         ISaveableRegister();
     }
     private void OnDisable()
@@ -47,7 +48,13 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
+        EventHandler.JugadorSeleccionaNodoEvent -= JugadorSeleccionaNodoEvent;
         ISaveableDeregister();
+    }
+
+    private void JugadorSeleccionaNodoEvent()
+    {
+        //throw new System.NotImplementedException();
     }
 
     private void JugadaHechaEvent()
@@ -155,38 +162,16 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         Vector3 gridWorldPosition = _grid.CellToWorld(gridPosition);
         //Representa un punto dentro de la pantalla del jugador
         Vector2 gridScreenPosition = _mainCamera.WorldToScreenPoint(gridWorldPosition);
-
         return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, _canvas);
-    }
+        //if (PropiedadesCasillasManager.Instance.EsJugadaSeleccionaNodo)
+        //{
+        //    return RectTransformUtility.PixelAdjustPoint(gridWorldPosition, cursorRectTransform, _canvas);
+        //}
+        //else
+        //{
+        //    return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, _canvas);
+        //}
 
-    public bool CheckPositionValidity(Vector3Int cursorGridPosition)
-    {
-        bool retorno = false;
-        Ficha pieza = PropiedadesCasillasManager.Instance.getPiezaEnPosicion(GetGridPositionForCursor());
-        //Tiene carta flotante
-        if (CartaGO != null)
-        {
-            //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
-            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), PropiedadesCasillasManager.Instance.EsTurnoColor1, CartaGO.GetComponent<Carta>(), true))
-            {
-                retorno = true;
-            }
-        }
-        //Posicion pieza para retirar
-        else if (pieza != null && ((PropiedadesCasillasManager.Instance.EsTurnoColor1 && pieza.EsColor1) || (!PropiedadesCasillasManager.Instance.EsTurnoColor1 && !pieza.EsColor1)))
-        {
-            retorno = true;
-        }
-        else
-        {
-            //Posicion carta para retirar
-            Carta cartaEnPosicion = PropiedadesCasillasManager.Instance.getCartaEnPosicion(GetGridPositionForCursor());
-            if (cartaEnPosicion != null && cartaEnPosicion.NumCuartosConFicha == 0)
-            {
-                retorno = true;
-            }
-        }
-        return retorno;
     }
 
     private void SetCursorValidity(Vector3Int cursorGridPosition)
@@ -195,14 +180,31 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         //Tiene carta flotante
         if (CartaGO != null)
         {
-            //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
-            if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), PropiedadesCasillasManager.Instance.EsTurnoColor1, CartaGO.GetComponent<Carta>(), true))
+            if (PropiedadesCasillasManager.Instance.EsJugadaSeleccionaNodo)
             {
-                SetCursorToValidCarta();
+                //Selecciona nodo para eliminar
+                if (PropiedadesCasillasManager.Instance.checkGrupoEnPosicion(GetGridPositionForCursor()))
+                {
+                    SetCursorToValidPieza();
+                }
+                else
+                {
+                    SetCursorToInvalidPieza();
+                }
+
             }
             else
             {
-                SetCursorToInvalid();
+                //Recoloca carta en tablero
+                //Es ubicacion genera Punto para jugador actual y no es la ubicacion inicial de la carta
+                if (PropiedadesCasillasManager.Instance.checkPuntoEnPosicion(false, GetGridPositionForCursor(), PropiedadesCasillasManager.Instance.EsTurnoColor1, CartaGO.GetComponent<Carta>(), true))
+                {
+                    SetCursorToValidCarta();
+                }
+                else
+                {
+                    SetCursorToInvalid();
+                }
             }
         }
         //Posicion pieza para retirar. No se puede retirar piezas ajenas NI la ultima pieza de un jugador
@@ -243,6 +245,13 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     private void SetCursorToInvalid()
     {
         cursorImage.sprite = redCursorSprite;
+        CursorPositionIsValid = false;
+        CursorPositionIsPieza = false;
+    }
+
+    private void SetCursorToInvalidPieza()
+    {
+        cursorImage.sprite = redCursorSpritePieza;
         CursorPositionIsValid = false;
         CursorPositionIsPieza = false;
     }
