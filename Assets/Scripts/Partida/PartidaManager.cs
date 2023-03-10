@@ -276,7 +276,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
         //Final partida empate
         if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
         {
-            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!esProximoTurnoJ1 ? "1" : "2"));
+            SceneControllerManager.Instance.FadeAndKeepScene("EMPATE");
             EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
             return;
         }

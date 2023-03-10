@@ -287,7 +287,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         CartaGO.GetComponent<Carta>().CartasVecinas = carta.CartasVecinas;
         CartaGO.transform.SetParent(gameObject.transform);
         CartaGO.transform.SetAsFirstSibling();
-        SceneControllerManager.Instance.ToggleAcciones();
     }
 
     public void BotonEliminar()

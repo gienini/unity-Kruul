@@ -106,6 +106,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         if (_dictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x, posicion.y), out Carta carta))
         {
+            bool esToggle = true;
             _cartasEscondidas = new List<Carta>();
             _fichasEscondidas = new List<Ficha>();
             _cuadrantesEscondidos = new List<List<ValorCasilla>>();
@@ -118,7 +119,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 {
                     if (dictCartasPorOrden.TryGetValue(cartaDict.OrdenCarta, out Carta c))
                     {
-                        Debug.Log("ERROR");
+                        Debug.LogError("ERROR");
                     }else
                     {
                         dictCartasPorOrden.Add(cartaDict.OrdenCarta, cartaDict);
@@ -173,6 +174,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     //no son todos iguales
                     if (setArboles.Count > 1)
                     {
+                        esToggle = false;
                         //jugador seleccione nodo
                         Debug.Log("JUGADOR SELECCIONA NODO");
                         _esJugadaSeleccionaNodo = true;
@@ -191,9 +193,13 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                             }
                             indice++;
                         }
-                        EventHandler.CallJugadorSeleccionaNodoEvent();
+                        //EventHandler.CallJugadorSeleccionaNodoEvent();
                     }
                 }
+            }
+            if (esToggle)
+            {
+                SceneControllerManager.Instance.ToggleAcciones();
             }
         }
     }
@@ -385,14 +391,44 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     if (CartasSeleccionaNodo[0].Contains(c))
                     {
                         Debug.Log("SE HA SELECCIONADO EL 0");
-                    }else if (CartasSeleccionaNodo[1].Contains(c))
+                        nodoSeleccionado(0);
+                    }
+                    else if (CartasSeleccionaNodo[1].Contains(c))
                     {
                         Debug.Log("SE HA SELECCIONADO EL 1");
+                        nodoSeleccionado(1);
                     }
                 }
             }
         }
 
+    }
+    private void nodoSeleccionado(int index)
+    {
+        int noIndex = index == 0 ? 1 : 0;
+        foreach (Carta cartaNodo in CartasSeleccionaNodo[index])
+        {
+            cartaNodo.muestraGrupoCarta();
+            escondeCarta(cartaNodo, false);
+        }
+        foreach (Carta cartaNodo in CartasSeleccionaNodo[noIndex])
+        {
+            cartaNodo.muestraGrupoCarta();
+        }
+        _esJugadaSeleccionaNodo = false;
+        SceneControllerManager.Instance.ToggleAcciones();
+    }
+    private void toggleGrupoCartas(int index)
+    {
+        int noIndex = index == 0 ? 1 : 0;
+        foreach (Carta cartaGrupo in CartasSeleccionaNodo[index])
+        {
+            cartaGrupo.muestraCartaEliminar();
+        }
+        foreach (Carta cartaGrupo in CartasSeleccionaNodo[noIndex])
+        {
+            cartaGrupo.muestraGrupoCarta();
+        }
     }
     /// <summary>
     /// Busca si la posicion del cursor pasa por enciuma de un grupo de cartas
@@ -412,10 +448,25 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     {
                         if (_dictCoordenadasCarta.TryGetValue(GeneraKey(posicion.x+offsetX, posicion.y + offsetY), out Carta c)) {
                             //Encontrada carta que pertenece al grupo
+                            if (CartasSeleccionaNodo[0].Contains(c))
+                            {
+                                toggleGrupoCartas(0);
+                            }
+                            else if (CartasSeleccionaNodo[1].Contains(c))
+                            {
+                                toggleGrupoCartas(1);
+                            }
                             return true;
                         }
                     }
                 }
+            }
+        }
+        foreach (List<Carta> grupo in CartasSeleccionaNodo)
+        {
+            foreach (Carta c in grupo)
+            {
+                c.muestraGrupoCarta();
             }
         }
         return false;

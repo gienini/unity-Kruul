@@ -58,10 +58,14 @@ public class Carta : MonoBehaviour
     private void OnEnable()
     {
     }
-
-    public void ToggleCartaEliminar()
+    public void muestraGrupoCarta()
     {
-        grupoCarta.SetActive(!grupoCarta.activeSelf);
-        grupoEliminar.SetActive(!grupoEliminar.activeSelf);
+        grupoCarta.SetActive(true);
+        grupoEliminar.SetActive(false);
+    }
+    public void muestraCartaEliminar()
+    {
+        grupoCarta.SetActive(false);
+        grupoEliminar.SetActive(true);
     }
 }
