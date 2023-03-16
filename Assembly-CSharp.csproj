@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Clases\ISaveable.cs" />
     <Compile Include="Assets\Scripts\Clases\SceneSave.cs" />
     <Compile Include="Assets\Scripts\Clases\SingletonMonobehaviour.cs" />
+    <Compile Include="Assets\Scripts\Clases\SortedSetComparer.cs" />
     <Compile Include="Assets\Scripts\Clases\Vector3Serializable.cs" />
     <Compile Include="Assets\Scripts\Controles\InputManager.cs" />
     <Compile Include="Assets\Scripts\Debug\DorsoAnimacionDebug.cs" />

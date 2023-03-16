@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class SceneControllerManager : SingletonMonobehaviour<SceneControllerManager>, ISaveable
 {
-    private bool isFading;
+    public bool isFading;
     public bool esCambiandoEscena;
     [SerializeField] private CanvasGroup faderCanvasGroup = null;
     [SerializeField] private Image faderImage = null;

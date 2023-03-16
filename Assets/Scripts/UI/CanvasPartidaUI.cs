@@ -35,9 +35,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
 
     void Start()
     {
-        GrupoDorsosUI.GetComponentInChildren<Button>().interactable = false;
-        GrupoPiezasColor1.GetComponentInChildren<Button>().interactable = false;
-        GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = false;
     }
     public void iniciaPartida()
     {
@@ -57,6 +54,7 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
                 _piezasColor2.Add(child);
             }
         }
+        GrupoDorsosUI.GetComponentInChildren<Button>().interactable = false;
         GrupoPiezasColor1.GetComponentInChildren<Button>().interactable = false;
         GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = false;
     }

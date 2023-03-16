@@ -114,7 +114,7 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
 
     private void Update()
     {
-        if (cursorIsEnabled && PropiedadesCasillasManager.Instance.EsDictCargado )
+        if (cursorIsEnabled && PropiedadesCasillasManager.Instance.EsDictCargado && !SceneControllerManager.Instance.isFading)
         {
             DisplayCursor();
         }else {

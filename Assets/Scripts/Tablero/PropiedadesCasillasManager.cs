@@ -66,6 +66,7 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     private void AcabaFase1Event()
     {
         _esFase1 = false;
+        _esTurnoColor1 = !_esTurnoColor1;
     }
 
     private void EmpiezaFase1Event()
@@ -165,12 +166,12 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                 //Hay mas de un arbol de nodos para mantener
                 if (nodosMantener.Keys.Count > 1)
                 {
-                    HashSet<SortedSet<int>> setArboles = new HashSet<SortedSet<int>>();
-                    foreach (SortedSet<int> arbolNodos in nodosMantener.Values)
+                    HashSet<SortedSet<int>> setArboles = new HashSet<SortedSet<int>>(new SortedSetComparer());
+                    foreach (SortedSet<int> arbolNodosParaAñadir in nodosMantener.Values)
                     {
-                        if (!setArboles.Contains(arbolNodos))
+                        if (!setArboles.Contains(arbolNodosParaAñadir))
                         {
-                            setArboles.Add(arbolNodos);
+                            setArboles.Add(arbolNodosParaAñadir);
                         }
 
                     }
