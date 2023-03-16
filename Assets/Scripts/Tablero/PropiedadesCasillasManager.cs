@@ -168,7 +168,10 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
                     HashSet<SortedSet<int>> setArboles = new HashSet<SortedSet<int>>();
                     foreach (SortedSet<int> arbolNodos in nodosMantener.Values)
                     {
-                        setArboles.Add(arbolNodos);
+                        if (!setArboles.Contains(arbolNodos))
+                        {
+                            setArboles.Add(arbolNodos);
+                        }
 
                     }
                     //no son todos iguales

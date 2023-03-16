@@ -35,6 +35,9 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
 
     void Start()
     {
+    }
+    public void iniciaPartida()
+    {
         _piezasColor1 = new List<Image>();
         foreach (Image child in GrupoPiezasColor1.GetComponentsInChildren<Image>())
         {
@@ -144,28 +147,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         }
         
     }
-    //private IEnumerator Fade(float finalAlpha)
-    //{
-    //    StartCoroutine(SceneControllerManager.Instance.Fade(finalAlpha));
-    //    //Seteamos a true para que no salte la corutine
-    //    isFading = true;
-    //    faderCanvasGroup.blocksRaycasts = true;
-
-    //    float fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / Settings.FadeDuration;
-
-    //    while (!Mathf.Approximately(faderCanvasGroup.alpha, finalAlpha))
-    //    {
-    //        //Movemos opacidad del canvas group que tapa todo en negro
-    //        faderCanvasGroup.alpha = Mathf.MoveTowards(faderCanvasGroup.alpha, finalAlpha, fadeSpeed * Time.deltaTime);
-
-    //        //Espera un frame para mostrar el cambio en el fade y seguimos
-    //        yield return null;
-    //    }
-
-    //    isFading = false;
-
-    //    faderCanvasGroup.blocksRaycasts = true;
-    //}
     private void JugadaHechaEvent()
     {
         if (PropiedadesCasillasManager.Instance.EsFase1)
@@ -211,9 +192,11 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
 
     private void EmpiezaFase1Event()
     {
+        iniciaPartida();
         mainCamera = Camera.main;
         _camaraPosicionZ = mainCamera.transform.position.z;
         _esTriggerAnimacionInicial = true;
+        refreshFichas();
     }
     private IEnumerator instanciaPilaDorsos(int barajaCount)
     {
