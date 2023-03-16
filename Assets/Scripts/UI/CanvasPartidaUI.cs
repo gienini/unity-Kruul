@@ -21,7 +21,7 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     private List<GameObject> _listDorsos;
     private float _camaraPosicionZ;
     private bool _esTriggerAnimacionInicial = false;
-    private bool isFading;
+    private bool esSeleccionAccion = false;
 
     private string _iSaveableUniqueID;
     public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
@@ -35,6 +35,9 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
 
     void Start()
     {
+        GrupoDorsosUI.GetComponentInChildren<Button>().interactable = false;
+        GrupoPiezasColor1.GetComponentInChildren<Button>().interactable = false;
+        GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = false;
     }
     public void iniciaPartida()
     {
@@ -102,12 +105,17 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     }
     private void escondeOpcionesAccion()
     {
-        //FaderPartidaUI.transform.SetAsLastSibling();
-        GrupoPiezasColor2.SetActive(true);
-        GrupoPiezasColor1.SetActive(true);
-        GrupoPiezasColor1.GetComponentInChildren<Button>().interactable = false;
-        GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = false;
-        StartCoroutine(SceneControllerManager.Instance.Fade(0f));
+        if (esSeleccionAccion)
+        {
+            esSeleccionAccion = false;
+            //FaderPartidaUI.transform.SetAsLastSibling();
+            GrupoPiezasColor2.SetActive(true);
+            GrupoPiezasColor1.SetActive(true);
+            GrupoPiezasColor1.GetComponentInChildren<Button>().interactable = false;
+            GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = false;
+            GrupoDorsosUI.GetComponentInChildren<Button>().interactable = false;
+            StartCoroutine(SceneControllerManager.Instance.Fade(0f));
+        }
     }
     private void muestraOpcionesAccion(bool esJugador1)
     {
@@ -145,6 +153,8 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         {
             GrupoPiezasColor2.GetComponentInChildren<Button>().interactable = true;
         }
+        GrupoDorsosUI.GetComponentInChildren<Button>().interactable = true;
+        esSeleccionAccion = true;
         
     }
     private void JugadaHechaEvent()
