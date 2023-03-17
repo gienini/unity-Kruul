@@ -113,7 +113,7 @@ public class CanvasPartidaUI : MonoBehaviour
     private void muestraOpcionesAccion(bool esJugador1)
     {
         grupoSeleccionAccion.gameObject.SetActive(true);
-        StartCoroutine(AnimacionFade(1f, esJugador1));
+        StartCoroutine(AnimacionFade(0.5f, esJugador1));
     }
     private void displayNombreJugador()
     {
