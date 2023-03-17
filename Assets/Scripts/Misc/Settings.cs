@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class Settings
 {
+    //Escena
+    public static string NombreEscenaJuego = NombresEscena.Escena_2.ToString();
     //Efectos
     public static float TiempoLevantarCarta = 1f;
     public static float FadeDuration = 1f;

@@ -301,7 +301,7 @@ SortingGroup:
   m_GameObject: {fileID: 846893100861711467}
   m_Enabled: 1
   m_SortingLayerID: 2139500023
-  m_SortingLayer: 5
+  m_SortingLayer: 0
   m_SortingOrder: 1
 --- !u!114 &8909620349335265829
 MonoBehaviour:
@@ -619,7 +619,7 @@ SortingGroup:
   m_GameObject: {fileID: 2520817637284610385}
   m_Enabled: 1
   m_SortingLayerID: 2139500023
-  m_SortingLayer: 5
+  m_SortingLayer: 0
   m_SortingOrder: 1
 --- !u!114 &3665393537073821791
 MonoBehaviour:
@@ -1793,7 +1793,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.5, y: 1}
+  m_SizeDelta: {x: 0.75, y: 0.75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &801909408087106197
 MonoBehaviour:

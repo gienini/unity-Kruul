@@ -18,5 +18,6 @@ public enum NombresEscena
 {
     Escena_PartidaNormal,
     Escena_PartidaTutorial,
+    Escena_2,
     none
 }

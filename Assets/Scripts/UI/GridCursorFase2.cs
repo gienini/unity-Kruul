@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GridCursorFase2 : MonoBehaviour, ISaveable
+public class GridCursorFase2 : MonoBehaviour
 {
     [SerializeField] private Image cursorImage = null;
     [SerializeField] private RectTransform cursorRectTransform = null;
@@ -20,10 +20,7 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     private bool _cursorPositionIsValid = false;
     private bool _cursorPositionIsPieza = false;
     private bool _cursorIsEnabled = false;
-    private string _iSaveableUniqueID;
-    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
-    public GameObjectSave _gameObjectSave;
-    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
+    
     public bool CursorPositionIsValid { get => _cursorPositionIsValid; set => _cursorPositionIsValid = value; }
     public bool CursorIsEnabled { get => _cursorIsEnabled; set => _cursorIsEnabled = value; }
     public GameObject CartaGO { get => _cartaGO; set => _cartaGO = value; }
@@ -38,7 +35,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.AntesFadeOutEvent += AntesFadeOutEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
         EventHandler.JugadorSeleccionaNodoEvent += JugadorSeleccionaNodoEvent;
-        ISaveableRegister();
     }
     private void OnDisable()
     {
@@ -49,7 +45,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         EventHandler.AntesFadeOutEvent -= AntesFadeOutEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
         EventHandler.JugadorSeleccionaNodoEvent -= JugadorSeleccionaNodoEvent;
-        ISaveableDeregister();
     }
 
     private void JugadorSeleccionaNodoEvent()
@@ -92,8 +87,6 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
     }
     private void Awake()
     {
-        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
-        GameObjectSave = new GameObjectSave();
         _mainCamera = Camera.main;
         _canvas = GetComponentInParent<Canvas>();
         cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 0f);
@@ -305,68 +298,5 @@ public class GridCursorFase2 : MonoBehaviour, ISaveable
         SceneControllerManager.Instance.ToggleAcciones();
     }
 
-    public void ISaveableRegister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
-    }
-
-    public void ISaveableDeregister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
-    }
-
-    public GameObjectSave IsaveableSave()
-    {
-        SceneSave sceneSave = new SceneSave();
-        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
-        sceneSave.boolDictionary = new Dictionary<string, bool>();
-        sceneSave.boolDictionary.Add("cursorIsEnabled", _cursorIsEnabled);
-        sceneSave.boolDictionary.Add("cursorPositionIsPieza", _cursorPositionIsPieza);
-        if (_cartaGO != null)
-        {
-            sceneSave.cartaEscondidaCursor = new CartaSerializable(_cartaGO.GetComponent<Carta>());
-        }
-        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
-        return GameObjectSave;
-    }
-
-
-    public void IsaveableLoad(GameSave gameSave)
-    {
-        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
-        {
-            GameObjectSave = gameObjectSave;
-            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
-            {
-                if (sceneSave.boolDictionary != null)
-                {
-                    if (sceneSave.boolDictionary.TryGetValue("cursorIsEnabled", out bool cursorIsEnabled))
-                    {
-                        _cursorIsEnabled = cursorIsEnabled;
-                    }
-                    if (sceneSave.boolDictionary.TryGetValue("cursorPositionIsPieza", out bool cursorPositionIsPieza))
-                    {
-                        _cursorPositionIsPieza = cursorPositionIsPieza;
-                    }
-                }
-                if (sceneSave.cartaEscondidaCursor != null)
-                {
-                    _cartaGO = Instantiate(cartaBasePrefab, _canvas.transform);
-                    _cartaGO.GetComponent<Carta>().ValorCuartosCarta = sceneSave.cartaEscondidaCursor.valorCuartosCarta;
-                    _cartaGO.transform.SetParent(gameObject.transform);
-                    _cartaGO.transform.SetAsFirstSibling();
-                }
-            }
-        }
-    }
-
-    public void IsaveableStoreScene(string sceneName)
-    {
-        //
-    }
-
-    public void IsaveableRestoreScene(string sceneName)
-    {
-        //
-    }
+   
 }

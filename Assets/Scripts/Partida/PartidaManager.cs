@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PartidaManager : MonoBehaviour, ISaveable
+public class PartidaManager : MonoBehaviour
 {
     [SerializeField] private GameObject cartaBasePrefab = null;
     [SerializeField] private GameObject fichaPrefab = null;
@@ -15,10 +15,7 @@ public class PartidaManager : MonoBehaviour, ISaveable
     
 
     public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
-    private string _iSaveableUniqueID;
-    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
-    public GameObjectSave _gameObjectSave;
-    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
+   
 
     private void OnEnable()
     {
@@ -29,7 +26,6 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
         EventHandler.JugadaEliminarEvent += callJugadaHechaFase2;
-        ISaveableRegister();
     }
     private void OnDisable()
     {
@@ -40,13 +36,10 @@ public class PartidaManager : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
         EventHandler.JugadaEliminarEvent -= callJugadaHechaFase2;
-        ISaveableDeregister();
     }
 
     private void Awake()
     {
-        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
-        GameObjectSave = new GameObjectSave();
     }
 
     private void Start()
@@ -302,120 +295,4 @@ public class PartidaManager : MonoBehaviour, ISaveable
         }
     }
 
-    #region
-    public void ISaveableRegister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
-    }
-
-    public void ISaveableDeregister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
-    }
-
-    public GameObjectSave IsaveableSave()
-    {
-        SceneSave sceneSave = new SceneSave();
-        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
-        sceneSave.boolDictionary = new Dictionary<string, bool>();
-
-        if (_baraja._pilaCartas != null && _baraja._pilaCartas.Count > 0)
-        {
-            sceneSave.stringDictionary = new Dictionary<string, string>();
-            for (int i = 0; i < _baraja._pilaCartas.Count; i++)
-            {
-                sceneSave.stringDictionary.Add(i.ToString(), _baraja._pilaCartas[i]);
-            }
-        }
-        if (PropiedadesCasillasManager.Instance.DictCoordenadasCarta != null)
-        {
-            Dictionary<string, CartaSerializable> dictCoordenadasCartaSerializable = new Dictionary<string, CartaSerializable>();
-            foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasCarta.Keys)
-            {
-                dictCoordenadasCartaSerializable.Add(key, new CartaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasCarta[key]));
-            }
-            sceneSave.dictCoordenadasCarta = dictCoordenadasCartaSerializable;
-        }
-        if (PropiedadesCasillasManager.Instance.DictCoordenadasFicha != null)
-        {
-            Dictionary<string, FichaSerializable> dictCoordenadasPiezaSerializable = new Dictionary<string, FichaSerializable>();
-            foreach (string key in PropiedadesCasillasManager.Instance.DictCoordenadasFicha.Keys)
-            {
-                dictCoordenadasPiezaSerializable.Add(key, new FichaSerializable(PropiedadesCasillasManager.Instance.DictCoordenadasFicha[key]));
-            }
-            sceneSave.dictCoordenadasPieza = dictCoordenadasPiezaSerializable;
-        }
-        if (PropiedadesCasillasManager.Instance.CartasEscondidas != null)
-        {
-            List<CartaSerializable> cartasEscondidasSerializable = new List<CartaSerializable>();
-            foreach (Carta c in PropiedadesCasillasManager.Instance.CartasEscondidas)
-            {
-                cartasEscondidasSerializable.Add(new CartaSerializable(c));
-            }
-            sceneSave.cartasEscondidas = cartasEscondidasSerializable;
-        }
-        if (PropiedadesCasillasManager.Instance.CartaEscondidaCursor != null)
-        {
-            sceneSave.cartaEscondidaCursor = new CartaSerializable(PropiedadesCasillasManager.Instance.CartaEscondidaCursor);
-        }
-        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
-        return GameObjectSave;
-    }
-
-    public void IsaveableLoad(GameSave gameSave)
-    {
-        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
-        {
-            GameObjectSave = gameObjectSave;
-            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
-            {
-
-                if (sceneSave.stringDictionary != null && sceneSave.stringDictionary.Count > 0)
-                {
-                    List<string> cartasBaraja = new List<string>();
-                    foreach (string cartaSave in sceneSave.stringDictionary.Values)
-                    {
-                        cartasBaraja.Add(cartaSave);
-                    }
-                    _baraja = new Baraja(cartasBaraja);
-                }
-                if (sceneSave.dictCoordenadasCarta != null && sceneSave.dictCoordenadasCarta.Count > 0)
-                {
-                    PropiedadesCasillasManager.Instance.DictCoordenadasCarta = new Dictionary<string, Carta>();
-                    foreach (string key in sceneSave.dictCoordenadasCarta.Keys)
-                    {
-                        InstanciaCarta(key, sceneSave.dictCoordenadasCarta[key]);
-                    }
-                }
-                if (sceneSave.dictCoordenadasPieza != null && sceneSave.dictCoordenadasPieza.Count > 0)
-                {
-                    PropiedadesCasillasManager.Instance.DictCoordenadasFicha = new Dictionary<string, Ficha>();
-                    foreach (string key in sceneSave.dictCoordenadasPieza.Keys)
-                    {
-                        //InstanciaPieza(key, sceneSave.dictCoordenadasPieza[key]);
-                    }
-                }
-                //if (sceneSave.cartasEscondidas != null && sceneSave.cartasEscondidas.Count > 0)
-                //{
-                //    foreach(CartaSerializable cartaSer in sceneSave.cartasEscondidas)
-                //    {
-                //        InstanciaCarta(cartaSer);
-                //    }
-                //}
-                //private List<CartaSerializable> cartasEscondidasSerializable;
-                //private CartaSerializable cartaEscondidaCursorSerializable;
-            }
-        }
-    }
-
-    public void IsaveableStoreScene(string sceneName)
-    {
-        //
-    }
-
-    public void IsaveableRestoreScene(string sceneName)
-    {
-        //
-    }
-    #endregion
 }

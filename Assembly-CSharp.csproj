@@ -64,11 +64,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Clases\GameObjectSave.cs" />
-    <Compile Include="Assets\Scripts\Clases\GameSave.cs" />
+    <Compile Include="Assets\Cainos\Pixel Art Top Down - Basic\Script\CameraFollow.cs" />
+    <Compile Include="Assets\Cainos\Pixel Art Top Down - Basic\Script\LayerTrigger.cs" />
+    <Compile Include="Assets\Cainos\Pixel Art Top Down - Basic\Script\PropsAltar.cs" />
+    <Compile Include="Assets\Cainos\Pixel Art Top Down - Basic\Script\SpriteColorAnimation.cs" />
+    <Compile Include="Assets\Cainos\Pixel Art Top Down - Basic\Script\TopDownCharacterController.cs" />
     <Compile Include="Assets\Scripts\Clases\GenerateGUID.cs" />
-    <Compile Include="Assets\Scripts\Clases\ISaveable.cs" />
-    <Compile Include="Assets\Scripts\Clases\SceneSave.cs" />
     <Compile Include="Assets\Scripts\Clases\SingletonMonobehaviour.cs" />
     <Compile Include="Assets\Scripts\Clases\SortedSetComparer.cs" />
     <Compile Include="Assets\Scripts\Clases\Vector3Serializable.cs" />
@@ -88,7 +89,6 @@
     <Compile Include="Assets\Scripts\Partida\FichaSerializable.cs" />
     <Compile Include="Assets\Scripts\Partida\MenuPrincipalManager.cs" />
     <Compile Include="Assets\Scripts\Partida\PartidaManager.cs" />
-    <Compile Include="Assets\Scripts\Partida\SaveLoadManager.cs" />
     <Compile Include="Assets\Scripts\Partida\SceneControllerManager.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\Baraja.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\CoordenadaCasilla.cs" />
@@ -112,6 +112,8 @@
     <None Include="Assets\Sprites\propios\shader\NewUnlitShader.shader" />
     <None Include="Assets\Sprites\propios\shader\NewRayTracingShader.raytrace" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
+    <None Include="Assets\Cainos\Pixel Art Top Down - Basic\Changelog.txt" />
+    <None Include="Assets\Cainos\Pixel Art Top Down - Basic\Shader\SH Sprite Shadow.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\Sprites\propios\shader\NewImageEffectShader.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
@@ -127,6 +129,7 @@
     <None Include="Assets\Modular Cards DEMO\Documentation.txt" />
     <None Include="Assets\Hand Painted Seamless Wood Texture\Documentation\Documentation.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\Cainos\Pixel Art Top Down - Basic\Shader\SH Sprite Shadow Mask.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />

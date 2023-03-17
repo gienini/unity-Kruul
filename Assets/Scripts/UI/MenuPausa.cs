@@ -12,7 +12,7 @@ public class MenuPausa : MonoBehaviour
     public void BotonReiniciarPartida()
     {
         PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
-        SceneControllerManager.Instance.FadeAndLoadScene(NombresEscena.Escena_PartidaNormal.ToString());
+        SceneControllerManager.Instance.FadeAndLoadScene(Settings.NombreEscenaJuego);
         
     }
 
@@ -29,16 +29,5 @@ public class MenuPausa : MonoBehaviour
     public void BotonSalirDelJuego()
     {
         SceneControllerManager.Instance.Quit();
-    }
-
-    public void BotonGuardar()
-    {
-        SaveLoadManager.Instance.SaveDataToFile();
-    }
-
-    public void BotonCargar()
-    {
-        PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
-        SceneControllerManager.Instance.FadeAndLoadSceneCargar(NombresEscena.Escena_PartidaNormal.ToString());
     }
 }

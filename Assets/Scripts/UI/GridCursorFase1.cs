@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GridCursorFase1 : MonoBehaviour, ISaveable
+public class GridCursorFase1 : MonoBehaviour
 {
     [SerializeField] private Image cursorImage = null;
     [SerializeField] private RectTransform cursorRectTransform = null;
@@ -22,11 +22,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
     private Canvas _canvas;
     private Grid _grid;
     private Camera _mainCamera;
-
-    private string _iSaveableUniqueID;
-    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
-    public GameObjectSave _gameObjectSave;
-    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
     public bool CursorPositionIsValid { get => _cursorPositionIsValid && cursorIsEnabled; set => _cursorPositionIsValid = value; }
     public GameObject CartaGO { get => _cartaGO; set => _cartaGO = value; }
     public bool EsCursorPieza { get => _esCursorPieza; set => _esCursorPieza = value; }
@@ -101,8 +96,6 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         _mainCamera = Camera.main;
         _canvas = GetComponentInParent<Canvas>();
         cursorImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 0f);
-        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
-        GameObjectSave = new GameObjectSave();
     }
     private void Start()
     {
@@ -294,71 +287,5 @@ public class GridCursorFase1 : MonoBehaviour, ISaveable
         _cartaGO.GetComponent<Carta>().ValorCuartosCarta = cuartosProximaCarta;
         _cartaGO.transform.SetParent(gameObject.transform);
         _cartaGO.transform.SetAsFirstSibling();
-    }
-
-    public void ISaveableRegister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
-    }
-
-    public void ISaveableDeregister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
-    }
-
-    public GameObjectSave IsaveableSave()
-    {
-        SceneSave sceneSave = new SceneSave();
-        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
-        sceneSave.boolDictionary = new Dictionary<string, bool>();
-        sceneSave.boolDictionary.Add("cursorIsEnabled", cursorIsEnabled);
-        sceneSave.boolDictionary.Add("esCursorPieza", _esCursorPieza);
-        if (_cartaGO != null)
-        {
-            sceneSave.cartaEscondidaCursor = new CartaSerializable(_cartaGO.GetComponent<Carta>());
-        }
-        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
-        return GameObjectSave;
-    }
-
-
-    public void IsaveableLoad(GameSave gameSave)
-    {
-        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
-        {
-            GameObjectSave = gameObjectSave;
-            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
-            {
-                _grid = GameObject.FindObjectOfType<Grid>();
-                if (sceneSave.boolDictionary != null)
-                {
-                    if (sceneSave.boolDictionary.TryGetValue("cursorIsEnabled", out bool cursorIsEnabled))
-                    {
-                        this.cursorIsEnabled = cursorIsEnabled;
-                    }
-                    if (sceneSave.boolDictionary.TryGetValue("esCursorPieza", out bool esCursorPieza))
-                    {
-                        _esCursorPieza = esCursorPieza;
-                    }
-                }
-                if (sceneSave.cartaEscondidaCursor != null)
-                {
-                    _cartaGO = Instantiate(cartaBasePrefab, _canvas.transform);
-                    _cartaGO.GetComponent<Carta>().ValorCuartosCarta = sceneSave.cartaEscondidaCursor.valorCuartosCarta;
-                    _cartaGO.transform.SetParent(gameObject.transform);
-                    _cartaGO.transform.SetAsFirstSibling();
-                }
-            }
-        }
-    }
-
-    public void IsaveableStoreScene(string sceneName)
-    {
-        //
-    }
-
-    public void IsaveableRestoreScene(string sceneName)
-    {
-        //
     }
 }

@@ -26,7 +26,7 @@ public class MenuPrincipalManager : MonoBehaviour
 
     public void BotonEmpezarJuego()
     {
-        SceneControllerManager.Instance.FadeAndLoadScene(NombresEscena.Escena_PartidaNormal.ToString());
+        SceneControllerManager.Instance.FadeAndLoadScene(Settings.NombreEscenaJuego);
     }
 
     private void EmpiezaFase1Event()

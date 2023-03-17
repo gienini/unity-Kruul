@@ -18,6 +18,76 @@ MonoBehaviour:
   originY: -9
   propiedadCasillaList:
   - coordenada:
+      x: -20
+      y: -4
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: -3
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: -2
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: -1
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 0
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 1
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 2
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 3
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 4
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 5
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 6
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 7
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -20
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -19
       y: -4
     propiedad: 0
@@ -80,6 +150,11 @@ MonoBehaviour:
   - coordenada:
       x: -19
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -19
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -148,6 +223,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -18
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -17
       y: -4
     propiedad: 0
@@ -210,6 +290,11 @@ MonoBehaviour:
   - coordenada:
       x: -17
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -17
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -278,6 +363,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -16
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -15
       y: -4
     propiedad: 0
@@ -340,6 +430,11 @@ MonoBehaviour:
   - coordenada:
       x: -15
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -15
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -408,6 +503,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -14
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -13
       y: -4
     propiedad: 0
@@ -470,6 +570,11 @@ MonoBehaviour:
   - coordenada:
       x: -13
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -13
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -538,6 +643,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -12
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -11
       y: -4
     propiedad: 0
@@ -600,6 +710,11 @@ MonoBehaviour:
   - coordenada:
       x: -11
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -11
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -668,6 +783,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -10
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -9
       y: -4
     propiedad: 0
@@ -730,6 +850,11 @@ MonoBehaviour:
   - coordenada:
       x: -9
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -9
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -798,6 +923,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -8
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -7
       y: -4
     propiedad: 0
@@ -860,6 +990,11 @@ MonoBehaviour:
   - coordenada:
       x: -7
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -7
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -928,6 +1063,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -6
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -5
       y: -4
     propiedad: 0
@@ -990,6 +1130,11 @@ MonoBehaviour:
   - coordenada:
       x: -5
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -5
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1058,6 +1203,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -4
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -3
       y: -4
     propiedad: 0
@@ -1120,6 +1270,11 @@ MonoBehaviour:
   - coordenada:
       x: -3
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -3
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1188,6 +1343,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: -2
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: -1
       y: -4
     propiedad: 0
@@ -1250,6 +1410,11 @@ MonoBehaviour:
   - coordenada:
       x: -1
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: -1
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1318,6 +1483,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 0
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 1
       y: -4
     propiedad: 0
@@ -1380,6 +1550,11 @@ MonoBehaviour:
   - coordenada:
       x: 1
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 1
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1448,6 +1623,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 2
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 3
       y: -4
     propiedad: 0
@@ -1510,6 +1690,11 @@ MonoBehaviour:
   - coordenada:
       x: 3
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 3
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1578,6 +1763,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 4
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 5
       y: -4
     propiedad: 0
@@ -1640,6 +1830,11 @@ MonoBehaviour:
   - coordenada:
       x: 5
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 5
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1708,6 +1903,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 6
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 7
       y: -4
     propiedad: 0
@@ -1770,6 +1970,11 @@ MonoBehaviour:
   - coordenada:
       x: 7
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 7
+      y: 9
     propiedad: 0
     valor: 1
   - coordenada:
@@ -1838,6 +2043,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 8
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 9
       y: -4
     propiedad: 0
@@ -1903,6 +2113,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 9
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 10
       y: -4
     propiedad: 0
@@ -1968,6 +2183,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 10
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 11
       y: -4
     propiedad: 0
@@ -2033,6 +2253,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 11
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 12
       y: -4
     propiedad: 0
@@ -2098,6 +2323,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 12
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 13
       y: -4
     propiedad: 0
@@ -2163,6 +2393,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 13
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 14
       y: -4
     propiedad: 0
@@ -2228,6 +2463,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 14
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 15
       y: -4
     propiedad: 0
@@ -2293,6 +2533,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 15
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 16
       y: -4
     propiedad: 0
@@ -2358,6 +2603,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 16
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 17
       y: -4
     propiedad: 0
@@ -2423,6 +2673,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 17
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 18
       y: -4
     propiedad: 0
@@ -2488,6 +2743,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 18
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 19
       y: -4
     propiedad: 0
@@ -2553,6 +2813,11 @@ MonoBehaviour:
     propiedad: 0
     valor: 1
   - coordenada:
+      x: 19
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
       x: 20
       y: -4
     propiedad: 0
@@ -2615,5 +2880,150 @@ MonoBehaviour:
   - coordenada:
       x: 20
       y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 20
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: -4
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: -3
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: -2
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: -1
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 0
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 1
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 2
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 3
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 4
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 5
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 6
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 7
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 21
+      y: 9
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: -4
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: -3
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: -2
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: -1
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 0
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 1
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 2
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 3
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 4
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 5
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 6
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 7
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 8
+    propiedad: 0
+    valor: 1
+  - coordenada:
+      x: 22
+      y: 9
     propiedad: 0
     valor: 1

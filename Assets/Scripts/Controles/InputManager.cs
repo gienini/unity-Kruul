@@ -10,7 +10,7 @@ public class InputManager : MonoBehaviour
     private bool _esClicando = false;
     private void Update()
     {
-        if (SceneControllerManager.Instance.EscenaActual == NombresEscena.Escena_PartidaNormal.ToString())
+        if (SceneControllerManager.Instance.EscenaActual == Settings.NombreEscenaJuego)
         {
             if (PropiedadesCasillasManager.Instance.EsFase1)
             {

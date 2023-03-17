@@ -25,9 +25,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Layer 1
+  - Layer 2
+  - Layer 3
   - 
   - 
   - 
@@ -42,17 +42,20 @@ TagManager:
     uniqueID: 0
     locked: 0
   - name: Mesa
-    uniqueID: 121487299
+    uniqueID: 2425651459
+    locked: 0
+  - name: Sombras
+    uniqueID: 669503019
     locked: 0
   - name: Tablero
-    uniqueID: 2874609849
+    uniqueID: 4250941897
     locked: 0
   - name: Instancias
-    uniqueID: 655590843
+    uniqueID: 4189426099
+    locked: 0
+  - name: Efectos
+    uniqueID: 3924598659
     locked: 0
   - name: Logica
-    uniqueID: 3149830385
-    locked: 0
-  - name: efectos
-    uniqueID: 2139500023
+    uniqueID: 2419367687
     locked: 0

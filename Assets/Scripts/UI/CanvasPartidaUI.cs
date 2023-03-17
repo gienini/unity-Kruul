@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CanvasPartidaUI : MonoBehaviour, ISaveable
+public class CanvasPartidaUI : MonoBehaviour
 {
     [SerializeField] private GameObject GrupoPiezasColor1 = null;
     [SerializeField] private GameObject GrupoPiezasColor2 = null;
@@ -23,14 +23,8 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
     private bool _esTriggerAnimacionInicial = false;
     private bool esSeleccionAccion = false;
 
-    private string _iSaveableUniqueID;
-    public string ISaveableUniqueID { get => _iSaveableUniqueID; set => _iSaveableUniqueID = value; }
-    public GameObjectSave _gameObjectSave;
-    public GameObjectSave GameObjectSave { get => _gameObjectSave; set => _gameObjectSave = value; }
     private void Awake()
     {
-        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
-        GameObjectSave = new GameObjectSave();
     }
 
     void Start()
@@ -68,7 +62,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent += JugadaHechaEvent;
         EventHandler.AccionSeleccionadaEvent += AccionSeleccionadaEvent;
-        ISaveableRegister();
     }
     private void OnDisable()
     {
@@ -76,7 +69,6 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.JugadaHechaEvent -= JugadaHechaEvent;
         EventHandler.AccionSeleccionadaEvent -= AccionSeleccionadaEvent;
-        ISaveableDeregister();
     }
 
     private void AccionSeleccionadaEvent(bool esCarta)
@@ -270,123 +262,4 @@ public class CanvasPartidaUI : MonoBehaviour, ISaveable
         yield return null;
     }
 
-    public void ISaveableRegister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
-    }
-
-    public void ISaveableDeregister()
-    {
-        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
-    }
-
-    public GameObjectSave IsaveableSave()
-    {
-        SceneSave sceneSave = new SceneSave();
-        GameObjectSave.sceneData.Remove(NombresEscena.Escena_PartidaNormal.ToString());
-        sceneSave.dictVector3 = new Dictionary<string, List<Vector3Serializable>>();
-        if (_piezasColor1 != null && _piezasColor1.Count > 0)
-        {
-            List<Vector3Serializable> images = new List<Vector3Serializable>();
-            foreach(Image pieza in _piezasColor1)
-            {
-                images.Add(new Vector3Serializable(pieza.gameObject.transform.position.x, pieza.transform.position.y, pieza.transform.position.z));
-            }
-            sceneSave.dictVector3.Add("_piezasColor1", images);
-        }
-        if (_piezasColor2 != null && _piezasColor2.Count > 0)
-        {
-            List<Vector3Serializable> images = new List<Vector3Serializable>();
-            foreach (Image pieza in _piezasColor2)
-            {
-                images.Add(new Vector3Serializable(pieza.gameObject.transform.position.x, pieza.transform.position.y, pieza.transform.position.z));
-            }
-            sceneSave.dictVector3.Add("_piezasColor2", images);
-        }
-        if (_listDorsos != null && _listDorsos.Count > 0)
-        {
-            List<Vector3Serializable> images = new List<Vector3Serializable>();
-            foreach (GameObject pieza in _listDorsos)
-            {
-                images.Add(new Vector3Serializable(pieza.transform.position.x, pieza.transform.position.y, pieza.transform.position.z));
-            }
-            sceneSave.dictVector3.Add("_listDorsos", images);
-        }
-        sceneSave.intDictionary = new Dictionary<string, int>();
-        sceneSave.intDictionary.Add("_numPiezasColor1", _numPiezasColor1);
-        sceneSave.intDictionary.Add("_numPiezasColor2", _numPiezasColor2);
-        sceneSave.boolDictionary = new Dictionary<string, bool>();
-        GameObjectSave.sceneData.Add(NombresEscena.Escena_PartidaNormal.ToString(), sceneSave);
-        return GameObjectSave;
-    }
-    public void IsaveableLoad(GameSave gameSave)
-    {
-        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
-        {
-            GameObjectSave = gameObjectSave;
-            if (gameObjectSave.sceneData.TryGetValue(NombresEscena.Escena_PartidaNormal.ToString(), out SceneSave sceneSave))
-            {
-                if (sceneSave.dictVector3 != null && sceneSave.dictVector3.TryGetValue("_piezasColor1", out List<Vector3Serializable> piezasColor1))
-                {
-                    foreach (Image pieza in _piezasColor1)
-                    {
-                        Destroy(pieza);
-                    }
-                    _piezasColor1 = new List<Image>();
-                    foreach (Vector3Serializable v3s in piezasColor1)
-                    {
-                        GameObject pieza = Instantiate(PiezaPrefabColor1, GrupoPiezasColor1.transform, false);
-                        pieza.transform.position = new Vector3(v3s.x, v3s.y, v3s.z);
-                        _piezasColor1.Add(pieza.GetComponent<Image>());
-                    }
-                }
-                if (sceneSave.dictVector3 != null && sceneSave.dictVector3.TryGetValue("_piezasColor2", out List<Vector3Serializable> piezasColor2))
-                {
-                    foreach (Image pieza in _piezasColor2)
-                    {
-                        Destroy(pieza);
-                    }
-                    _piezasColor2 = new List<Image>();
-                    foreach (Vector3Serializable v3s in piezasColor2)
-                    {
-                        GameObject pieza = Instantiate(PiezaPrefabColor2, GrupoPiezasColor2.transform, false);
-                        pieza.transform.position = new Vector3(v3s.x, v3s.y, v3s.z);
-                        _piezasColor2.Add(pieza.GetComponent<Image>());
-                    }
-                }
-                if (sceneSave.dictVector3 != null && sceneSave.dictVector3.TryGetValue("_listDorsos", out List<Vector3Serializable> listDorsos))
-                {
-                    foreach (GameObject dorso in _listDorsos)
-                    {
-                        Destroy(dorso);
-                    }
-                    _listDorsos = new List<GameObject>();
-                    foreach (Vector3Serializable v3s in listDorsos)
-                    {
-                        GameObject dorso = Instantiate(DorsoPrefab, DisplayDorsosUI.transform, false);
-                        dorso.transform.position = new Vector3(v3s.x, v3s.y, v3s.z);
-                        _listDorsos.Add(dorso);
-                    }
-                }
-                if (sceneSave.intDictionary != null && sceneSave.intDictionary.TryGetValue("_numPiezasColor1", out int numPiezasColor1))
-                {
-                    _numPiezasColor1 = numPiezasColor1;
-                }
-                if (sceneSave.intDictionary != null && sceneSave.intDictionary.TryGetValue("_numPiezasColor2", out int numPiezasColor2))
-                {
-                    _numPiezasColor2 = numPiezasColor2;
-                }
-            }
-        }
-    }
-
-    public void IsaveableStoreScene(string sceneName)
-    {
-        //
-    }
-
-    public void IsaveableRestoreScene(string sceneName)
-    {
-        //
-    }
 }
