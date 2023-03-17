@@ -956,4 +956,20 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
         return retorno;
     }
 
+    public Grid getCasillasGrid()
+    {
+        Grid[] grids = GameObject.FindObjectsOfType<Grid>();
+        if (grids.Length>0)
+        {
+            for (int i = 0; i < grids.Length; i++)
+            {
+                if (grids[i].gameObject.name == Settings.NombreCasillasJuego)
+                {
+                    return grids[i];
+                }
+            }
+        }
+        return null;
+    }
+
 }

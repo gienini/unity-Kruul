@@ -13,6 +13,7 @@ public class CanvasPartidaUI : MonoBehaviour
     [SerializeField] private GameObject DorsoPrefab = null;
     [SerializeField] private GameObject PiezaPrefabColor1 = null;
     [SerializeField] private GameObject PiezaPrefabColor2 = null;
+    [SerializeField] SeleccionAccion grupoSeleccionAccion = null;
     private List<Image> _piezasColor1;
     private List<Image> _piezasColor2;
     private int _numPiezasColor1 = 9;
@@ -97,6 +98,7 @@ public class CanvasPartidaUI : MonoBehaviour
     {
         if (esSeleccionAccion)
         {
+            grupoSeleccionAccion.gameObject.SetActive(false);
             esSeleccionAccion = false;
             //FaderPartidaUI.transform.SetAsLastSibling();
             GrupoPiezasColor2.SetActive(true);
@@ -107,8 +109,10 @@ public class CanvasPartidaUI : MonoBehaviour
             StartCoroutine(SceneControllerManager.Instance.Fade(0f));
         }
     }
+    
     private void muestraOpcionesAccion(bool esJugador1)
     {
+        grupoSeleccionAccion.gameObject.SetActive(true);
         StartCoroutine(AnimacionFade(1f, esJugador1));
     }
     private void displayNombreJugador()

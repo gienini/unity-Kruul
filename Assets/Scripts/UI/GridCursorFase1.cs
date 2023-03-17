@@ -117,7 +117,7 @@ public class GridCursorFase1 : MonoBehaviour
 
     public void DespuesIntroFase1Event()
     {
-        _grid = GameObject.FindObjectOfType<Grid>();
+        _grid = PropiedadesCasillasManager.Instance.getCasillasGrid();
         cursorIsEnabled = true;
     }
 

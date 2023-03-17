@@ -127,7 +127,7 @@ public class GridCursorFase2 : MonoBehaviour
     {
         if (_grid == null)
         {
-            _grid = GameObject.FindObjectOfType<Grid>();
+            _grid = PropiedadesCasillasManager.Instance.getCasillasGrid();
         }
         if (_grid != null)
         {
