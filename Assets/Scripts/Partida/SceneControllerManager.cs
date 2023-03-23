@@ -19,7 +19,6 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
     [SerializeField] private List<GameObject> PartidaCanvas = null;
     [SerializeField] private GridCursorFase1 gridCursorFase1 = null;
     [SerializeField] private GridCursorFase2 gridCursorFase2 = null;
-    [SerializeField] private GameObject FinalPartidaCanvas = null;
     public NombresEscena startingSceneName;
     private string _escenaActual;
     private TextMeshProUGUI _textoFader;
@@ -108,40 +107,27 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
             StartCoroutine(FadeAndSwitchScene(sceneName));
         }
     }
-    public void FadeAndKeepScene(string textToShow, bool esFinal)
+    public void FadeAndKeepScene(string textToShow)
     {
         if (!isFading)
         {
 
-            StartCoroutine(FadeAndKeepRoutine(textToShow, esFinal));
+            StartCoroutine(FadeAndKeepRoutine(textToShow));
         }
     }
-    public void FadeAndKeepScene(string textToShow)
-    {
-        FadeAndKeepScene(textToShow, false);
-    }
-    private IEnumerator FadeAndKeepRoutine(string textToShow, bool esFinal)
+    private IEnumerator FadeAndKeepRoutine(string textToShow)
     {
         _textoFader = faderCanvasGroup.gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        
+        _textoFader.text = textToShow;
         EventHandler.CallAntesFadeOutEvent();
         EventHandler.CallFadeOutEvent();
         //Fade in
-        
-        if (!esFinal)
-        {
-            yield return StartCoroutine(Fade(1f));
-            _textoFader.text = textToShow;
-            //Fade out
-            yield return StartCoroutine(Fade(0f));
-            EventHandler.CallDespuesFadeOutEvent();
-            _textoFader.text = null;
-        }else
-        {
-            yield return StartCoroutine(Fade(0.5f));
-            _textoFader.text = textToShow;
-            FinalPartidaCanvas.SetActive(true);
-        }
+        yield return StartCoroutine(Fade(1f));
+        //Fade out
+        yield return StartCoroutine(Fade(0f));
+
+        EventHandler.CallDespuesFadeOutEvent();
+        _textoFader.text = null;
     }
     private IEnumerator FadeAndSwitchScene(string sceneName)
     {
@@ -205,11 +191,6 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
 
     public IEnumerator Fade(float finalAlpha)
     {
-        if (finalAlpha == 1f)
-        {
-            FinalPartidaCanvas.SetActive(false);
-            _textoFader.text = "";
-        }
         //Seteamos a true para que no salte la corutine
         isFading = true;
 

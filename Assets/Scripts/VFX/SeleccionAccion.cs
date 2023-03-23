@@ -10,8 +10,8 @@ public class SeleccionAccion : MonoBehaviour
     [SerializeField] private Image flechaDorsos;
     private bool esAnimacionActivada = false;
 
-    private float yMaxima = 240;
-    private float yMinima = 200;
+    private float yMaxima = -29+180;
+    private float yMinima = -73+180;
     private bool esSubiendo = false;
     // Start is called before the first frame update
     void Start()
@@ -27,9 +27,9 @@ public class SeleccionAccion : MonoBehaviour
     private void OnEnable()
     {
         esSubiendo = false;
-        flechaP1.gameObject.GetComponent<RectTransform>().transform.position = new Vector3(flechaP1.gameObject.GetComponent<RectTransform>().transform.position.x, yMaxima, flechaP1.gameObject.GetComponent<RectTransform>().transform.position.z);
-        flechaP2.gameObject.GetComponent<RectTransform>().transform.position = new Vector3(flechaP2.gameObject.GetComponent<RectTransform>().transform.position.x, yMaxima, flechaP2.gameObject.GetComponent<RectTransform>().transform.position.z);
-        flechaDorsos.gameObject.GetComponent<RectTransform>().transform.position = new Vector3(flechaDorsos.gameObject.GetComponent<RectTransform>().transform.position.x, yMaxima, flechaDorsos.gameObject.GetComponent<RectTransform>().transform.position.z);
+        //flechaP1.gameObject.GetComponent<RectTransform>().transform.position = new Vector3(flechaP1.gameObject.GetComponent<RectTransform>().transform.position.x, yMaxima, flechaP1.gameObject.GetComponent<RectTransform>().transform.position.z);
+        //flechaP2.gameObject.GetComponent<RectTransform>().transform.position = new Vector3(flechaP2.gameObject.GetComponent<RectTransform>().transform.position.x, yMaxima, flechaP2.gameObject.GetComponent<RectTransform>().transform.position.z);
+        //flechaDorsos.gameObject.GetComponent<RectTransform>().transform.position = new Vector3(flechaDorsos.gameObject.GetComponent<RectTransform>().transform.position.x, yMaxima, flechaDorsos.gameObject.GetComponent<RectTransform>().transform.position.z);
         if (PropiedadesCasillasManager.Instance.EsTurnoColor1)
         {
             flechaP2.color = new Color(flechaP2.color.r, flechaP2.color.g, flechaP2.color.b, 0f);

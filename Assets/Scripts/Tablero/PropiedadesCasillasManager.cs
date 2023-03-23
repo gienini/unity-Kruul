@@ -67,12 +67,10 @@ public class PropiedadesCasillasManager : SingletonMonobehaviour<PropiedadesCasi
     {
         _esFase1 = true;
         _esTurnoColor1 = true;
-        _esFase2 = false;
     }
 
     private void EmpiezaFase2Event()
     {
-        _esFase1 = false;
         _esFase2 = true;
     }
 

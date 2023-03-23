@@ -204,13 +204,6 @@ public class CanvasPartidaUI : MonoBehaviour
     }
     private IEnumerator instanciaPilaDorsos(int barajaCount)
     {
-        if (DisplayDorsosUI.gameObject.GetComponentsInChildren<Dorso>() != null && DisplayDorsosUI.gameObject.GetComponentsInChildren<Dorso>().Length > 0)
-        {
-            foreach(Dorso d in DisplayDorsosUI.gameObject.GetComponentsInChildren<Dorso>())
-            {
-                Destroy(d.gameObject);
-            }
-        }
         Vector3 posicionDestino = new Vector3(-((barajaCount/2)*Settings.SeparacionSpawnCartasUI), 0, 0);
         _listDorsos = new List<GameObject>();
         for (int i = 0; i < barajaCount; i++)
