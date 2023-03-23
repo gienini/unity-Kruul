@@ -99,6 +99,7 @@
     <Compile Include="Assets\Scripts\SO_Scripts\SO_DecoracionesCartas.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\SO_PropiedadesCasilla.cs" />
     <Compile Include="Assets\Scripts\SO_Scripts\SO_Sonidos.cs" />
+    <Compile Include="Assets\Scripts\Sonido\AudioManager.cs" />
     <Compile Include="Assets\Scripts\Sonido\SoundItem.cs" />
     <Compile Include="Assets\Scripts\Tablero\PropiedadesCasillasManager.cs" />
     <Compile Include="Assets\Scripts\Tablero\ValorCasilla.cs" />
