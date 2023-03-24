@@ -10,9 +10,10 @@ public class PartidaManager : MonoBehaviour
     [SerializeField] private SO_Baraja so_baraja = null;
     [SerializeField] private int fichasJugadorProximo;
     [SerializeField] private int numeroCartasArrancables;
+    [SerializeField] private GameObject fuegoArtificialPrefab = null;
     private Camera mainCamera;
     private Baraja _baraja;
-    
+    private bool esAnimacionFuegos = false;
 
     public Camera MainCamera { get => mainCamera; set => mainCamera = value; }
    
@@ -26,6 +27,7 @@ public class PartidaManager : MonoBehaviour
         EventHandler.DespuesFadeOutEvent += DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event += DespuesIntroFase1Event;
         EventHandler.JugadaEliminarEvent += callJugadaHechaFase2;
+        EventHandler.FinalPartidaEvent += FinalPartidaEvent;
     }
     private void OnDisable()
     {
@@ -36,6 +38,13 @@ public class PartidaManager : MonoBehaviour
         EventHandler.DespuesFadeOutEvent -= DespuesFadeOutEvent;
         EventHandler.DespuesIntroFase1Event -= DespuesIntroFase1Event;
         EventHandler.JugadaEliminarEvent -= callJugadaHechaFase2;
+        EventHandler.FinalPartidaEvent -= FinalPartidaEvent;
+    }
+
+    private void FinalPartidaEvent(int arg1, int arg2)
+    {
+        esAnimacionFuegos = true;
+        StartCoroutine(fuegos());
     }
 
     private void Awake()
@@ -45,6 +54,7 @@ public class PartidaManager : MonoBehaviour
     private void Start()
     {
         mainCamera = Camera.main;
+        esAnimacionFuegos = false;
     }
     private void DespuesIntroFase1Event()
     {
@@ -63,6 +73,15 @@ public class PartidaManager : MonoBehaviour
     private void EmpiezaFase1Event()
     {
         PropiedadesCasillasManager.Instance.InicializaDictValoresCasilla();
+    }
+    private IEnumerator fuegos()
+    {
+        while (esAnimacionFuegos)
+        {
+            GameObject nuevoFuegoArtificial = Instantiate(fuegoArtificialPrefab, new Vector3(Random.Range(- 15, 15), -10, transform.position.z), Quaternion.identity);
+            yield return new WaitForSeconds(1f);
+        }
+        
     }
     private void inicializaBaraja()
     {
@@ -242,14 +261,14 @@ public class PartidaManager : MonoBehaviour
             //Check final de partida prematuro, si los dos jugadores no tienen ficha = empate
             if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
             {
-                SceneControllerManager.Instance.FadeAndKeepScene("EMPATE");
+                SceneControllerManager.Instance.FadeAndKeepScene("EMPATE", true);
                 EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
             }
             //Check final de partida prematuro, si alguno de los dos jugadores no tienen ficha en tablero
             else if (fichasPuestasJugador1 == 0 || fichasPuestasJugador2 == 0)
             {
                 bool esVictoriaJ1 = fichasPuestasJugador1 > 0;
-                SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esVictoriaJ1 ? "1" : "2"));
+                SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (esVictoriaJ1 ? "1" : "2"), true);
                 EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
             }else
             {
@@ -269,7 +288,7 @@ public class PartidaManager : MonoBehaviour
         //Final partida empate
         if (fichasPuestasJugador1 == 0 && fichasPuestasJugador2 == 0)
         {
-            SceneControllerManager.Instance.FadeAndKeepScene("EMPATE");
+            SceneControllerManager.Instance.FadeAndKeepScene("EMPATE", true);
             EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
             return;
         }
@@ -287,7 +306,7 @@ public class PartidaManager : MonoBehaviour
         //Final partida si el jugador siguiente (que ya esta seteado)
         if (fichasJugadorProximo == 0 || (fichasJugadorProximo == 1 && numeroCartasArrancables == 0))
         {
-            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!esProximoTurnoJ1 ? "1" : "2"));
+            SceneControllerManager.Instance.FadeAndKeepScene("VICTORIA J" + (!esProximoTurnoJ1 ? "1" : "2"), true);
             EventHandler.CallFinalPartidaEvent(fichasPuestasJugador1, fichasPuestasJugador2);
         }else
         {
