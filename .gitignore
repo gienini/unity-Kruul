@@ -9,8 +9,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
-/.vs/Kruul/v16/.suo
-
+.vs/
+Library/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
