@@ -59,10 +59,10 @@ MonoBehaviour:
   Path: ../Kruul FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638160592025302592
+  lastModified: 638160627013084549
   FileSizes:
   - Name: Desktop
-    Value: 2534112
+    Value: 2914368
   Exists: 1
 --- !u!114 &-7152205540224105441
 MonoBehaviour:
@@ -110,6 +110,29 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 248000
+--- !u!114 &-1863431153603018950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/UI/No Funciona
+  m_EditorClassIdentifier: 
+  Path: event:/UI/No Funciona
+  guid: 1eba506ca071ce46a6a12b4e1ed84442
+  Banks:
+  - {fileID: -7289679116078058159}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 1520
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,12 +154,14 @@ MonoBehaviour:
   - {fileID: 3213054595025510142}
   - {fileID: 5291825687686336782}
   - {fileID: -3511598828951452059}
+  - {fileID: -1863431153603018950}
+  - {fileID: 5789694199126787476}
   EditorParameters: []
   MasterBanks:
   - {fileID: -7289679116078058159}
   StringsBanks:
   - {fileID: 8643443045672894271}
-  stringsBankWriteTime: 638160592025312592
+  stringsBankWriteTime: 638160627013094551
   cacheVersion: 8
 --- !u!114 &3213054595025510142
 MonoBehaviour:
@@ -184,6 +209,29 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 3500
+--- !u!114 &5789694199126787476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambience/Ambience Partida
+  m_EditorClassIdentifier: 
+  Path: event:/Ambience/Ambience Partida
+  guid: 4ebf18bc428a314db343405ab639750f
+  Banks:
+  - {fileID: -7289679116078058159}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 6500
 --- !u!114 &7398061894278914773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,10 +270,10 @@ MonoBehaviour:
   Path: ../Kruul FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638160592025312592
+  lastModified: 638160627013094551
   FileSizes:
   - Name: Desktop
-    Value: 968
+    Value: 1080
   Exists: 1
 --- !u!114 &8677790129754767368
 MonoBehaviour:

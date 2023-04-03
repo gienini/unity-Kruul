@@ -1850,7 +1850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22a476066d0a3740863ea898363359c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Event: event:/UI/Menu Button 01
+  Event: event:/UI/No Funciona
   PlayOnAwake: 0
 --- !u!1 &502919822
 GameObject:
@@ -8382,7 +8382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22a476066d0a3740863ea898363359c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Event: event:/UI/Menu Button 01
+  Event: event:/UI/No Funciona
   PlayOnAwake: 0
 --- !u!222 &3880465881438185722
 CanvasRenderer:
